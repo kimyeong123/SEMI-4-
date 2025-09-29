@@ -29,7 +29,7 @@ check(
 check(regexp_like(member_nickname, '^[가-힣0-9]{2,10}$')),
 check(regexp_like(member_birth, '^(19[0-9]{2}|20[0-9]{2})-((02-(0[1-9]|1[0-9]|2[0-9]))|((0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30))|((0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01])))$')),
 check(regexp_like(member_contact, '^010[1-9][0-9]{7}$')),
-check(regexp_like(memberemail, '[A-Za-z0-9-]+@[A-Za-z0-9_-]+')),
+check(regexp_like(member_email, '[A-Za-z0-9-]+@[A-Za-z0-9_-]+')),
 check(member_level in ('일반회원', '우수회원', '관리자')),
 check(member_point >= 0),
 check(regexp_like(member_post, '^[0-9]{5,6}$')),
@@ -48,8 +48,16 @@ product_price number not null,
 product_content varchar2(4000) not null,
 check(product_price >= 0)
 );
-drop sequence product _seq;
 create sequence product_seq;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+create table product_option (
+product_option_no number primary key,
+product_no references product(product_no) delete on cascade not null,
+product_option_name varchar2(60) not null,
+product_option_value varchar2(30) not null,
+product_option_stock number default 0  not null;
+);
+create sequence product_option_seq;
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 create table review(
 review_no number primary key,
@@ -60,59 +68,35 @@ review_rating number(1) not null check (review_rating between 1 and 5),
 review_created_at timestamp default systimestamp not null
 );
 create sequence review_seq; 
-
-create table member (
-member_id varchar2(20) primary key,
-member_pw varchar2(16) not null,
-member_nickname varchar2(30) not null unique,
-member_birth char(10),
-member_contact char(11),
-member_email varchar2(60) not null,
-member_level varchar2(12) default '일반회원' not null,
-member_point number default 0 not null,
-member_post varchar2(6),
-member_address1 varchar2(300),
-member_address2 varchar2(300),
-member_join timestamp default systimestamp not null,
-member_login timestamp,
-member_change timestamp,
-check(regexp_like(member_id, '^[a-z][a-z0-9]{4,19}$')),
-check(
-    --regexp_like(member_pw, '^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[!@#$])[A-Za-z0-9!@#$]{8,16}$')
-    regexp_like(member_pw, '^[A-Za-z0-9!@#$]{8,16}$')
-    and
-    regexp_like(member_pw, '[A-Z]+')
-    and
-    regexp_like(member_pw, '[a-z]+')
-    and
-    regexp_like(member_pw, '[0-9]+')
-    and
-    regexp_like(member_pw, '[!@#$]+')
-),
-check(regexp_like(member_nickname, '^[가-힣0-9]{2,10}$')),
-check(regexp_like(member_birth, '^(19[0-9]{2}|20[0-9]{2})-((02-(0[1-9]|1[0-9]|2[0-9]))|((0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30))|((0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01])))$')),
-check(regexp_like(member_contact, '^010[1-9][0-9]{7}$')),
-check(regexp_like(memberemail, '[A-Za-z0-9-]+@[A-Za-z0-9_-]+')),
-check(member_level in ('일반회원', '우수회원', '관리자')),
-check(member_point >= 0),
-check(regexp_like(member_post, '^[0-9]{5,6}$')),
-check(
-    (member_post is null and member_address1 is null and member_address2 is null) 
-    or 
-    (member_post is not null and member_address1 is not null and member_address2 is not null)
-)
-);
-create sequence member_seq;
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-create table product  (
-product_no number primary key,
-product_name varchar2(90) not null,
-product_price number not null,
-product_content varchar2(4000) not null,
-check(product_price >= 0)
+drop table orders;
+create table orders  (
+orders_no number primary key,
+orders_id references member(member_id) on delete set null,
+orders_totalPrice number,
+orders_recipient varchar2(60),
+orders_recipientContact char(11),
+orders_shippingPost varchar(6),
+orders_shippingAddress1 varchar(300),
+orders_shippingAddress2 varchar(300),
+orders_status varchar2(60),
+check(orders_status in ('결제완료', '배송중', '배송완료')),
+check(orders_totalPrice >= 0)
 );
-drop sequence product _seq;
-create sequence product_seq;
+drop sequence orders _seq;
+create sequence orders_seq;
+select * from orders;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+create table cart (
+    cart_no number primary key,
+    member_id references member(member_id) on delete cascade not null,
+    product_no references product(product_no) on delete cascade not null,
+    option_no references product_option(option_no) on delete cascade not null,
+    amount number default 1 not null,
+    created_at timestamp default systimestamp not null,
+    check(amount > 0)
+);
+create sequence cart_seq;
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 create table review(
 review_no number primary key,
