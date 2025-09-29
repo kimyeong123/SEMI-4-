@@ -59,6 +59,15 @@ product_option_stock number default 0  not null;
 );
 create sequence product_option_seq;
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+create table product_option(
+option_no number primary key,
+product_no references product(product_no) on delete cascade not null ,
+option_name varchar2(30) not null,
+option_value varchar2(30) not null,
+option_amount number not null,
+create sequence product_option_seq;
+);
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 create table review(
 review_no number primary key,
 product_no references product(product_no) on delete cascade  not null ,
@@ -69,7 +78,6 @@ review_created_at timestamp default systimestamp not null
 );
 create sequence review_seq; 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-drop table orders;
 create table orders  (
 orders_no number primary key,
 orders_id references member(member_id) on delete set null,
@@ -83,9 +91,19 @@ orders_status varchar2(60),
 check(orders_status in ('결제완료', '배송중', '배송완료')),
 check(orders_totalPrice >= 0)
 );
-drop sequence orders _seq;
 create sequence orders_seq;
-select * from orders;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+create order_detail (
+order_detail_no number primary key,
+order_no references order(order_no) on delete cascade not null,
+product_no references product(product_no) on delete cascade not null,
+option_no references order(option_no) on delete cascade not null,
+amount number default 1 not null,
+price_per_item number not null,
+check(amount > 0),
+check(price_per_item > 0)
+);
+create sequence order_detail_seq;
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 create table cart (
     cart_no number primary key,
