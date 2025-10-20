@@ -13,6 +13,6 @@ public class CartDto {
 	private String memberId;
 	private int productNo;
 	private int optionNo;
-	private int a;
-	private Timestamp createdAt;
+	private int cartAmount;
+	private Timestamp cartCreatedAt;
 }
