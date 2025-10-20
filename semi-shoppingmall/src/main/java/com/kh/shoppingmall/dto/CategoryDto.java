@@ -1,8 +1,11 @@
 package com.kh.shoppingmall.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class CategoryDto {
 	private int categoryNo;
 	private String categoryName;
