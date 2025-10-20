@@ -126,4 +126,11 @@ review_created_at timestamp default systimestamp not null
 );
 create sequence review_seq; 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+create table attachment(
+attachment_no number primary key,
+attachment_name varchar2(255) not null,
+attachment_size number not null,
+attachment_type varchar2(100) not null,
+attachment_time timestamp default systimestamp not null
+);
+create sequence attachment_seq;
