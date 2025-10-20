@@ -1,8 +1,11 @@
 package com.kh.shoppingmall.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class OrdersDto {
     private int ordersNo;
     private String ordersId;
