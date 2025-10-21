@@ -63,7 +63,7 @@ public class CategoryDao {
 		
 		Object[] params = { categoryNo };
 		
-		return jdbcTemplate.queryForObject(sql, int.class, params);
+		return jdbcTemplate.queryForObject(sql, Integer.class, params);
 	}
 	
 	
