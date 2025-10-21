@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class MemberPurchaseHistoryVO {
 
     private String ordersId;
-    private String productNo;
+    private int productNo;
     private String productName;
     private int productPrice;
     private String productContent;
