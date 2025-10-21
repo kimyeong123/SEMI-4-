@@ -33,14 +33,14 @@ public class ProductOptionDao {
 
     // 옵션 등록   option_name = (ex) 사이즈, 색상 option_value = (ex) 265, 빨강
     public void insert(ProductOptionDto productOptionDto) {
-        String sql = "insert into product_option(option_no, product_no, option_name, option_value, option_stook) "
+        String sql = "insert into product_option(option_no, product_no, option_name, option_value, option_stock) "
                    + "values (?, ?, ?, ?, ?)";
         Object[] params = {
             productOptionDto.getOptionNo(),
             productOptionDto.getProductNo(),
             productOptionDto.getOptionName(),
             productOptionDto.getOptionValue(),
-            productOptionDto.getOptionStook()
+            productOptionDto.getOptionStock()
         };
         jdbcTemplate.update(sql, params);
     }
@@ -48,12 +48,12 @@ public class ProductOptionDao {
     // 옵션 수정
     public boolean update(ProductOptionDto productOptionDto) {
         String sql = "update product_option "
-                   + "set option_name = ?, option_value = ?, option_stook = ? "
+                   + "set option_name = ?, option_value = ?, option_stock = ? "
                    + "where option_no = ?";
         Object[] params = {
             productOptionDto.getOptionName(),
             productOptionDto.getOptionValue(),
-            productOptionDto.getOptionStook(),
+            productOptionDto.getOptionStock(),
             productOptionDto.getOptionNo()
         };
         return jdbcTemplate.update(sql, params) > 0;

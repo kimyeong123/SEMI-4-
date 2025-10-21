@@ -11,5 +11,5 @@ public class ProductOptionDto {
 	private int productNo;
 	private String optionName;
 	private String optionValue;
-	private int optionStook;
+	private int optionStock;
 }
