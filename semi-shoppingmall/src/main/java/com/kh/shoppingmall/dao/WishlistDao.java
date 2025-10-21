@@ -1,6 +1,5 @@
 package com.kh.shoppingmall.dao;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class WishlistDao {
 			return count > 0;
 		}
 		public boolean delete(String memberId, int productNo) {
-			String sql = "delete wishlist where member_id=? and product_no=?";
+			String sql = "delete from wishlist where member_id=? and product_no=?";
 			Object[] params = {memberId, productNo};
 			return jdbcTemplate.update(sql, params) > 0;
 		}
