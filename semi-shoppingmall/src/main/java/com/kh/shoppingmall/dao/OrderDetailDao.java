@@ -18,7 +18,7 @@ public class OrderDetailDao {
 	private OrderDetailMapper orderDetailMapper;
 	
 	public int sequence() {
-		String sql = "select orders_detail_seq.nextval from dual";
+		String sql = "select order_detail_seq.nextval from dual";
 		return jdbcTemplate.queryForObject(sql, int.class);
 	}
 	
@@ -65,7 +65,7 @@ public class OrderDetailDao {
 	}
 	
 	public List<OrderDetailDto> selectListByOrdersNo(int ordersNo){
-		String sql = "select * from order_detail where orders_no = ?";
+		String sql = "select * from order_detail where order_no = ?";
 		Object[] param = {ordersNo};
 		
 		return jdbcTemplate.query(sql, orderDetailMapper, param);
