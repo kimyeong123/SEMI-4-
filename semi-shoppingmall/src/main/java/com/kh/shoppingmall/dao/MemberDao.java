@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.mapper.MemberMapper;
-//import com.kh.shoppingmall.vo.PageVO;
 
 @Repository
 public class MemberDao {
@@ -154,6 +153,7 @@ public class MemberDao {
 //			return jdbcTemplate.query(sql, memberMapper, params);
 //		}
 //	}
+	
 //	
 	//회원 프로필 기능
 	public void connect(String memberId, int attachmentNo) {
