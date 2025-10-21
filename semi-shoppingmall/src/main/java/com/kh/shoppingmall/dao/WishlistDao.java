@@ -14,11 +14,11 @@ public class WishlistDao {
 	private JdbcTemplate jdbcTemplate;
 	
 	//CRUD
-	public void insert(int wishlistNo, String memberId, int productNo, Timestamp wishlistCreateAt) {
+	public void insert(String memberId, int productNo) {
 		String sql = "insert into wishlist("
-				+ "wishlist_no, member_id_, product_no, wishlist_createdAt) "
-				+ "values(?, ?, ?, systimestamp)";
-		Object[] params = {wishlistNo, memberId, productNo, wishlistCreateAt};
+				+ "wishlist_no, member_id, product_no, wishlist_createdAt) "
+				+ "values(wishlist_seq.nextval, ?, ?, systimestamp)";
+		Object[] params = {memberId, productNo};
 		jdbcTemplate.update(sql, params);
 	}
 	//검사
@@ -30,7 +30,7 @@ public class WishlistDao {
 			return count > 0;
 		}
 		public boolean delete(String memberId, int productNo) {
-			String sql = "delete pokemon_like where member_id=? and product_no=?";
+			String sql = "delete wishlist where member_id=? and product_no=?";
 			Object[] params = {memberId, productNo};
 			return jdbcTemplate.update(sql, params) > 0;
 		}
