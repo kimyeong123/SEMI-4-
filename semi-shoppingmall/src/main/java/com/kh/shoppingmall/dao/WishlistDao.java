@@ -15,7 +15,7 @@ public class WishlistDao {
 	//CRUD
 	public void insert(String memberId, int productNo) {
 		String sql = "insert into wishlist("
-				+ "wishlist_no, member_id, product_no, wishlist_createdAt) "
+				+ "wishlist_no, member_id, product_no, created_at) "
 				+ "values(wishlist_seq.nextval, ?, ?, systimestamp)";
 		Object[] params = {memberId, productNo};
 		jdbcTemplate.update(sql, params);

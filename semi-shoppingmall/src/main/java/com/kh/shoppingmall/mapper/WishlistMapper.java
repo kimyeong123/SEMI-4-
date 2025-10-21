@@ -17,7 +17,7 @@ public class WishlistMapper implements RowMapper<WishlistDto>{
 				.wishlistNo(rs.getInt("wishlist_no"))
 				.memberId(rs.getString("member_id"))
 				.productNo(rs.getInt("product_no"))
-				.wishlistCreatedAt(rs.getTimestamp("created_at"))
+				.createdAt(rs.getTimestamp("created_at"))
 			.build();
 	}
 
