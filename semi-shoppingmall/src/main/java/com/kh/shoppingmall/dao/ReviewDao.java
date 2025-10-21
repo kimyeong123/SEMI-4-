@@ -26,7 +26,7 @@ public class ReviewDao {
 
     // 리뷰 목록 조회 회원 아이디 기준으로 조회
     public List<ReviewDto> selectListByMember(String memberId) {
-        String sql = "select * from review where product_no = ? order by review_no desc";
+        String sql = "select * from review where member_id = ? order by review_no desc";
         Object[] params = {memberId};
         return jdbcTemplate.query(sql, reviewMapper, params);
     }

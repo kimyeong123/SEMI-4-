@@ -58,6 +58,13 @@ public class ProductOptionDao {
         };
         return jdbcTemplate.update(sql, params) > 0;
     }
+    //재고만 수정
+    public boolean updateStock(int optionNo, int amount) {
+        String sql = "update product_option set option_stock = option_stock + ? "
+                   + "where option_no = ?";
+        Object[] params = { amount }; // (amount가 -10이면 차감, 10이면 증가)
+        return jdbcTemplate.update(sql, params) > 0;
+    }
 
     // 옵션 삭제
     public boolean delete(int optionNo) {
