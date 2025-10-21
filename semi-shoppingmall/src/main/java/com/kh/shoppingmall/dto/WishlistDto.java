@@ -12,5 +12,5 @@ public class WishlistDto {
 	private int wishlistNo;
 	private String memberId;
 	private int productNo;
-	private Timestamp wishlistCreatedAt;
+	private Timestamp createdAt;
 }
