@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.ProductDto;
+import com.kh.shoppingmall.mapper.ProductListVOMapper;
 import com.kh.shoppingmall.mapper.ProductMapper;
+import com.kh.shoppingmall.vo.ProductListVO;
 
 @Repository
 public class ProductDao {
@@ -18,6 +20,9 @@ public class ProductDao {
 
     @Autowired
     private ProductMapper productMapper;
+    
+    @Autowired
+    private ProductListVOMapper productListVOmapper;
     
     //시퀀스 생성
     public int sequence() {
@@ -68,14 +73,14 @@ public class ProductDao {
     }
 
     // 상품 검색
-    public List<ProductDto> selectList(String column, String keyword) {
+    public List<ProductListVO> selectList(String column, String keyword) {
         Set<String> allowList = Set.of("product_name", "product_content");
         if (!allowList.contains(column)) return List.of();
 
         String sql = "select * from product where instr(#1, ?) > 0 order by #1 asc, product_no asc";
         sql = sql.replace("#1", column);
         Object[] params = { keyword };
-        return jdbcTemplate.query(sql, productMapper, params);
+        return jdbcTemplate.query(sql, productListVOmapper, params);
     }
 
     // 상세 조회
