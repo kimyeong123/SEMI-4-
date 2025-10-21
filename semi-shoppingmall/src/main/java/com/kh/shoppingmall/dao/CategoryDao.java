@@ -56,6 +56,17 @@ public class CategoryDao {
 		
 		return list.isEmpty() ? null : list.get(0);
 	}
+	
+	//부모 카테고리를 갖는 하위 카테고리 개수 조회 메소드
+	public int countByParent(int categoryNo) {
+		String sql = "SELECT COUNT(*) FROM category WHERE parent_category_no = ?";
+		
+		Object[] params = { categoryNo };
+		
+		return jdbcTemplate.queryForObject(sql, int.class, params);
+	}
+	
+	
 	//U
 	public boolean update(CategoryDto categoryDto) {
 		String sql = "update category set "
