@@ -43,7 +43,7 @@ public class OrdersDao {
 	
 	// 1. R(Select): 내 주문 내역 목록 조회 (member_id 기준)
 	public List<OrdersDto> selectListByMemberId(String memberId) {
-		String sql = "select * from orders where member_id = ? order by orders_no desc";
+		String sql = "select * from orders where orders_id = ? order by orders_no desc";
 		Object[] param = {memberId};
 		return jdbcTemplate.query(sql, ordersMapper, param);
 	}
