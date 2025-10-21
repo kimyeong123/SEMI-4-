@@ -90,7 +90,8 @@ public class MemberDao {
 	public boolean updateMemberByAdmin(MemberDto memberDto) {
 		String sql = "update member set "
 							+ "member_nickname=?, member_birth=?, member_contact=?, "
-							+ "member_email=?, member_post=?, member_address1=?, "
+							+ "member_email=?, member_p"
+							+ "ost=?, member_address1=?, "
 							+ "member_address2=?, member_level=?, member_point=? "
 						+ "where member_id=?";
 		Object[] params = {
