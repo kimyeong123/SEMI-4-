@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
-public class WIshlistDetailVO {
+public class WishlistDetailVO {
 	private int wishlistNo;
 	private String memberId;
 	private Timestamp createdAt;
