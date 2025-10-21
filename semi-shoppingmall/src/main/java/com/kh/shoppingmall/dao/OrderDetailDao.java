@@ -24,6 +24,7 @@ public class OrderDetailDao {
 	
 	//jdbcTemplate.batchUpdate 를 사용해 여러 주문건을 한번의 주문으로 통일(예: 장바구니에 담아 묶음결제)
 	//이 때 리턴값은 int[]이 됨 값이 1이면 정상이고 0 또는 -2면 삽입 실패
+	//이 때 order_detail_no는  서비스 쪽 (예: AttachmentService)에서 넣어주는게 좋음 이유는 시퀸스라 별도로 값을 넣어야됨
 	public int[] batchInsert(List<OrderDetailDto> orderDetailList) {
 		String sql = "insert into order_detail("
 				+ "order_detail_no, order_no, "
