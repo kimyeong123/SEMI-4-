@@ -41,7 +41,7 @@ public class ReviewDao {
 
     // 리뷰 등록
     public void insert(ReviewDto reviewDto) {
-        String sql = "insert review(review_no, product_no, member_id, review_content, review_rating, review_created_at) "
+        String sql = "insert into review(review_no, product_no, member_id, review_content, review_rating, review_created_at) "
                    + "values(?, ?, ?, ?, ?, ?)";
         Object[] params = {
             reviewDto.getReviewNo(),
