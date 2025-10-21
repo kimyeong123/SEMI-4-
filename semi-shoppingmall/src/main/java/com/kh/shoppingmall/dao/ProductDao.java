@@ -77,7 +77,7 @@ public class ProductDao {
         Set<String> allowList = Set.of("product_name", "product_content");
         if (!allowList.contains(column)) return List.of();
 
-        String sql = "select * from product where instr(#1, ?) > 0 order by #1 asc, product_no asc";
+        String sql = "select * from product_list where instr(#1, ?) > 0 order by #1 asc, product_no asc";
         sql = sql.replace("#1", column);
         Object[] params = { keyword };
         return jdbcTemplate.query(sql, productListVOmapper, params);
