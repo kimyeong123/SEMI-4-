@@ -21,7 +21,14 @@ public class OrdersSummaryMapper implements RowMapper<OrdersSummaryVO> {
 					.ordersShippingPost(rs.getString("orders_shipping_post"))
 					.ordersShippingAddress1(rs.getString("orders_shipping_address1"))
 					.ordersShippingAddress2(rs.getString("orders_shipping_address2"))
-					.orders_status(rs.getString("orders_status"))
+					.ordersStatus(rs.getString("orders_status"))
+					.orderAmount(rs.getInt("order_amount"))
+					.pricePerItem(rs.getInt("price_per_item"))
+					.productNo(rs.getInt("product_no"))
+					.productName(rs.getString("product_name"))
+					.optionName(rs.getString("option_name"))
+					.optionValue(rs.getString("option_value"))
+					.thumbnailName(rs.getString("thumbnail_name"))
 				.build();
 	}
 }

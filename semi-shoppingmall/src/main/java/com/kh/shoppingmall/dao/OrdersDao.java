@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.mapper.OrdersMapper;
+import com.kh.shoppingmall.mapper.OrdersSummaryMapper;
+import com.kh.shoppingmall.vo.OrdersSummaryVO;
 
 @Repository
 public class OrdersDao {
@@ -15,6 +17,8 @@ public class OrdersDao {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private OrdersMapper ordersMapper;
+	@Autowired
+	private OrdersSummaryMapper ordersSummaryMapper;
 	
 	public int sequence() {
 		String sql = "select orders_seq.nextval from dual";
@@ -42,18 +46,18 @@ public class OrdersDao {
 	}
 	
 	// 1. R(Select): 내 주문 내역 목록 조회 (member_id 기준)
-	public List<OrdersDto> selectListByMemberId(String memberId) {
+	public List<OrdersSummaryVO> selectListByMemberId(String memberId) {
 		String sql = "select * from orders where member_id = ? order by orders_no desc";
 		Object[] param = {memberId};
-		return jdbcTemplate.query(sql, ordersMapper, param);
+		return jdbcTemplate.query(sql, ordersSummaryMapper, param);
 	}
 	
 	// 2. R(Select): 주문 1건 기본 상세조회 (orders_no 기준)
 	// 이 함수는 OrdersDto의 기본 정보만 가져옴. 나중에 OrderDetailsVO로 확장 필요.
-	public OrdersDto selectOneByOrderNo(int ordersNo) {
+	public OrdersSummaryVO selectOneByOrderNo(int ordersNo) {
 		String sql = "select * from orders where orders_no = ?";
 		Object[] param = {ordersNo};
-		List<OrdersDto> list = jdbcTemplate.query(sql, ordersMapper, param);
+		List<OrdersSummaryVO> list = jdbcTemplate.query(sql, ordersSummaryMapper, param);
 		return list.isEmpty() ? null : list.get(0);		
 	}
 	

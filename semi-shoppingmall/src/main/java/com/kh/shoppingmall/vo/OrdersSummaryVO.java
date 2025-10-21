@@ -14,5 +14,20 @@ public class OrdersSummaryVO {
 	private String ordersRecipientContact;
 	private String ordersShippingPost;
 	private String ordersShippingAddress1, ordersShippingAddress2;
-	private String orders_status;
+	private String ordersStatus;
+	
+	//order_detail 참조
+	private int orderAmount;
+	private int pricePerItem;
+	
+	//product 참조
+	private int productNo;
+	private String productName;
+	
+	//product_option 참조
+	private String optionName;
+	private String optionValue;
+	
+	//썸네일 불러오기
+	private String thumbnailName;
 }
