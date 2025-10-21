@@ -86,17 +86,17 @@ public class ProductDao {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    // 썸네일 연결
-    public void connectThumbnail(int productNo, int thumbnailNo) {
-        String sql = "update product set product_thumbnail_no=? where product_no=?";
-        Object[] params = { thumbnailNo, productNo };
-        jdbcTemplate.update(sql, params);
-    }
-
-    // 썸네일 찾기
-    public int findThumbnail(int productNo) {
-        String sql = "select product_thumbnail_no from product where product_no=?";
-        Object[] params = { productNo };
-        return jdbcTemplate.queryForObject(sql, int.class, params);
-    }
+//    // 썸네일 연결
+//    public void connectThumbnail(int productNo, int thumbnailNo) {
+//        String sql = "update product set product_thumbnail_no=? where product_no=?";
+//        Object[] params = { thumbnailNo, productNo };
+//        jdbcTemplate.update(sql, params);
+//    }
+//
+//    // 썸네일 찾기
+//    public int findThumbnail(int productNo) {
+//        String sql = "select product_thumbnail_no from product where product_no=?";
+//        Object[] params = { productNo };
+//        return jdbcTemplate.queryForObject(sql, int.class, params);
+//    }
 }
