@@ -46,19 +46,19 @@ public class OrdersDao {
 	}
 	
 	// 1. R(Select): 내 주문 내역 목록 조회 (member_id 기준)
-	public List<OrdersSummaryVO> selectListByMemberId(String memberId) {
-		String sql = "select * from orders where member_id = ? order by orders_no desc";
+	public List<OrdersDto> selectListByMemberId(String ordersId) {
+		String sql = "select * from orders where orders_id = ? order by orders_no desc";
 
-		Object[] param = {memberId};
-		return jdbcTemplate.query(sql, ordersSummaryMapper, param);
+		Object[] param = {ordersId};
+		return jdbcTemplate.query(sql, ordersMapper, param);
 	}
 	
 	// 2. R(Select): 주문 1건 기본 상세조회 (orders_no 기준)
 	// 이 함수는 OrdersDto의 기본 정보만 가져옴. 나중에 OrderDetailsVO로 확장 필요.
-	public OrdersSummaryVO selectOneByOrderNo(int ordersNo) {
+	public OrdersDto selectOneByOrderNo(int ordersNo) {
 		String sql = "select * from orders where orders_no = ?";
 		Object[] param = {ordersNo};
-		List<OrdersSummaryVO> list = jdbcTemplate.query(sql, ordersSummaryMapper, param);
+		List<OrdersDto> list = jdbcTemplate.query(sql, ordersMapper, param);
 		return list.isEmpty() ? null : list.get(0);		
 	}
 	

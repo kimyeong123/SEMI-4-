@@ -38,7 +38,7 @@ public class ReviewDao {
     
     //리뷰 목록 조회 상품 기준으로 조회
     public List<ReviewDetailVO> selectListByProduct(int productNo) {
-        String sql = "select * from review where product_no = ? order by review_no desc";
+        String sql = "select * from review_detail where product_no = ? order by review_no desc";
         Object[] params = { productNo };
         return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
     }

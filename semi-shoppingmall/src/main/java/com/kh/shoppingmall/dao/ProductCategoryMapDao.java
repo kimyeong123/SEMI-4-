@@ -23,7 +23,7 @@ public class ProductCategoryMapDao {
 	    return jdbcTemplate.queryForObject(sql, Integer.class, params) > 0;
 	}
 	public boolean delete(int productNo, int categoryNo) {
-		String sql = "delete product_category_map where product_no=? and category_no=?";
+		String sql = "delete from product_category_map where product_no=? and category_no=?";
 		Object[] params = {productNo, categoryNo};
 		return jdbcTemplate.update(sql, params) > 0;
 	}
