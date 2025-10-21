@@ -156,16 +156,23 @@ public class MemberDao {
 //	}
 	
 //	
-	//회원 프로필 기능
-	public void connect(String memberId, int attachmentNo) {
-		String sql = "insert into member_profile(member_id, attachment_no) values(?, ?)";
-		Object[] params = {memberId, attachmentNo};
-		jdbcTemplate.update(sql, params);
-	}
-	public int findAttachment(String memberId) {
-		String sql = "select attachment_no from member_profile where member_id = ? ";
-		Object[] params = {memberId};
-		return jdbcTemplate.queryForObject(sql, int.class, params);
+//	//회원 프로필 기능
+//	public void connect(String memberId, int attachmentNo) {
+//		String sql = "insert into member_profile(member_id, attachment_no) values(?, ?)";
+//		Object[] params = {memberId, attachmentNo};
+//		jdbcTemplate.update(sql, params);
+//	}
+//	public int findAttachment(String memberId) {
+//		String sql = "select attachment_no from member_profile where member_id = ? ";
+//		Object[] params = {memberId};
+//		return jdbcTemplate.queryForObject(sql, int.class, params);
+//	}
+	
+	// 프로필 이미지 번호를 회원 테이블에 업데이트
+	public boolean updateProfileImage(String memberId, int attachmentNo) {
+	    String sql = "update member set member_profile_no = ? where member_id = ?";
+	    Object[] params = {attachmentNo, memberId};
+	    return jdbcTemplate.update(sql, params) > 0;
 	}
 }
 
