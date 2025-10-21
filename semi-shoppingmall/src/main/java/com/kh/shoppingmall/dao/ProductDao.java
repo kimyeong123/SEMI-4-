@@ -49,7 +49,7 @@ public class ProductDao {
         String sql = "update product set "
                    + "product_name=?, product_price=?, product_content=?, product_thumbnail_no=? "
                    + "where product_no=?";
-        Object[] params = {
+        Object[] params = { 
             dto.getProductName(),
             dto.getProductPrice(),
             dto.getProductContent(),
