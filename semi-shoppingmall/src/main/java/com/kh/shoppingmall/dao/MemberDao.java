@@ -154,6 +154,7 @@ public class MemberDao {
 //		}
 //	}
 	
+//	
 	//회원 프로필 기능
 	public void connect(String memberId, int attachmentNo) {
 		String sql = "insert into member_profile(member_id, attachment_no) values(?, ?)";
