@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.shoppingmall.dao.CartDao;
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dao.OrdersDao;
 import com.kh.shoppingmall.dao.WishlistDao;
@@ -20,9 +21,12 @@ public class MemberService {
 	private WishlistDao wishlistDao;
 	@Autowired
 	private OrdersDao ordersDao;
+	@Autowired
+	private CartDao cartDao;
 	
 	@Autowired
 	private AttachmentService attachmentService;
+
 	
 	@Transactional
 	public boolean drop(String memberId, String memberPw) {
@@ -35,27 +39,24 @@ public class MemberService {
 		if(isValid == false) return false;
 		
 		//3. 회원 사진 삭제
-		try {
-			int attachmentNo = memberDao.findAttachment(memberId);
-			attachmentService.delete(attachmentNo);
+		Integer attachmentNo = memberDao.findAttachment(memberId); // Integer로 받음
+		if (attachmentNo != null) { // null이 아닐 때만 삭제 시도
+		    attachmentService.delete(attachmentNo);
 		}
-		catch(Exception e) {}
-		
-		//4-1. 위시리스트 조회
-		List<Integer> productNoList = wishlistDao.selectListByMemberId(memberId);
-		
-		//4-2. 주문 기록 비식별화
+
+		//4-1. 주문 기록 비식별화
 		ordersDao.clearMemberId(memberId);
+		
+		//4-2.위시리스트 데이터 삭제
+		wishlistDao.deleteByMemberId(memberId);
+
+		//4-3. 장바구니 데이터 삭제 
+		cartDao.deleteByMemberId(memberId); 
 		
 		//5. 회원 삭제
 		boolean isDeleted = memberDao.delete(memberId);
 		if(isDeleted == false) return false;
-		
-		//위시리스트 갱신
-		for(int productNo : productNoList) {
-			wishlistDao.updateProductWishlistCount(productNo);
-		}
-		
+
 		return true;
 	}
 	
