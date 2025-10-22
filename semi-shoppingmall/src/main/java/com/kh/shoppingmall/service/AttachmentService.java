@@ -3,6 +3,7 @@ package com.kh.shoppingmall.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -77,12 +78,13 @@ public class AttachmentService {
 		//DB 정보 삭제
 		attachmentDao.delete(attachmentNo);
 	}
+
+	public List<Integer> selectAttachmentNosByReviewNo(int reviewNo) {
+		return attachmentDao.selectAttachmentNosByReviewNo(reviewNo);
+	}
+
+	public boolean updateReviewNo(int attachmentNo, int reviewNo) {
+		return attachmentDao.updateReviewNo(attachmentNo, reviewNo);
+	}
 	
 }
-
-
-
-
-
-
-

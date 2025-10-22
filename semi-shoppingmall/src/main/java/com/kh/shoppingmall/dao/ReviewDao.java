@@ -53,18 +53,20 @@ public class ReviewDao {
     }
 
     // 리뷰 등록
-    public void insert(ReviewDto reviewDto) {
-        String sql = "insert into review(review_no, product_no, member_id, review_content, review_rating, review_created_at) "
-                   + "values(?, ?, ?, ?, ?, ?)";
+    public int insert(ReviewDto reviewDto) {
+        String seqSql = "select review_seq.nextval from dual";
+        int reviewNo = jdbcTemplate.queryForObject(seqSql, int.class);
+        reviewDto.setReviewNo(reviewNo); 
+        String insertSql = "insert into review("
+                + "review_no, product_no, member_id, review_rating, review_content"
+                + ") values(?, ?, ?, ?, ?)";
         Object[] params = {
-            reviewDto.getReviewNo(),
-            reviewDto.getProductNo(),
-            reviewDto.getMemberId(),
-            reviewDto.getReviewContent(),
-            reviewDto.getReviewRating(),
-            reviewDto.getReviewCreatedAt()
+                reviewNo, reviewDto.getProductNo(), reviewDto.getMemberId(), 
+                reviewDto.getReviewRating(), reviewDto.getReviewContent()
         };
-        jdbcTemplate.update(sql, params);
+        jdbcTemplate.update(insertSql, params);
+        
+        return reviewNo;
     }
 
     // 리뷰 수정
@@ -85,5 +87,13 @@ public class ReviewDao {
         String sql = "delete from review where review_no = ?";
         Object[] params = {reviewNo};
         return jdbcTemplate.update(sql, params) > 0;
+    }
+
+    public List<ReviewDetailVO> selectDetailListByMember(String memberId) {
+        // ReviewDetailVO는 리뷰 정보와 함께, 첨부파일, 상품명 등 조인된 정보를 포함하는 VO라고 가정합니다.
+        String sql = "SELECT * FROM review_detail_view WHERE member_id = ? ORDER BY review_no DESC";
+        Object[] params = {memberId};
+        
+        return jdbcTemplate.query(sql, reviewDetailVOMapper, params); 
     }
 }

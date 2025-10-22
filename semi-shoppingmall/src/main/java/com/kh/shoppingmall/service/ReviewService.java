@@ -1,18 +1,14 @@
 package com.kh.shoppingmall.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.shoppingmall.dao.AttachmentDao;
 import com.kh.shoppingmall.dao.ReviewDao;
-import com.kh.shoppingmall.dto.AttachmentDto;
 import com.kh.shoppingmall.dto.ReviewDto;
 import com.kh.shoppingmall.vo.ReviewDetailVO;
 
@@ -20,108 +16,102 @@ import com.kh.shoppingmall.vo.ReviewDetailVO;
 public class ReviewService {
 	@Autowired
 	private ReviewDao reviewDao;
+	
+	// 파일 처리 책임 위임
 	@Autowired
-	private AttachmentDao attachmentDao;
+	private AttachmentService attachmentService; 
+	
+	// 상품 평점 업데이트 책임 위임
 	@Autowired
-	private ProductService productService;
+	private ProductService productService; 
 
-	// 임시 업로드 경로 설정 (실제 환경에서는 설정 파일에서 값을 주입받아 사용해야 합니다.)
-	private final String uploadPath = "C:/upload/review/";
 
-	@Transactional
+//		리뷰 등록 및 첨부파일 처리 (트랜잭션 적용)
+
+	@Transactional(rollbackFor = Exception.class)
 	public boolean insertReview(ReviewDto reviewDto, List<MultipartFile> attachments) throws IOException {
-//		리뷰 번호 시퀀스 생성
-		int reviewNo = reviewDao.sequence();
-		reviewDto.setReviewNo(reviewNo);
+		
+		// 1. 리뷰 DB에 등록 (DAO가 시퀀스 생성 후 번호 반환 가정)
+		int reviewNo = reviewDao.insert(reviewDto);
+		reviewDto.setReviewNo(reviewNo); // 반환된 번호로 DTO 업데이트
 		int productNo = reviewDto.getProductNo();
-
-//		리뷰 DB에 등록
-		reviewDao.insert(reviewDto);
-
-//		첨부파일 처리
-		if (attachments != null && !attachments.isEmpty()) {
-			for (MultipartFile file : attachments) {
-				if (!file.isEmpty()) {
-//					파일 시스템에 파일 저장
-					String originalFilename = file.getOriginalFilename();
-					String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-					File targetFile = new File(uploadPath, savedFilename);
-
-//					파일 저장 디렉토리가 없으면 생성
-					if (!targetFile.getParentFile().exists()) {
-						targetFile.getParentFile().mkdirs();
-					}
-					file.transferTo(targetFile); // 실제 파일 저장
-
-//					Attachment 메타 정보 DB에 저장
-					AttachmentDto attachmentDto = AttachmentDto.builder().attachmentName(savedFilename)
-							.attachmentType(file.getContentType()).attachmentSize(file.getSize()).reviewNo(reviewNo)
-							.productNo(productNo).build();
-
-					attachmentDao.insert(attachmentDto);
+		
+		// 2. 첨부파일 처리 (AttachmentService에 위임)
+		if(attachments != null && !attachments.isEmpty()) {
+			for(MultipartFile file : attachments) {
+				if(!file.isEmpty()) {
+					// 2-1. 파일 저장 (물리적 저장 + DB 메타데이터 기록)
+					int attachmentNo = attachmentService.save(file);
+					
+					// 2-2. 파일과 리뷰 연결 (DB 업데이트)
+					attachmentService.updateReviewNo(attachmentNo, reviewNo);
 				}
 			}
 		}
-
-//		상품 평균 평점 업데이트 (ProductService 생긴후에 주석해제 메서드 이름은 수정할듯)
+		
+		// 3. 상품 평균 평점 업데이트 (ProductService에 위임)
 		productService.updateAverageRatingForProduct(productNo);
-
+		
 		return true;
 	}
+	
+//		리뷰 수정 및 평점 업데이트
 
-//	리뷰 수정 및 평점 업데이트
 	@Transactional
 	public boolean updateReview(ReviewDto reviewDto) {
 		int productNo = reviewDto.getProductNo();
+		
+		// 1. 리뷰 DB 수정
 		boolean result = reviewDao.update(reviewDto);
-
-		if (result) {
+		
+		if(result) {
+			// 2. 상품 평균 평점 업데이트 (ProductService에 위임)
 			productService.updateAverageRatingForProduct(productNo);
 		}
-
+		
 		return result;
 	}
-
-//	리뷰 삭제 및 평점 업데이트
+	
+//	 리뷰 삭제, 첨부파일 정리 및 평점 업데이트
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteReview(int reviewNo) {
-		ReviewDto findDto = reviewDao.selectOne(reviewNo);
-		if (findDto == null) {
-			return false;
-		}
-		List<AttachmentDto> attachments = attachmentDao.selectListByReviewNo(reviewNo);
+	    // 1. 삭제할 리뷰 정보 조회 (평점 업데이트를 위해 productNo가 필요함)
+	    ReviewDto findDto = reviewDao.selectOne(reviewNo);
+	    if (findDto == null) {
+	         return false; // 리뷰가 없으면 실패
+	    }
+	    
+	    // 2. 첨부 파일 정리: 삭제할 파일 번호 목록을 먼저 조회
+        List<Integer> deleteAttachmentNoList = attachmentService.selectAttachmentNosByReviewNo(reviewNo);
+	    
+	    // 3. 리뷰 DB에서 삭제
+	    boolean result = reviewDao.delete(reviewNo);
+	    
+	    if(result) {
+	        // 4. 첨부 파일 정리: AttachmentService에 위임하여 DB 정보와 물리 파일 모두 삭제
+	    	for (Integer attachmentNo : deleteAttachmentNoList) {
+	    		attachmentService.delete(attachmentNo);
+	    	}
 
-		boolean result = reviewDao.delete(reviewNo); // 첨부 파일 DB에서 삭제
-
-		if (result) {
-//			첨부 파일 정리 물리적 삭제
-			attachmentDao.deleteByReviewNo(reviewNo);
-
-			for (AttachmentDto attach : attachments) {
-				File targetFile = new File(uploadPath, attach.getAttachmentName());
-				// 파일이 존재하면 삭제
-				if (targetFile.exists()) {
-					targetFile.delete();
-				}
-			}
-
-//			 상품 평균 평점 업데이트 (ProductService)
-			 productService.updateAverageRatingForProduct(findDto.getProductNo());
-			
-			return true;
-		}
-		
-//		리뷰 삭제 실패시
-		return false;
+	        // 5. 상품 평균 평점 업데이트 (ProductService에 위임)
+	        productService.updateAverageRatingForProduct(findDto.getProductNo()); 
+	        
+	        return true;
+	    }
+	    
+	    return false;
 	}
-
-//	조회 및 유틸
+	
+	// --- 조회 및 유틸리티 로직 ---
+	
+//	회원이 작성한 리뷰 상세 목록 조회
 	public List<ReviewDetailVO> getReviewsDetailByMember(String memberId) {
-		return null; // 내가 쓴 리뷰목록 조회
+		// ReviewDao에 뷰를 조회하는 메서드를 호출
+		return reviewDao.selectDetailListByMember(memberId); 
 	}
-
-	public ReviewDto getReview(int reviewNo) { // 리뷰 수정을 위해 불러오기
+	
+	public ReviewDto getReview(int reviewNo) { 
 		return reviewDao.selectOne(reviewNo);
 	}
-
+	
 }
