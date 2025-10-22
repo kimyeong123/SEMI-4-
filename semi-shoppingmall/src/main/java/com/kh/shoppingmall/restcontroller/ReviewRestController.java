@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,125 +26,125 @@ import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
 
-@RestController
-@RequestMapping("/rest/review") // REST API 기본 경로 설정
+@RestController // 이 클래스가 REST API 요청을 처리함을 나타냅니다.
+@RequestMapping("/rest/review") // 모든 메서드의 기본 경로를 "/rest/review"로 설정합니다.
 public class ReviewRestController {
 
     @Autowired
-    private ReviewService reviewService;
+    private ReviewService reviewService; // 리뷰 관련 비즈니스 로직 처리를 담당합니다.
 
-    // 1. 특정 상품의 상세 리뷰 목록 조회 (READ)
-    // 특정 상품에 대한 상세 리뷰 목록을 조회하는 API
+    // 리뷰 목록 조회 (GET)
+    // 경로: /rest/review/list/{productNo}
     @GetMapping("/list/{productNo}")
-    public ResponseEntity<List<ReviewDetailVO>> getReviewsByProduct(@PathVariable int productNo) {
-        
-        List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
-        
-        return ResponseEntity.ok(reviewList);
+    public ResponseEntity<List<ReviewDetailVO>> getReviewsDetailByProduct(
+            @PathVariable int productNo) { // URL 경로에서 상품 번호를 추출합니다.
+
+        // 서비스에서 상세 리뷰 목록을 조회합니다.
+        List<ReviewDetailVO> list = reviewService.getReviewsDetailByProduct(productNo);
+
+        // 조회된 목록과 함께 200 OK 상태 코드를 반환합니다.
+        return ResponseEntity.ok(list);
     }
-    
-    // 2. 리뷰 등록 (CREATE - 파일 포함)
-    // 리뷰 등록 요청을 처리하고 결과를 JSON으로 반환합니다.
+
+    // 리뷰 등록 (POST)
+    // 경로: /rest/review/
+    // [수정] try-catch를 제거하고, throws IOException을 메소드 시그니처에 추가합니다.
     @PostMapping("/")
     public ResponseEntity<Map<String, String>> insertReview(
-            HttpSession session, // 
-            @ModelAttribute ReviewDto reviewDto, 
-            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) { 
-        
-        // ** (HttpSession 사용) 세션에서 로그인 ID를 가져옵니다. **
-        String currentMemberId = (String) session.getAttribute("loginId");
-        
-        // ** (미인증 사용자 처리) 로그인 ID가 없으면 401 Unauthorized 반환 **
+            // HttpSession을 사용하여 로그인된 사용자 정보를 가져옵니다.
+            HttpSession session,
+            // 리뷰 DTO는 @ModelAttribute로 받습니다. (파일 첨부 시 함께 사용하기 위함)
+            @ModelAttribute ReviewDto reviewDto,
+            // 첨부 파일은 @RequestPart로 받습니다. (multipart/form-data 요청의 파일 파트)
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) 
+            throws IOException { // 파일 처리 중 오류가 발생할 수 있으므로 선언
+
+        // 1. (인증 체크) 세션에서 로그인 ID를 가져와 현재 사용자 ID로 설정합니다.
+        String currentMemberId = (String) session.getAttribute("loginId"); // 세션 키는 "loginId"로 가정
         if (currentMemberId == null) {
+            // 로그인되어 있지 않다면 401 Unauthorized 상태를 반환합니다.
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인이 필요합니다."));
         }
-        
-        reviewDto.setMemberId(currentMemberId);
-        
-        try {
-            reviewService.insertReview(reviewDto, attachments);
-            // 성공 시 201 Created 상태와 메시지를 반환합니다.
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "리뷰가 성공적으로 등록되었습니다."));
-        } catch (IOException e) { 
-            // 파일 처리 중 발생한 오류는 400 Bad Request로 처리
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "파일 업로드 중 오류가 발생했습니다. 첨부 파일을 확인해 주세요."));
-        } catch (Exception e) {
-            // 그 외 DB 트랜잭션 오류 등은 500 Internal Server Error 상태 반환
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "리뷰 등록 중 시스템 오류가 발생했습니다."));
-        }
+        reviewDto.setMemberId(currentMemberId); // 리뷰 DTO에 작성자 ID 설정
+
+        // 2. 서비스에 등록 요청
+        reviewService.insertReview(reviewDto, attachments);
+
+        // 3. 성공 응답: 새로운 리소스 생성 시 201 Created 상태 코드를 반환합니다.
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "리뷰가 성공적으로 등록되었습니다."));
     }
-    
-    // 3. 리뷰 수정 (UPDATE - JSON 데이터 사용)
-    // 기존 리뷰를 수정하는 API (내용 및 평점)
+
+    // 리뷰 수정 (PUT)
+    // 경로: /rest/review/
     @PutMapping("/")
     public ResponseEntity<Map<String, String>> updateReview(
-            HttpSession session, 
+            // HttpSession을 사용하여 로그인된 사용자 정보를 가져옵니다.
+            HttpSession session,
+            // 수정 데이터는 주로 JSON 형태로 요청 본문(@RequestBody)을 통해 받습니다.
             @RequestBody ReviewDto reviewDto) {
-        
-        // ** (HttpSession 사용) 세션에서 로그인 ID를 가져와 권한을 확인합니다. **
+
+        // 1. (인증 체크) 세션에서 로그인 ID를 가져와 현재 사용자 ID로 설정합니다.
         String currentMemberId = (String) session.getAttribute("loginId");
-        
-        // ** (미인증 사용자 처리) 로그인 ID가 없으면 401 Unauthorized 반환 **
         if (currentMemberId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인이 필요합니다."));
         }
-        
-        String authorId = reviewService.getAuthorId(reviewDto.getReviewNo());
 
+        // 2. (권한 체크) 리뷰 번호로 작성자 ID를 조회하여 현재 사용자와 일치하는지 확인합니다.
+        String authorId = reviewService.getAuthorId(reviewDto.getReviewNo()); // 서비스에서 작성자 ID 조회
         if (authorId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "수정하려는 리뷰가 존재하지 않습니다."));
+            // 리뷰가 존재하지 않음
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "해당 리뷰를 찾을 수 없습니다."));
         }
-        
         if (!currentMemberId.equals(authorId)) {
-            // 작성자가 아닌 경우 403 Forbidden 반환
+            // 작성자가 아닐 경우 403 Forbidden 상태를 반환합니다.
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "리뷰 수정 권한이 없습니다."));
         }
-        
-        // 권한 확인 통과 후 수정 진행
+
+        // 3. 서비스에 수정 요청
         boolean result = reviewService.updateReview(reviewDto);
-        
+
+        // 4. 응답
         if (result) {
-            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 수정되었습니다."));
+            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 수정되었습니다.")); // 200 OK
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "리뷰 수정에 실패했습니다. (DB 오류)"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "수정 대상 리뷰를 찾을 수 없습니다."));
         }
     }
 
-    // 4. 리뷰 삭제 (DELETE)
-    // 특정 리뷰를 삭제하는 API
+    // 리뷰 삭제 (DELETE)
+    // 경로: /rest/review/{reviewNo}
     @DeleteMapping("/{reviewNo}")
     public ResponseEntity<Map<String, String>> deleteReview(
-            HttpSession session, // 
+            // HttpSession을 사용하여 로그인된 사용자 정보를 가져옵니다.
+            HttpSession session,
+            // 삭제할 리뷰 번호를 URL 경로에서 추출합니다.
             @PathVariable int reviewNo) {
-        
-        // ** (HttpSession 사용) 세션에서 로그인 ID를 가져와 권한을 확인합니다. **
+
+        // 1. (인증 체크) 세션에서 로그인 ID를 가져와 현재 사용자 ID로 설정합니다.
         String currentMemberId = (String) session.getAttribute("loginId");
-        
-        // ** (미인증 사용자 처리) 로그인 ID가 없으면 401 Unauthorized 반환 **
         if (currentMemberId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "로그인이 필요합니다."));
         }
-        
-        String authorId = reviewService.getAuthorId(reviewNo);
 
+        // 2. (권한 체크) 리뷰 번호로 작성자 ID를 조회하여 현재 사용자와 일치하는지 확인합니다.
+        String authorId = reviewService.getAuthorId(reviewNo); // 서비스에서 작성자 ID 조회
         if (authorId == null) {
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "삭제하려는 리뷰가 존재하지 않습니다."));
+            // 리뷰가 존재하지 않음
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "해당 리뷰를 찾을 수 없습니다."));
         }
-        
         if (!currentMemberId.equals(authorId)) {
-            // 작성자가 아닌 경우 403 Forbidden 반환
+            // 작성자가 아닐 경우 403 Forbidden 상태를 반환합니다.
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "리뷰 삭제 권한이 없습니다."));
         }
-        
-        // 권한 확인 통과 후 삭제 진행
+
+        // 3. 서비스에 삭제 요청
         boolean result = reviewService.deleteReview(reviewNo);
-        
+
+        // 4. 응답
         if (result) {
-            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 삭제되었습니다."));
+            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 삭제되었습니다.")); // 200 OK
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "리뷰 삭제에 실패했습니다. (DB 오류)"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "삭제 대상 리뷰를 찾을 수 없습니다."));
         }
     }
 }
