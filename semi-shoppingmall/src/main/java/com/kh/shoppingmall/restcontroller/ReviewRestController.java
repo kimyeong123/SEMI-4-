@@ -32,9 +32,8 @@ public class ReviewRestController {
             HttpSession session,
             @ModelAttribute ReviewDto reviewDto,
             @RequestParam(required = false) List<MultipartFile> attach
-    ) throws IOException {
-
-        // 로그인 안 된 사용자
+    ) {
+        // 로그인 안 된 사용자 처리
         String currentMemberId = (String) session.getAttribute("loginId");
         if (currentMemberId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -43,11 +42,17 @@ public class ReviewRestController {
 
         reviewDto.setMemberId(currentMemberId);
 
-        // attach가 null이면 빈 리스트로 대체
+        // 첨부가 없을 경우 빈 리스트로 처리
         if (attach == null) attach = List.of();
 
-        reviewService.insertReview(reviewDto, attach);
-
-        return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 등록되었습니다."));
+        try {
+            reviewService.insertReview(reviewDto, attach);
+            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 등록되었습니다."));
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "리뷰 등록 중 오류가 발생했습니다."));
+        }
     }
 }
