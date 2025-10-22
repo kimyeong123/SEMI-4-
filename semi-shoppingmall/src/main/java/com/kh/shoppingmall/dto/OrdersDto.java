@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.dto;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +16,5 @@ public class OrdersDto {
     private String ordersRecipientContact;
     private String ordersShippingPost, ordersShippingAddress1, ordersShippingAddress2;
     private String ordersStatus;
+    private Timestamp ordersCreatedAt;
 }

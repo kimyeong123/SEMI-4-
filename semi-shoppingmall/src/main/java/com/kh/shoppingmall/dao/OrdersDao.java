@@ -62,6 +62,12 @@ public class OrdersDao {
 		return list.isEmpty() ? null : list.get(0);		
 	}
 	
+	public List<OrdersSummaryVO> selectOrderSummary(int ordersNo) {
+	    String sql = "SELECT * FROM order_summary WHERE orders_no = ?";
+	    Object[] params = { ordersNo };
+	    return jdbcTemplate.query(sql, ordersSummaryMapper, params);
+	}
+	
 	public boolean update (int ordersNo, String ordersStatus) {
 		String sql = "update orders set orders_status = ? where orders_no = ?";
 		Object[] params = {ordersStatus, ordersNo};
