@@ -41,4 +41,6 @@ public class WishlistService {
     public boolean checkItem(String memberId, int productNo) {
         return wishlistDao.check(memberId, productNo);
     }
+
+
 }

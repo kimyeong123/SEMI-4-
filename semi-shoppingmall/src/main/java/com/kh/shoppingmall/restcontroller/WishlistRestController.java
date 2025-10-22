@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +38,7 @@ public class WishlistRestController {
 
         // 서비스 호출 및 결과 처리
         try {
-            boolean isSuccess = wishlistService.insertWishlist(currentMemberId, productNo);
+            boolean isSuccess = wishlistService.addItem(currentMemberId, productNo);
             if (isSuccess) {
                 // 201 Created는 리소스가 성공적으로 생성되었음을 의미합니다.
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "찜하기에 추가되었습니다."));
@@ -67,7 +66,7 @@ public class WishlistRestController {
         }
 
         // 서비스 호출 및 결과 처리
-        boolean isSuccess = wishlistService.deleteWishlist(currentMemberId, productNo);
+        boolean isSuccess = wishlistService.removeItem(currentMemberId, productNo);
         
         if (isSuccess) {
             return ResponseEntity.ok(Map.of("message", "찜하기가 취소되었습니다.")); // 200 OK
@@ -95,7 +94,7 @@ public class WishlistRestController {
         }
         
         // 서비스 호출: 찜 여부 확인
-        boolean isWished = wishlistService.checkWishlist(currentMemberId, productNo);
+        boolean isWished = wishlistService.checkItem(currentMemberId, productNo);
         
         // 찜 여부 결과와 함께 200 OK를 반환합니다.
         return ResponseEntity.ok(Map.of("isWished", isWished));
