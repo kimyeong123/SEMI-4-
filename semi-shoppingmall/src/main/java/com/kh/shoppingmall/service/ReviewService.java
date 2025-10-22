@@ -120,5 +120,7 @@ public class ReviewService {
 	public String getAuthorId(int reviewNo) {
         return reviewDao.selectAuthorId(reviewNo);
     }
+
+
 	
 }
