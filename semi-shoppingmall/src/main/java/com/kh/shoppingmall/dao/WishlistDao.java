@@ -64,4 +64,17 @@ public class WishlistDao {
 	    Object[] params = {memberId};
 	    return jdbcTemplate.query(sql, wishlistDetailVOMapper, params);
 	}
+	
+	//갱신메서드 추가(회원 탈퇴시 갱신목적)
+	public boolean updateProductWishlistCount (int productNo) {
+		//1. 위시리스트 테이블에서 상품의 총 개수 확인
+		int count = this.countByProductNo(productNo);
+		
+		//2. 테이블의 위시리스트 카운트 필드 업데이트
+		String sql = "update product set product_wishlist_count = ? "
+				+ "where product_no = ?";
+		Object[] params = {count, productNo};
+		return jdbcTemplate.update(sql, params) > 0;
+	}
+	
 }
