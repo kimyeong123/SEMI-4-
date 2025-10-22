@@ -59,4 +59,16 @@ public class AttachmentDao {
 		return jdbcTemplate.update(sql, param) > 0;
 	}
 	
+	public List<AttachmentDto> selectListByReviewNo(int reviewNo) {
+		String sql = "select * from attachment where review_no = ?";
+		Object[] params = {reviewNo};
+		return jdbcTemplate.query(sql, attachmentMapper, params);
+	}
+	
+	public int deleteByReviewNo(int reviewNo) {
+	    String sql = "delete from attachment where review_no = ?";
+	    Object[] params = {reviewNo};
+	    return jdbcTemplate.update(sql, params);
+	}
+	
 }
