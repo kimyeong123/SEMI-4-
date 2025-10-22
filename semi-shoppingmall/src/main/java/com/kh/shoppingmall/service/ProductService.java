@@ -136,10 +136,20 @@ public class ProductService {
 			}
 		}
 
-		// 6. 상세 이미지 새로 저장
-		for (MultipartFile imageFile : newDetailImageList) {
-			int attachmentNo = attachmentService.save(imageFile);
-			attachmentDao.updateProductNo(attachmentNo, productNo);
-		}
-	}
+        // 6. 상세 이미지 새로 저장
+        for (MultipartFile imageFile : newDetailImageList) {
+            int attachmentNo = attachmentService.save(imageFile);
+            attachmentDao.updateProductNo(attachmentNo, productNo);
+        }
+    }
+    
+    @Transactional
+    public void updateAverageRatingForProduct(int productNo) {
+        // 1. 해당 상품에 대한 리뷰 평점의 평균을 계산 (DAO)
+        Double avgRating = productDao.calculateAverageRating(productNo);
+        
+        // 2. 계산된 평균 평점을 상품 정보에 업데이트 (DAO)
+        // null이 나오면 0으로 처리하거나, DB에서 null을 허용하는 방식에 따라 처리
+        productDao.updateAverageRating(productNo, avgRating);
+    }
 }

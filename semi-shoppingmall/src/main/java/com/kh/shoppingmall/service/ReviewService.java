@@ -22,10 +22,8 @@ public class ReviewService {
 	private ReviewDao reviewDao;
 	@Autowired
 	private AttachmentDao attachmentDao;
-//	@Autowired
-//	private ProductService productService;
-//	@Autowired
-//	private MemberService memberService; 
+	@Autowired
+	private ProductService productService;
 
 	// 임시 업로드 경로 설정 (실제 환경에서는 설정 파일에서 값을 주입받아 사용해야 합니다.)
 	private final String uploadPath = "C:/upload/review/";
@@ -66,7 +64,7 @@ public class ReviewService {
 		}
 
 //		상품 평균 평점 업데이트 (ProductService 생긴후에 주석해제 메서드 이름은 수정할듯)
-//		productService.updateAverageRatingForProduct(productNo);
+		productService.updateAverageRatingForProduct(productNo);
 
 		return true;
 	}
@@ -78,7 +76,7 @@ public class ReviewService {
 		boolean result = reviewDao.update(reviewDto);
 
 		if (result) {
-//			productService.updateAverageRatingForProduct(productNo);
+			productService.updateAverageRatingForProduct(productNo);
 		}
 
 		return result;
@@ -107,8 +105,8 @@ public class ReviewService {
 				}
 			}
 
-			// 5. 상품 평균 평점 업데이트 (ProductService)
-			// productService.updateAverageRatingForProduct(findDto.getProductNo());
+//			 상품 평균 평점 업데이트 (ProductService)
+			 productService.updateAverageRatingForProduct(findDto.getProductNo());
 			
 			return true;
 		}
