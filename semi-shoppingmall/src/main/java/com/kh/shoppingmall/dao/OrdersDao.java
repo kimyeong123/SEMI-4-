@@ -23,7 +23,7 @@ public class OrdersDao {
 	public int sequence() {
 		String sql = "select orders_seq.nextval from dual";
 		return jdbcTemplate.queryForObject(sql, int.class);
-	}
+	} 
 	
 	public void insert(OrdersDto ordersDto) {
 		String sql = "insert into orders("
