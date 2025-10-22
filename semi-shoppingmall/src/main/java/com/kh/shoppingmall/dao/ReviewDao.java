@@ -3,6 +3,7 @@ package com.kh.shoppingmall.dao;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -88,12 +89,33 @@ public class ReviewDao {
         Object[] params = {reviewNo};
         return jdbcTemplate.update(sql, params) > 0;
     }
-
+    //회원의 리뷰조회
     public List<ReviewDetailVO> selectDetailListByMember(String memberId) {
         // ReviewDetailVO는 리뷰 정보와 함께, 첨부파일, 상품명 등 조인된 정보를 포함하는 VO라고 가정합니다.
         String sql = "SELECT * FROM review_detail_view WHERE member_id = ? ORDER BY review_no DESC";
         Object[] params = {memberId};
         
         return jdbcTemplate.query(sql, reviewDetailVOMapper, params); 
+    }
+    //상품의 리뷰조회
+    public List<ReviewDetailVO> selectDetailListByProduct(int productNo) {
+        // 'review_detail' 뷰 또는 테이블을 조회하여 상세 정보를 가져옵니다.
+        // 이때 reviewDetailVOMapper가 ReviewDetailVO에 맞게 데이터를 매핑해줍니다.
+        String sql = "select * from review_detail where product_no = ? order by review_no desc";
+        Object[] params = { productNo };
+        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
+    }
+
+    public String selectAuthorId(int reviewNo) {
+        String sql = "SELECT member_id FROM review WHERE review_no = ?";
+        Object[] params = {reviewNo};
+        
+        try {
+            // queryForObject를 사용하여 단일 문자열(member_id)을 조회합니다.
+            return jdbcTemplate.queryForObject(sql, String.class, params);
+        } catch (EmptyResultDataAccessException e) {
+            // 조회 결과가 없을 경우 (리뷰 번호가 유효하지 않을 경우) null을 반환합니다.
+            return null;
+        }
     }
 }
