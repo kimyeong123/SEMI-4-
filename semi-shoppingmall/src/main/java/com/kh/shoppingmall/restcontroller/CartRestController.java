@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/rest/cart") 
+@RequestMapping("/rest/cart")
 public class CartRestController {
 
     @Autowired
