@@ -72,11 +72,15 @@ public class AttachmentService {
 		
 		//실제 파일 삭제
 		File target = new File(upload, String.valueOf(attachmentNo));
-		target.delete();
-		
+		boolean deleted = target.delete();
+		if(!deleted) {
+		    // 로그 남기기 등 필요시 처리
+		}
+	
 		//DB 정보 삭제
 		attachmentDao.delete(attachmentNo);
 	}
+	
 	
 }
 

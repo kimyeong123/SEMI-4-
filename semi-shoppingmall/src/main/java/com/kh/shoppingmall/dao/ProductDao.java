@@ -24,7 +24,7 @@ public class ProductDao {
     @Autowired
     private ProductListVOMapper productListVOmapper;
     
-    //시퀀스 생성
+    // 시퀀스 생성
     public int sequence() {
         String sql = "select product_seq.nextval from dual";
         return jdbcTemplate.queryForObject(sql, int.class);
@@ -72,15 +72,16 @@ public class ProductDao {
         return jdbcTemplate.query(sql, productMapper);
     }
 
-    // 상품 검색
-    public List<ProductListVO> selectList(String column, String keyword) {
+    // 검색
+    public List<ProductDto> selectList(String column, String keyword) {
         Set<String> allowList = Set.of("product_name", "product_content");
         if (!allowList.contains(column)) return List.of();
 
-        String sql = "select * from product_list where instr(#1, ?) > 0 order by #1 asc, product_no asc";
+        String sql = "select * from product where instr(#1, ?) > 0 order by #1 asc, product_no asc";
         sql = sql.replace("#1", column);
+
         Object[] params = { keyword };
-        return jdbcTemplate.query(sql, productListVOmapper, params);
+        return jdbcTemplate.query(sql, productMapper, params); // ProductDto 반환
     }
 
     // 상세 조회
@@ -91,28 +92,37 @@ public class ProductDao {
         return list.isEmpty() ? null : list.get(0);
     }
     
+    // ★추가: 썸네일 첨부파일 번호 찾기
+    public Integer findThumbnail(int productNo) {
+        String sql = "select product_thumbnail_no from product where product_no=?";
+        Object[] params = { productNo };
+        List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, params);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    // ★추가: 상세 이미지 첨부파일 목록 찾기
+    public List<Integer> findDetailAttachments(int productNo) {
+        String sql = "select attachment_no from product_image where product_no=?";
+        Object[] params = { productNo };
+        return jdbcTemplate.queryForList(sql, Integer.class, params);
+    }
+
+    // ★추가: Controller 호환용 별칭
+    public Integer findAttachment(int productNo) {
+        return findThumbnail(productNo);
+    }
+
+    // 평균 평점 계산
     public double calculateAverageRating(int productNo) {
         String sql = "select coalesce(avg(review_rating), 0) from review where product_no = ?";
         Object[] params = {productNo};
         return jdbcTemplate.queryForObject(sql, double.class, params); 
     }
+
+    // 평균 평점 업데이트
     public boolean updateAverageRating(int productNo, double avgRating) {
         String sql = "update product set product_avg_rating = ? where product_no = ?";
         Object[] params = {avgRating, productNo};
         return jdbcTemplate.update(sql, params) > 0;
     }
-
-//    // 썸네일 연결
-//    public void connectThumbnail(int productNo, int thumbnailNo) {
-//        String sql = "update product set product_thumbnail_no=? where product_no=?";
-//        Object[] params = { thumbnailNo, productNo };
-//        jdbcTemplate.update(sql, params);
-//    }
-//
-//    // 썸네일 찾기
-//    public int findThumbnail(int productNo) {
-//        String sql = "select product_thumbnail_no from product where product_no=?";
-//        Object[] params = { productNo };
-//        return jdbcTemplate.queryForObject(sql, int.class, params);
-//    }
 }
