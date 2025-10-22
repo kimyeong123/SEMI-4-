@@ -3,6 +3,7 @@ package com.kh.shoppingmall.dao;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -164,10 +165,25 @@ public class MemberDao {
 //	}
 	
 	//memberService에서 사용하기 위해 재 활성화
-	public int findAttachment(String memberId) {
-		String sql = "select attachment_no from member_profile where member_id = ? ";
-		Object[] params = {memberId};
-		return jdbcTemplate.queryForObject(sql, int.class, params);
+//	public int findAttachment(String memberId) {
+//		String sql = "select attachment_no from member_profile where member_id = ? ";
+//		Object[] params = {memberId};
+//		return jdbcTemplate.queryForObject(sql, int.class, params);
+//	}
+	
+	public Integer findAttachment(String memberId) {
+		String sql = "select member_profile_no from member where member_id=?";
+		
+		Object[] params = { memberId };
+		
+		try {
+	        // 2. queryForObject 사용
+	        return jdbcTemplate.queryForObject(sql, Integer.class, params);
+	    }
+	    catch (EmptyResultDataAccessException e) {
+	        // 3. 결과가 없거나 DB 값이 NULL이면 예외 발생 -> null 반환
+	        return null;
+	    }
 	}
 	
 	// 프로필 이미지 번호를 회원 테이블에 업데이트

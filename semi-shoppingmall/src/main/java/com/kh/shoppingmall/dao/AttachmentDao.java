@@ -28,6 +28,7 @@ public class AttachmentDao {
 
     /**
      * 2. 첨부파일 정보 저장 (DB 메타 정보)
+     * Note: productNo, reviewNo가 0인 경우 null로 변환하여 삽입합니다.
      */
     public void insert(AttachmentDto attachmentDto) {
         String sql = "insert into attachment("
@@ -40,7 +41,7 @@ public class AttachmentDao {
         Integer productNo = attachmentDto.getProductNo() == 0 ? null : attachmentDto.getProductNo();
         Integer reviewNo = attachmentDto.getReviewNo() == 0 ? null : attachmentDto.getReviewNo();
 
-        // 상품번호와 리뷰번호가 동시에 존재하면 예외 발생 (Service에서 처리하는 것이 일반적이지만, DAO에 명시)
+        // 첨부 파일은 상품 또는 리뷰 중 하나에만 연결 가능 (DAO 레벨에서 1차 방어)
         if (productNo != null && reviewNo != null) {
             throw new IllegalArgumentException("첨부 파일은 상품 또는 리뷰 중 하나에만 연결될 수 있습니다.");
         }
@@ -75,40 +76,30 @@ public class AttachmentDao {
      * 5. 첨부파일에 상품번호를 연결 (업데이트)
      */
     public boolean updateProductNo(int attachmentNo, int productNo) {
-        String sql = "UPDATE attachment SET product_no = ? WHERE attachment_no = ?";
+        String sql = "update attachment set product_no = ?, review_no = null where attachment_no = ?";
         Object[] params = { productNo, attachmentNo };
         return jdbcTemplate.update(sql, params) > 0;
     }
     
-    // --- ReviewService의 deleteReview 지원 메서드 ---
+    // --- ReviewService의 파일 처리 지원 메서드 ---
     
     /**
-     * 6. 리뷰 번호로 첨부 파일 목록 조회 (물리 파일 삭제 정보 획득용)
+     * 6. 첨부파일에 리뷰 번호를 연결 (업데이트) - insertReview에서 사용
      */
-    public List<AttachmentDto> selectListByReviewNo(int reviewNo) {
-        String sql = "select * from attachment where review_no = ?";
-        Object[] params = {reviewNo};
-        return jdbcTemplate.query(sql, attachmentMapper, params);
+    public boolean updateReviewNo(int attachmentNo, int reviewNo) {
+        // 기존의 product_no를 null로 비우고 review_no를 설정합니다. (단일 연결 보장)
+        String sql = "update attachment set review_no = ?, product_no = null where attachment_no = ?";
+        Object[] params = { reviewNo, attachmentNo };
+        return jdbcTemplate.update(sql, params) > 0;
     }
-
+    
     /**
-     * 7. 리뷰 번호로 첨부 파일 DB 정보 삭제 (리뷰 삭제 시 정리)
+     * 7. 리뷰 번호로 연결된 모든 첨부 파일 번호(attachmentNo) 목록을 조회 - deleteReview에서 사용
      */
-    public int deleteByReviewNo(int reviewNo) {
-        String sql = "delete from attachment where review_no = ?";
-        Object[] params = {reviewNo};
-        return jdbcTemplate.update(sql, params);
-    }
-
     public List<Integer> selectAttachmentNosByReviewNo(int reviewNo) {
 		String sql = "select attachment_no from attachment where review_no = ?";
 		Object[] params = {reviewNo};
+        // queryForList를 사용하여 Integer 타입 리스트를 반환합니다.
 		return jdbcTemplate.queryForList(sql, Integer.class, params);
-	}
-
-    public boolean updateReviewNo(int attachmentNo, int reviewNo) {
-		String sql = "update attachment set review_no = ? where attachment_no = ?";
-		Object[] params = {reviewNo, attachmentNo};
-		return jdbcTemplate.update(sql, params) > 0;
 	}
 }
