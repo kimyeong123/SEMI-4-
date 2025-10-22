@@ -90,6 +90,17 @@ public class ProductDao {
         List<ProductDto> list = jdbcTemplate.query(sql, productMapper, params);
         return list.isEmpty() ? null : list.get(0);
     }
+    
+    public double calculateAverageRating(int productNo) {
+        String sql = "select coalesce(avg(review_rating), 0) from review where product_no = ?";
+        Object[] params = {productNo};
+        return jdbcTemplate.queryForObject(sql, double.class, params); 
+    }
+    public boolean updateAverageRating(int productNo, double avgRating) {
+        String sql = "update product set product_avg_rating = ? where product_no = ?";
+        Object[] params = {avgRating, productNo};
+        return jdbcTemplate.update(sql, params) > 0;
+    }
 
 //    // 썸네일 연결
 //    public void connectThumbnail(int productNo, int thumbnailNo) {
