@@ -7,7 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.ReviewDto;
+import com.kh.shoppingmall.mapper.ReviewDetailVOMapper;
 import com.kh.shoppingmall.mapper.ReviewMapper;
+import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 @Repository
 public class ReviewDao {
@@ -18,6 +20,9 @@ public class ReviewDao {
     @Autowired
     private ReviewMapper reviewMapper;
     
+    @Autowired
+    private ReviewDetailVOMapper reviewDetailVOMapper;
+    
     // 시퀀스 생성 
     public int sequence() {
         String sql = "select review_seq.nextval from dual";
@@ -25,11 +30,19 @@ public class ReviewDao {
     }
 
     // 리뷰 목록 조회 회원 아이디 기준으로 조회
-    public List<ReviewDto> selectListByMember(String memberId) {
-        String sql = "select * from review where member_id = ? order by review_no desc";
-        Object[] params = {memberId};
-        return jdbcTemplate.query(sql, reviewMapper, params);
+//    public List<ReviewDetailVO> selectListByMember(String memberId) {
+//        String sql = "select * from review where member_id = ? order by review_no desc";
+//        Object[] params = {memberId};
+//        return jdbcTemplate.query(sql, reviewDetailMapper, params);
+//    }
+    
+    //리뷰 목록 조회 상품 기준으로 조회
+    public List<ReviewDetailVO> selectListByProduct(int productNo) {
+        String sql = "select * from review_detail where product_no = ? order by review_no desc";
+        Object[] params = { productNo };
+        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
     }
+
 
     // 리뷰 단일 조회
     public ReviewDto selectOne(int reviewNo) {

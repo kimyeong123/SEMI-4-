@@ -85,6 +85,15 @@ public class CartDao {
 		
 		return jdbcTemplate.update(sql, params) > 0;
 	}
+
+	public int deleteByMemberId(String ordersId) {
+		String sql = "delete from cart where member_id=?";
+		
+		Object[] params = { ordersId };
+		
+		//삭제된 행 수를 반환
+		return jdbcTemplate.update(sql, params);
+	}
 }
 
 

@@ -162,11 +162,13 @@ public class MemberDao {
 //		Object[] params = {memberId, attachmentNo};
 //		jdbcTemplate.update(sql, params);
 //	}
-//	public int findAttachment(String memberId) {
-//		String sql = "select attachment_no from member_profile where member_id = ? ";
-//		Object[] params = {memberId};
-//		return jdbcTemplate.queryForObject(sql, int.class, params);
-//	}
+	
+	//memberService에서 사용하기 위해 재 활성화
+	public int findAttachment(String memberId) {
+		String sql = "select attachment_no from member_profile where member_id = ? ";
+		Object[] params = {memberId};
+		return jdbcTemplate.queryForObject(sql, int.class, params);
+	}
 	
 	// 프로필 이미지 번호를 회원 테이블에 업데이트
 	public boolean updateProfileImage(String memberId, int attachmentNo) {

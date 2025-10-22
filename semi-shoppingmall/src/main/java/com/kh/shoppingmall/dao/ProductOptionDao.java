@@ -20,7 +20,7 @@ public class ProductOptionDao {
 
     // 시퀀스 생성
     public int sequence() {
-        String sql = "select product_option_seq.nextval from dual";
+        String sql = "select option_seq.nextval from dual";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 

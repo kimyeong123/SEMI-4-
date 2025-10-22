@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.mapper.OrdersMapper;
+import com.kh.shoppingmall.mapper.OrdersSummaryMapper;
+import com.kh.shoppingmall.vo.OrdersSummaryVO;
 
 @Repository
 public class OrdersDao {
@@ -15,11 +17,13 @@ public class OrdersDao {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private OrdersMapper ordersMapper;
+	@Autowired
+	private OrdersSummaryMapper ordersSummaryMapper;
 	
 	public int sequence() {
 		String sql = "select orders_seq.nextval from dual";
 		return jdbcTemplate.queryForObject(sql, int.class);
-	}
+	} 
 	
 	public void insert(OrdersDto ordersDto) {
 		String sql = "insert into orders("
@@ -42,9 +46,10 @@ public class OrdersDao {
 	}
 	
 	// 1. R(Select): 내 주문 내역 목록 조회 (member_id 기준)
-	public List<OrdersDto> selectListByMemberId(String memberId) {
+	public List<OrdersDto> selectListByMemberId(String ordersId) {
 		String sql = "select * from orders where orders_id = ? order by orders_no desc";
-		Object[] param = {memberId};
+
+		Object[] param = {ordersId};
 		return jdbcTemplate.query(sql, ordersMapper, param);
 	}
 	
@@ -63,6 +68,14 @@ public class OrdersDao {
 		
 		return jdbcTemplate.update(sql, params) > 0;
 		
+	}
+	
+	//멤버 아이디 지우는 기능(추가됨)
+	public boolean clearMemberId(String memberId) {
+		String sql = "update orders set orders_id = null where orders_id = ? ";
+		Object[] param = {memberId};
+		
+		return jdbcTemplate.update(sql, param) > 0;
 	}
 	
 	
