@@ -99,4 +99,16 @@ public class AttachmentDao {
         Object[] params = {reviewNo};
         return jdbcTemplate.update(sql, params);
     }
+
+    public List<Integer> selectAttachmentNosByReviewNo(int reviewNo) {
+		String sql = "select attachment_no from attachment where review_no = ?";
+		Object[] params = {reviewNo};
+		return jdbcTemplate.queryForList(sql, Integer.class, params);
+	}
+
+    public boolean updateReviewNo(int attachmentNo, int reviewNo) {
+		String sql = "update attachment set review_no = ? where attachment_no = ?";
+		Object[] params = {reviewNo, attachmentNo};
+		return jdbcTemplate.update(sql, params) > 0;
+	}
 }
