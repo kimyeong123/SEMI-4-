@@ -127,7 +127,7 @@ public class OrdersService {
 		cartDao.deleteByMemberId(ordersId);
 
 		// 생성된 주문 번호 반환
-		return ordersNo;
+		return ordersNo; 
 	}
 
 }
