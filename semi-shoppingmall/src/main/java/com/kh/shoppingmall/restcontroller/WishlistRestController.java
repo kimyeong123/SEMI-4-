@@ -24,10 +24,8 @@ public class WishlistRestController {
     @Autowired
     private WishlistService wishlistService; // 찜하기 관련 비즈니스 로직 처리
 
-    /**
-     * 1. 찜하기 추가 (POST /rest/wishlist)
-     * 상품 상세 페이지 등에서 '찜하기' 버튼 클릭 시 호출
-     */
+    // 1. 찜하기 추가 (POST /rest/wishlist)
+    // 상품 상세 페이지 등에서 '찜하기' 버튼 클릭 시 호출
     @PostMapping("/")
     public ResponseEntity<Map<String, String>> addWishlist(
             HttpSession session, 
@@ -55,10 +53,8 @@ public class WishlistRestController {
         }
     }
     
-    /**
-     * 2. 찜하기 삭제 (DELETE /rest/wishlist)
-     * 찜 목록 페이지나 상품 상세 페이지에서 '찜하기 취소' 시 호출
-     */
+    // 2. 찜하기 삭제 (DELETE /rest/wishlist)
+    // 찜 목록 페이지나 상품 상세 페이지에서 '찜하기 취소' 시 호출
     @DeleteMapping("/")
     public ResponseEntity<Map<String, String>> deleteWishlist(
             HttpSession session, 
