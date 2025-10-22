@@ -90,13 +90,22 @@ public class AttachmentDao {
         Object[] params = {reviewNo};
         return jdbcTemplate.query(sql, attachmentMapper, params);
     }
-
+    
+    //7. 뷰 등록 시 임시 업로드된 파일에 review_no를 연결하기 위한 메소드
+    public boolean updateReviewNo(int attachmentNo, int reviewNo) {
+        String sql = "UPDATE attachment SET review_no = ? WHERE attachment_no = ?";
+        Object[] params = { reviewNo, attachmentNo };
+        return jdbcTemplate.update(sql, params) > 0;
+    }
+    
     /**
-     * 7. 리뷰 번호로 첨부 파일 DB 정보 삭제 (리뷰 삭제 시 정리)
+     * 8. 리뷰 번호로 첨부 파일 DB 정보 삭제 (리뷰 삭제 시 정리)
      */
     public int deleteByReviewNo(int reviewNo) {
         String sql = "delete from attachment where review_no = ?";
         Object[] params = {reviewNo};
         return jdbcTemplate.update(sql, params);
     }
+    
+    
 }

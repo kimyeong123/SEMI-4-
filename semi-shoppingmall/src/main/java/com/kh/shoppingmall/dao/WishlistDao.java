@@ -77,4 +77,14 @@ public class WishlistDao {
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 	
+	//회원 위시리스트 내역 삭제 메소드
+	public boolean deleteByMemberId(String memberId) {
+		String sql = "delete from wishlist where member_id=?";
+		
+		Object[] params = { memberId };
+		
+		return jdbcTemplate.update(sql, params) > 0;
+		
+	}
+	
 }
