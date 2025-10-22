@@ -113,10 +113,11 @@ public class ProductDao {
     }
 
     // 평균 평점 계산
-    public double calculateAverageRating(int productNo) {
-        String sql = "select coalesce(avg(review_rating), 0) from review where product_no = ?";
+    public Double calculateAverageRating(int productNo) { // 반환 타입: Double
+        // AVG(review_rating)는 리뷰가 없을 경우 NULL 값을 반환합니다.
+        String sql = "select avg(review_rating) from review where product_no = ?"; 
         Object[] params = {productNo};
-        return jdbcTemplate.queryForObject(sql, double.class, params); 
+        return jdbcTemplate.queryForObject(sql, Double.class, params); 
     }
 
     // 평균 평점 업데이트
