@@ -70,5 +70,13 @@ public class OrdersDao {
 		
 	}
 	
+	//멤버 아이디 지우는 기능(추가됨)
+	public boolean clearMemberId(String memberId) {
+		String sql = "update orders set orders_id = null where orders_id = ? ";
+		Object[] param = {memberId};
+		
+		return jdbcTemplate.update(sql, param) > 0;
+	}
+	
 	
 }
