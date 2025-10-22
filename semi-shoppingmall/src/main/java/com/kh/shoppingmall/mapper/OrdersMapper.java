@@ -22,6 +22,7 @@ public class OrdersMapper implements RowMapper<OrdersDto> {
 					.ordersShippingAddress1(rs.getString("orders_shipping_address1"))
 					.ordersShippingAddress2(rs.getString("orders_shipping_address2"))
 					.ordersStatus(rs.getString("orders_status"))
+					.ordersCreatedAt(rs.getTimestamp("orders_created_at"))
 				.build();
 	}
 }

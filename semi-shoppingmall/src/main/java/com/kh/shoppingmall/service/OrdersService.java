@@ -17,6 +17,8 @@ import com.kh.shoppingmall.dto.CartDto;
 import com.kh.shoppingmall.dto.OrderDetailDto;
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.dto.ProductDto;
+import com.kh.shoppingmall.vo.CartDetailVO;
+import com.kh.shoppingmall.vo.OrdersSummaryVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -44,10 +46,10 @@ public class OrdersService {
 	private MemberDao memberDao;
 
 	// 총 주문 금액 계산
-	private int calculateTotalPrice(List<CartDto> cartItems) {
+	public int calculateTotalPrice(List<CartDetailVO> cartItems) {
 		int totalPrice = 0;
 
-		for (CartDto cartItem : cartItems) {
+		for (CartDetailVO cartItem : cartItems) {
 			ProductDto product = productDao.selectOne(cartItem.getProductNo());
 
 			if (product != null) {
@@ -64,7 +66,7 @@ public class OrdersService {
 	}
 
 	@Transactional
-	public int createOrders(OrdersDto ordersDto, List<CartDto> cartItems, HttpSession session) {
+	public int createOrders(OrdersDto ordersDto, List<CartDetailVO> cartItems, HttpSession session) {
 
 		// 1. ordersNo 생성
 		// 주문하는 사람 조회
@@ -87,7 +89,7 @@ public class OrdersService {
 
 		// 2. order_detail 테이블에 상품 정보 insert
 		List<OrderDetailDto> orderDetailList = new ArrayList<>();
-		for (CartDto cartItem : cartItems) {
+		for (CartDetailVO cartItem : cartItems) {
 
 			// orderDetailDto 생성
 			OrderDetailDto orderDetailDto = new OrderDetailDto();
@@ -119,7 +121,7 @@ public class OrdersService {
 		orderDetailDao.batchInsert(orderDetailList);
 
 		// 3. 재고 차감
-		for (CartDto cartItem : cartItems) {
+		for (CartDetailVO cartItem : cartItems) {
 			productOptionDao.updateStock(cartItem.getOptionNo(), -cartItem.getCartAmount());
 		}
 
@@ -128,6 +130,22 @@ public class OrdersService {
 
 		// 생성된 주문 번호 반환
 		return ordersNo; 
+	}
+	
+	//주문 목록 가져오기
+	public List<OrdersSummaryVO> getOrderSummary(int ordersNo) {
+	    List<OrdersSummaryVO> summaryList = ordersDao.selectOrderSummary(ordersNo);
+	    // 필요하다면 여기서 추가적인 로직 (예: 첫 번째 항목만 반환하거나 예외 처리)을 넣을 수 있어요.
+	    // 예를 들어 주문 정보 자체가 없다면 null 반환
+	    if (summaryList.isEmpty()) {
+	        return null; // 또는 빈 리스트 반환: Collections.emptyList();
+	    }
+	    return summaryList;
+	}
+	
+	//memberId로 주문 내역 가져오기
+	public List<OrdersDto> getOrderListByMember(String memberId) {
+	    return ordersDao.selectListByMemberId(memberId);
 	}
 
 }
