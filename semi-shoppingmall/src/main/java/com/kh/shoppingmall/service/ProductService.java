@@ -160,4 +160,15 @@ public class ProductService {
         Double avgRating = productDao.calculateAverageRating(productNo);
         productDao.updateAverageRating(productNo, avgRating);
     }
+
+    // ---------------- 상세 이미지 목록 조회 ----------------
+    public List<Integer> getDetailAttachments(int productNo) {
+        return productDao.findDetailAttachments(productNo);
+    }
+
+    // ---------------- 첨부파일 삭제 ----------------
+    @Transactional
+    public void deleteAttachment(int attachmentNo) {
+        attachmentService.delete(attachmentNo);
+    }
 }
