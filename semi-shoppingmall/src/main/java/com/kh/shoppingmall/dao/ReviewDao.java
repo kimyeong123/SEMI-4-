@@ -19,103 +19,101 @@ public class ReviewDao {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReviewMapper reviewMapper;
-    
+    private ProductDao productDao;
     @Autowired
     private ReviewDetailVOMapper reviewDetailVOMapper;
-    
-    // 시퀀스 생성 
-    public int sequence() {
-        String sql = "select review_seq.nextval from dual";
-        return jdbcTemplate.queryForObject(sql, int.class);
-    }
+    @Autowired
+    private ReviewMapper reviewMapper;
 
-    // 리뷰 목록 조회 회원 아이디 기준으로 조회
-//    public List<ReviewDetailVO> selectListByMember(String memberId) {
-//        String sql = "select * from review where member_id = ? order by review_no desc";
-//        Object[] params = {memberId};
-//        return jdbcTemplate.query(sql, reviewDetailMapper, params);
-//    }
-    
-    //리뷰 목록 조회 상품 기준으로 조회
-    public List<ReviewDetailVO> selectListByProduct(int productNo) {
-        String sql = "select * from review_detail where product_no = ? order by review_no desc";
-        Object[] params = { productNo };
-        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
-    }
-
+    // ================= CRUD =================
 
     // 리뷰 단일 조회
     public ReviewDto selectOne(int reviewNo) {
-        String sql = "select * from review where review_no = ?";
-        Object[] params = {reviewNo};
+        String sql = "SELECT * FROM review WHERE review_no = ?";
+        Object[] params = { reviewNo };
         List<ReviewDto> list = jdbcTemplate.query(sql, reviewMapper, params);
         return list.isEmpty() ? null : list.get(0);
     }
 
+    // 리뷰 작성자 조회
+    public String selectAuthorId(int reviewNo) {
+        String sql = "SELECT member_id FROM review WHERE review_no = ?";
+        Object[] params = { reviewNo };
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, params);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    // 리뷰 평균 평점 조회 (null-safe)
+    public Double selectAverageRating(int productNo) {
+        String sql = "SELECT COALESCE(AVG(review_rating), 0) FROM review WHERE product_no = ?";
+        return jdbcTemplate.queryForObject(sql, Double.class, productNo);
+    }
+
+    // 리뷰 상세 목록 조회 - 회원 기준
+    public List<ReviewDetailVO> selectDetailListByMember(String memberId) {
+        String sql = "SELECT * FROM review_detail WHERE member_id = ? ORDER BY review_no DESC";
+        Object[] params = { memberId };
+        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
+    }
+
+    // 리뷰 상세 목록 조회 - 상품 기준
+    public List<ReviewDetailVO> selectDetailListByProduct(int productNo) {
+        String sql = "SELECT * FROM review_detail WHERE product_no = ? ORDER BY review_no DESC";
+        Object[] params = { productNo };
+        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
+    }
+
     // 리뷰 등록
     public int insert(ReviewDto reviewDto) {
-        String seqSql = "select review_seq.nextval from dual";
+        String seqSql = "SELECT review_seq.nextval FROM dual";
         int reviewNo = jdbcTemplate.queryForObject(seqSql, int.class);
-        reviewDto.setReviewNo(reviewNo); 
-        String insertSql = "insert into review("
-                + "review_no, product_no, member_id, review_rating, review_content"
-                + ") values(?, ?, ?, ?, ?)";
+        reviewDto.setReviewNo(reviewNo);
+
+        String insertSql = "INSERT INTO review(review_no, product_no, member_id, review_rating, review_content) "
+                + "VALUES (?, ?, ?, ?, ?)";
         Object[] params = {
-                reviewNo, reviewDto.getProductNo(), reviewDto.getMemberId(), 
-                reviewDto.getReviewRating(), reviewDto.getReviewContent()
+                reviewNo,
+                reviewDto.getProductNo(),
+                reviewDto.getMemberId(),
+                reviewDto.getReviewRating(),
+                reviewDto.getReviewContent()
         };
         jdbcTemplate.update(insertSql, params);
-        
+
         return reviewNo;
     }
 
     // 리뷰 수정
     public boolean update(ReviewDto reviewDto) {
-        String sql = "update review "
-                   + "set review_content = ?, review_rating = ? "
-                   + "where review_no = ?";
+        String sql = "UPDATE review SET review_content = ?, review_rating = ? WHERE review_no = ?";
         Object[] params = {
-            reviewDto.getReviewContent(),
-            reviewDto.getReviewRating(),
-            reviewDto.getReviewNo()
+                reviewDto.getReviewContent(),
+                reviewDto.getReviewRating(),
+                reviewDto.getReviewNo()
         };
         return jdbcTemplate.update(sql, params) > 0;
     }
 
     // 리뷰 삭제
     public boolean delete(int reviewNo) {
-        String sql = "delete from review where review_no = ?";
-        Object[] params = {reviewNo};
+        String sql = "DELETE FROM review WHERE review_no = ?";
+        Object[] params = { reviewNo };
         return jdbcTemplate.update(sql, params) > 0;
     }
-    //회원의 리뷰조회
-    public List<ReviewDetailVO> selectDetailListByMember(String memberId) {
-        // ReviewDetailVO는 리뷰 정보와 함께, 첨부파일, 상품명 등 조인된 정보를 포함하는 VO라고 가정합니다.
-        String sql = "SELECT * FROM review_detail WHERE member_id = ? ORDER BY review_no DESC";
-        Object[] params = {memberId};
-        
-        return jdbcTemplate.query(sql, reviewDetailVOMapper, params); 
-    }
-    //상품의 리뷰조회
-    public List<ReviewDetailVO> selectDetailListByProduct(int productNo) {
-        // 'review_detail' 뷰 또는 테이블을 조회하여 상세 정보를 가져옵니다.
-        // 이때 reviewDetailVOMapper가 ReviewDetailVO에 맞게 데이터를 매핑해줍니다.
-        String sql = "select * from review_detail where product_no = ? order by review_no desc";
-        Object[] params = { productNo };
-        return jdbcTemplate.query(sql, reviewDetailVOMapper, params);
-    }
 
-    public String selectAuthorId(int reviewNo) {
-        String sql = "SELECT member_id FROM review WHERE review_no = ?";
-        Object[] params = {reviewNo};
-        
+    // ================= 평점 갱신 =================
+
+    // 특정 상품 평균 평점 계산 후 갱신
+    public void refreshAvgRating(int productNo) {
         try {
-            // queryForObject를 사용하여 단일 문자열(member_id)을 조회합니다.
-            return jdbcTemplate.queryForObject(sql, String.class, params);
-        } catch (EmptyResultDataAccessException e) {
-            // 조회 결과가 없을 경우 (리뷰 번호가 유효하지 않을 경우) null을 반환합니다.
-            return null;
+            Double avg = this.selectAverageRating(productNo);
+            productDao.updateAverageRating(productNo, avg);
+        } catch (Exception e) {
+            System.err.println("평점 갱신 실패: productNo=" + productNo);
+            e.printStackTrace();
         }
     }
 }
