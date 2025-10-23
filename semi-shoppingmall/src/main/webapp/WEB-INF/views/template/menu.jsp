@@ -30,9 +30,9 @@
 		
 		<div class="divider"></div>
 		
-		<a href="/giftcard/list">
-			<i class="fa-solid fa-sack-dollar"></i>
-			<span>충전</span>	
+		
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
 		</a>
 		<a href="/member/mypage">
 			<i class="fa-solid fa-user"></i>
@@ -67,9 +67,9 @@
 		
 		<div class="divider"></div>
 		
-		<a href="/giftcard/list">
-			<i class="fa-solid fa-sack-dollar"></i>
-			<span>충전</span>	
+		
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
 		</a>
 		<a href="/member/mypage">
 			<i class="fa-solid fa-user"></i>
@@ -129,9 +129,8 @@
 
 		<div class="divider"></div>
 						
-		<a href="/giftcard/list">
-			<i class="fa-solid fa-sack-dollar"></i>
-			<span>충전</span>	
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
 		</a>
 		<a href="/member/login">
 			<i class="fa-solid fa-right-to-bracket"></i>

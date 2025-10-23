@@ -2,20 +2,17 @@ package com.kh.shoppingmall.restcontroller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dto.ReviewDto;
+import com.kh.shoppingmall.error.NeedPermissionException;
+import com.kh.shoppingmall.error.TargetNotfoundException;
+import com.kh.shoppingmall.error.UnauthorizationException;
 import com.kh.shoppingmall.service.ReviewService;
+import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,33 +23,53 @@ public class ReviewRestController {
     @Autowired
     private ReviewService reviewService;
 
-    // 리뷰 등록 (첨부파일 있을 수도, 없을 수도 있음)
-    @PostMapping("/")
-    public ResponseEntity<Map<String, String>> insertReview(
+    // 1. 리뷰 목록 조회 (비회원도 가능)
+    @GetMapping("/list")
+    public List<ReviewDetailVO> getReviews(@RequestParam int productNo) {
+        return reviewService.getReviewsDetailByProduct(productNo);
+    }
+
+    // 2. 리뷰 등록
+    @PostMapping("/add")
+    public boolean addReview(
             HttpSession session,
             @ModelAttribute ReviewDto reviewDto,
-            @RequestParam(required = false) List<MultipartFile> attach
-    ) {
-        // 로그인 안 된 사용자 처리
+            @RequestParam(required = false) List<MultipartFile> attachments) throws IOException {
+
         String currentMemberId = (String) session.getAttribute("loginId");
-        if (currentMemberId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "로그인이 필요합니다."));
-        }
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
 
         reviewDto.setMemberId(currentMemberId);
+        if (attachments == null) attachments = List.of();
 
-        // 첨부가 없을 경우 빈 리스트로 처리
-        if (attach == null) attach = List.of();
+        return reviewService.insertReview(reviewDto, attachments);
+    }
 
-        try {
-            reviewService.insertReview(reviewDto, attach);
-            return ResponseEntity.ok(Map.of("message", "리뷰가 성공적으로 등록되었습니다."));
-        } 
-        catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "리뷰 등록 중 오류가 발생했습니다."));
-        }
+    // 3. 리뷰 수정
+    @PostMapping("/update")
+    public boolean updateReview(HttpSession session, @RequestBody ReviewDto reviewDto) {
+
+        String currentMemberId = (String) session.getAttribute("loginId");
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+
+        String authorId = reviewService.getAuthorId(reviewDto.getReviewNo());
+        if (authorId == null) throw new TargetNotfoundException("해당 리뷰를 찾을 수 없습니다.");
+        if (!currentMemberId.equals(authorId)) throw new NeedPermissionException("리뷰 수정 권한이 없습니다.");
+
+        return reviewService.updateReview(reviewDto);
+    }
+
+    // 4. 리뷰 삭제
+    @PostMapping("/delete")
+    public boolean deleteReview(HttpSession session, @RequestParam int reviewNo) {
+
+        String currentMemberId = (String) session.getAttribute("loginId");
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+
+        String authorId = reviewService.getAuthorId(reviewNo);
+        if (authorId == null) throw new TargetNotfoundException("해당 리뷰를 찾을 수 없습니다.");
+        if (!currentMemberId.equals(authorId)) throw new NeedPermissionException("리뷰 삭제 권한이 없습니다.");
+
+        return reviewService.deleteReview(reviewNo); 
     }
 }
