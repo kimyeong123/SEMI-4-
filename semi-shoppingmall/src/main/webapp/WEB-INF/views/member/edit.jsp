@@ -13,6 +13,10 @@
 	</div>
 	
 	<!-- 수정본 -->
+
+	 <div>
+		<a class = "btn btn-netural" href = "/member/mypage">마이페이지로 다시가기</a>
+	 </div>
 	
 	<form action="edit" method="post" enctype="multipart/form-data" autocomplete="off" class="check-form">
         
