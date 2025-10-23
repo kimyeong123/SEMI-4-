@@ -19,8 +19,8 @@ public class ReviewController {
     private ReviewService reviewService;
 
     // 1. 리뷰 작성 페이지로 이동
-    @GetMapping("/write/{productNo}")
-    public String showWriteForm(@PathVariable int productNo, Model model, HttpSession session) {
+    @GetMapping("/write")
+    public String showWriteForm(@RequestParam int productNo, Model model, HttpSession session) {
         String memberId = (String) session.getAttribute("loginId");
         
         if (memberId == null) {
@@ -32,8 +32,8 @@ public class ReviewController {
     }
 
     // 2. 리뷰 수정 페이지로 이동
-    @GetMapping("/edit/{reviewNo}")
-    public String showEditForm(@PathVariable int reviewNo, Model model, HttpSession session) {
+    @GetMapping("/edit")
+    public String showEditForm(@RequestParam int reviewNo, Model model, HttpSession session) {
         String memberId = (String) session.getAttribute("loginId");
 
         if (memberId == null) {
@@ -50,7 +50,7 @@ public class ReviewController {
         return "review/editForm";
     }
 
-    // 3. 리뷰 수정 처리 (PUT 대신 POST 사용)
+    // 3. 리뷰 수정 처리
     @PostMapping("/update")
     public String updateReview(
             HttpSession session,
@@ -81,11 +81,11 @@ public class ReviewController {
         return "redirect:/product/detail?productNo=" + reviewDto.getProductNo();
     }
 
-    // 4. 리뷰 삭제 처리 (DELETE 대신 POST 사용)
-    @PostMapping("/delete/{reviewNo}")
+    // 4. 리뷰 삭제 처리
+    @PostMapping("/delete")
     public String deleteReview(
             HttpSession session,
-            @PathVariable int reviewNo,
+            @RequestParam int reviewNo,
             @RequestParam int productNo,
             RedirectAttributes redirectAttributes) {
 
