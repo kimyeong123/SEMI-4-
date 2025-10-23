@@ -14,23 +14,19 @@ import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 @Service
 public class ReviewService {
-    
+
     @Autowired
     private ReviewDao reviewDao;
 
     @Autowired
     private AttachmentService attachmentService; 
-    
-    @Autowired
-    private ProductService productService; 
 
     // ================= 리뷰 등록 =================
     @Transactional(rollbackFor = Exception.class)
     public boolean insertReview(ReviewDto reviewDto, List<MultipartFile> attachments) throws IOException {
         int reviewNo = reviewDao.insert(reviewDto);
         reviewDto.setReviewNo(reviewNo);
-        int productNo = reviewDto.getProductNo();
-        
+
         // 첨부파일 처리
         if (attachments != null && !attachments.isEmpty()) {
             for (MultipartFile file : attachments) {
@@ -40,23 +36,15 @@ public class ReviewService {
                 }
             }
         }
-        
-        // 상품 평점 갱신
-        productService.refreshAvgRating(productNo);
+
+        // 더 이상 평점 갱신 호출 없음
         return true;
     }
 
     // ================= 리뷰 수정 =================
     @Transactional
     public boolean updateReview(ReviewDto reviewDto) {
-        int productNo = reviewDto.getProductNo();
-        boolean result = reviewDao.update(reviewDto);
-
-        if (result) {
-            productService.refreshAvgRating(productNo);
-        }
-
-        return result;
+        return reviewDao.update(reviewDto);
     }
 
     // ================= 리뷰 삭제 =================
@@ -65,7 +53,6 @@ public class ReviewService {
         ReviewDto findDto = reviewDao.selectOne(reviewNo);
         if (findDto == null) return false;
 
-        int productNo = findDto.getProductNo();
         List<Integer> deleteAttachmentNoList = attachmentService.selectAttachmentNosByReviewNo(reviewNo);
 
         boolean result = reviewDao.delete(reviewNo);
@@ -81,14 +68,7 @@ public class ReviewService {
             }
         }
 
-        // 상품 평점 갱신
-        try {
-            productService.refreshAvgRating(productNo);
-        } catch (Exception e) {
-            System.err.println("Average rating update failed for productNo: " + productNo);
-            e.printStackTrace();
-        }
-
+        // 더 이상 평점 갱신 호출 없음
         return true;
     }
 
@@ -107,5 +87,11 @@ public class ReviewService {
 
     public String getAuthorId(int reviewNo) {
         return reviewDao.selectAuthorId(reviewNo);
+    }
+
+    // ================= 평균 평점 조회 =================
+    public double getAverageRating(int productNo) {
+        Double avg = reviewDao.selectAverageRating(productNo);
+        return avg != null ? avg : 0.0;
     }
 }
