@@ -37,7 +37,7 @@ public class ProductCategoryMapDao {
 	    Object[] params = {categoryNo};
 	    return jdbcTemplate.queryForList(sql, Integer.class, params);
 	}
-	public int countByCategory(int categoryNo) {
+	public int countByCategory(Integer categoryNo) {
 	    String sql = "select count(*) from product_category_map where category_no = ?";
 	    Object[] params = {categoryNo};
 	    return jdbcTemplate.queryForObject(sql, Integer.class, params);

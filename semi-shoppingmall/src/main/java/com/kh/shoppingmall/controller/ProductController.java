@@ -1,5 +1,6 @@
 package com.kh.shoppingmall.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,114 +11,134 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.shoppingmall.dao.ProductDao;
-import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.dto.CategoryDto;
+import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
+import com.kh.shoppingmall.service.ProductService;
 
 @Controller
 @RequestMapping("/admin/product")
 public class ProductController {
 
     @Autowired
-    private ProductDao productDao;
+    private ProductService productService;
 
     @Autowired
     private CategoryService categoryService;
 
-    // ---------------- 상품 등록 페이지 ----------------
+    // 상품 목록 
+    @GetMapping("/list")
+    public String list(Model model) {
+        List<ProductDto> productList = productService.getProductList(null, null);
+        model.addAttribute("productList", productList);
+        return "/WEB-INF/views/admin/product/list.jsp";
+    }
+
+    // 상품 등록 페이지
     @GetMapping("/add")
-    public String add(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
-        // 부모 카테고리 조회
+    public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
         List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
         model.addAttribute("parentCategoryList", parentCategoryList);
 
-        // 선택된 부모 카테고리에 따른 하위 카테고리 조회
-        List<CategoryDto> childCategoryList = null;
+        List<CategoryDto> childCategoryList = new ArrayList<>();
         if (parentCategoryNo != null) {
             childCategoryList = categoryService.getChildrenByParent(parentCategoryNo);
         }
         model.addAttribute("childCategoryList", childCategoryList);
         model.addAttribute("selectedParentNo", parentCategoryNo);
 
-        // 뷰 이름만 반환 (InternalResourceViewResolver가 경로 처리)
         return "/WEB-INF/views/admin/product/add.jsp";
     }
-
-    // ---------------- 상품 등록 처리 ----------------
     @PostMapping("/add")
     public String add(
             @ModelAttribute ProductDto productDto,
-            @RequestParam int parentCategoryNo,
-            @RequestParam int childCategoryNo) {
-        
-        // 상품 등록
-        productDao.insert(productDto);
+            @RequestParam(required = false) List<Integer> categoryNoList,
+            @RequestParam MultipartFile thumbnailFile,
+            @RequestParam List<MultipartFile> detailImageList) throws Exception {
 
-        // 등록 완료 페이지로 리다이렉트
+        productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList);
         return "redirect:addFinish";
     }
 
-    // ---------------- 상품 등록 완료 페이지 ----------------
+    // 상품 등록 완료 
     @GetMapping("/addFinish")
     public String addFinish() {
-    	return "/WEB-INF/views/admin/product/addFinish.jsp";
+        return "/WEB-INF/views/admin/product/addFinish.jsp";
     }
 
-    // ---------------- 상품 목록 ----------------
-    @GetMapping("/list")
-    public String list(Model model,
-                       @RequestParam(required = false) String column,
-                       @RequestParam(required = false) String keyword) {
-
-        boolean isSearch = column != null && keyword != null;
-        model.addAttribute("column", column);
-        model.addAttribute("keyword", keyword);
-
-        List<ProductDto> productList = isSearch ?
-                productDao.selectList(column, keyword) :
-                productDao.selectList();
-
-        model.addAttribute("productList", productList);
-        return "/WEB-INF/views/admin/product/list.jsp";
-    }
-
-    // ---------------- 상품 상세 ----------------
+    // 상품 상세
     @GetMapping("/detail")
     public String detail(@RequestParam int productNo, Model model) {
-        ProductDto productDto = productDao.selectOne(productNo);
-        if (productDto == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-        model.addAttribute("productDto", productDto);
+        model.addAttribute("product", product);
         return "/WEB-INF/views/admin/product/detail.jsp";
     }
 
-    // ---------------- 상품 수정 페이지 ----------------
+    // 상품 수정 페이지
     @GetMapping("/edit")
-    public String edit(@RequestParam int productNo, Model model) {
-        ProductDto productDto = productDao.selectOne(productNo);
-        if (productDto == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
+    public String editPage(@RequestParam int productNo, Model model) {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-        model.addAttribute("productDto", productDto);
+        List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
+        List<CategoryDto> childCategoryList = new ArrayList<>();
+        if (product.getParentCategoryNo() != null) {
+            childCategoryList = categoryService.getChildrenByParent(product.getParentCategoryNo());
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("parentCategoryList", parentCategoryList);
+        model.addAttribute("childCategoryList", childCategoryList);
+
         return "/WEB-INF/views/admin/product/edit.jsp";
     }
-
-    // ---------------- 상품 수정 처리 ----------------
     @PostMapping("/edit")
-    public String edit(@ModelAttribute ProductDto productDto) {
-        productDao.update(productDto);
+    public String edit(
+            @ModelAttribute ProductDto productDto,
+            @RequestParam(required = false) List<Integer> categoryNoList,
+            @RequestParam(required = false) MultipartFile thumbnailFile,
+            @RequestParam(required = false) List<MultipartFile> detailImageList) throws Exception {
+
+        if (categoryNoList == null) categoryNoList = new ArrayList<>();
+        if (detailImageList == null) detailImageList = new ArrayList<>();
+
+        productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList, null);
         return "redirect:detail?productNo=" + productDto.getProductNo();
     }
-
-    // ---------------- 상품 삭제 ----------------
+    // 삭제
     @GetMapping("/delete")
     public String delete(@RequestParam int productNo) {
-        ProductDto productDto = productDao.selectOne(productNo);
-        if (productDto == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-        productDao.delete(productNo);
+        // 1. 썸네일 삭제
+        Integer thumbnailNo = product.getProductThumbnailNo();
+        if (thumbnailNo != null) {
+            try {
+                productService.deleteAttachment(thumbnailNo); // AttachmentService에서 실제 파일 + DB 삭제
+            } catch (Exception e) {
+                // 파일 없거나 삭제 실패해도 무시
+            }
+        }
+
+        // 2. 상세 이미지 삭제
+        List<Integer> detailAttachments = productService.getDetailAttachments(productNo);
+        for (Integer attachmentNo : detailAttachments) {
+            try {
+                productService.deleteAttachment(attachmentNo);
+            } catch (Exception e) {
+                // 파일 없거나 삭제 실패해도 무시
+            }
+        }
+
+        // 3. 상품 자체 삭제
+        productService.delete(productNo);
+
         return "redirect:list";
     }
 }
