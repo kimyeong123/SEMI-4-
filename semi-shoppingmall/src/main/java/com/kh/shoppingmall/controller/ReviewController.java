@@ -1,68 +1,115 @@
-package com.kh.shoppingmall.controller; // 패키지를 분리하는 것이 좋습니다.
-
+package com.kh.shoppingmall.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kh.shoppingmall.dto.ReviewDto; // ReviewDto가 필요할 수 있습니다.
+import com.kh.shoppingmall.dto.ReviewDto;
 import com.kh.shoppingmall.service.ReviewService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/review") // HTML 페이지를 위한 기본 경로
+@RequestMapping("/review")
 public class ReviewController {
     
     @Autowired
-    private ReviewService reviewService; // 리뷰 수정 시 기존 정보를 가져오기 위해 필요
+    private ReviewService reviewService;
 
     // 1. 리뷰 작성 페이지로 이동
-    @GetMapping("/write/{productNo}")
-    public String showWriteForm(@PathVariable int productNo, Model model, HttpSession session) {
+    @GetMapping("/write")
+    public String showWriteForm(@RequestParam int productNo, Model model, HttpSession session) {
         String memberId = (String) session.getAttribute("loginId");
         
-        // 1. (인증 체크) 로그인 안 했으면 로그인 페이지로
         if (memberId == null) {
-            return "redirect:/login"; // 로그인 페이지 경로로 리다이렉트
+            return "redirect:/login";
         }
-        
-        // 2. (구매 여부 체크 - Service에서 로직 수행)
-        // boolean canWrite = reviewService.checkIfPurchased(memberId, productNo);
-        // if (!canWrite) {
-        //    return "redirect:/mypage/orderlist"; // 구매 내역 페이지 등으로 리다이렉트
-        // }
-        
-        // 3. 작성 폼 페이지로 상품 번호 전달
+
         model.addAttribute("productNo", productNo);
-        return "review/writeForm"; // "src/main/resources/templates/review/writeForm.html" 뷰를 반환
+        return "review/writeForm";
     }
 
     // 2. 리뷰 수정 페이지로 이동
-    @GetMapping("/edit/{reviewNo}")
-    public String showEditForm(@PathVariable int reviewNo, Model model, HttpSession session) {
+    @GetMapping("/edit")
+    public String showEditForm(@RequestParam int reviewNo, Model model, HttpSession session) {
         String memberId = (String) session.getAttribute("loginId");
 
-        // 1. (인증 체크) 로그인 안 했으면 로그인 페이지로
         if (memberId == null) {
             return "redirect:/login";
         }
         
-        // 2. 기존 리뷰 정보 가져오기
-        ReviewDto reviewDto = reviewService.getReview(reviewNo); // (이런 서비스 메소드가 필요합니다)
+        ReviewDto reviewDto = reviewService.getReview(reviewNo);
 
-        // 3. (권한 체크)
-        // 리뷰가 없거나, 작성자가 현재 사용자가 아니면
         if (reviewDto == null || !reviewDto.getMemberId().equals(memberId)) {
-            // 권한 없음 페이지 또는 상품 상세 페이지로 리다이렉트
-            return "redirect:/product/detail/" + reviewDto.getProductNo(); 
+            return "redirect:/product/detail?productNo=" + (reviewDto != null ? reviewDto.getProductNo() : 0);
         }
 
-        // 4. 수정 폼 페이지로 기존 리뷰 데이터 전달
         model.addAttribute("review", reviewDto);
-        return "review/editForm"; // "src/main/resources/templates/review/editForm.html" 뷰를 반환
+        return "review/editForm";
+    }
+
+    // 3. 리뷰 수정 처리
+    @PostMapping("/update")
+    public String updateReview(
+            HttpSession session,
+            @ModelAttribute ReviewDto reviewDto,
+            RedirectAttributes redirectAttributes) {
+
+        String currentMemberId = (String) session.getAttribute("loginId");
+        
+        if (currentMemberId == null) {
+            return "redirect:/login";
+        }
+        
+        String authorId = reviewService.getAuthorId(reviewDto.getReviewNo());
+
+        if (authorId == null || !currentMemberId.equals(authorId)) {
+            redirectAttributes.addFlashAttribute("error", "수정 권한이 없거나 리뷰가 존재하지 않습니다.");
+            return "redirect:/product/detail?productNo=" + reviewDto.getProductNo(); 
+        }
+        
+        boolean result = reviewService.updateReview(reviewDto);
+        
+        if (result) {
+            redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 수정되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "리뷰 수정에 실패했습니다.");
+        }
+
+        return "redirect:/product/detail?productNo=" + reviewDto.getProductNo();
+    }
+
+    // 4. 리뷰 삭제 처리
+    @PostMapping("/delete")
+    public String deleteReview(
+            HttpSession session,
+            @RequestParam int reviewNo,
+            @RequestParam int productNo,
+            RedirectAttributes redirectAttributes) {
+
+        String currentMemberId = (String) session.getAttribute("loginId");
+        
+        if (currentMemberId == null) {
+            return "redirect:/login";
+        }
+        
+        String authorId = reviewService.getAuthorId(reviewNo);
+
+        if (authorId == null || !currentMemberId.equals(authorId)) {
+            redirectAttributes.addFlashAttribute("error", "삭제 권한이 없거나 리뷰가 존재하지 않습니다.");
+            return "redirect:/product/detail?productNo=" + productNo; 
+        }
+        
+        boolean result = reviewService.deleteReview(reviewNo);
+        
+        if (result) {
+            redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 삭제되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "리뷰 삭제에 실패했습니다.");
+        }
+
+        return "redirect:/product/detail?productNo=" + productNo;
     }
 }
