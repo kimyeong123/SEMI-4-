@@ -11,31 +11,38 @@
             <tr>
                 <th>번호</th>
                 <th>카테고리 이름</th>
-                <th>부모 번호</th>
                 <th>작업</th>
             </tr>
         </thead>
         <tbody>
+            <!-- 상위 카테고리 먼저 -->
             <c:forEach var="c" items="${categoryList}">
-                <tr>
-                    <td>${c.categoryNo}</td>
-                    <td>${c.categoryName}</td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${c.parentCategoryNo != null}">
-                                ${c.parentCategoryNo}
-                            </c:when>
-                            <c:otherwise>
-                                -
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <a href="detail?categoryNo=${c.categoryNo}">상세</a> |
-                        <a href="edit?categoryNo=${c.categoryNo}">수정</a> |
-                        <a href="delete?categoryNo=${c.categoryNo}">삭제</a>
-                    </td>
-                </tr>
+                <c:if test="${c.parentCategoryNo == null || c.parentCategoryNo == 0}">
+                    <tr style="background-color: #f0f0f0; font-weight: bold;">
+                        <td>${c.categoryNo}</td>
+                        <td>${c.categoryName}</td>
+                        <td>
+                            <a href="detail?categoryNo=${c.categoryNo}">상세</a> |
+                            <a href="edit?categoryNo=${c.categoryNo}">수정</a> |
+                            <a href="delete?categoryNo=${c.categoryNo}">삭제</a>
+                        </td>
+                    </tr>
+
+                    <!-- 하위 카테고리 표시 -->
+                    <c:forEach var="sub" items="${categoryList}">
+                        <c:if test="${sub.parentCategoryNo == c.categoryNo}">
+                            <tr>
+                                <td>${sub.categoryNo}</td>
+                                <td style="padding-left: 30px;"> ${sub.categoryName}</td>
+                                <td>
+                                    <a href="detail?categoryNo=${sub.categoryNo}">상세</a> |
+                                    <a href="edit?categoryNo=${sub.categoryNo}">수정</a> |
+                                    <a href="delete?categoryNo=${sub.categoryNo}">삭제</a>
+                                </td>
+                            </tr>
+                        </c:if>
+                    </c:forEach>
+                </c:if>
             </c:forEach>
         </tbody>
     </table>

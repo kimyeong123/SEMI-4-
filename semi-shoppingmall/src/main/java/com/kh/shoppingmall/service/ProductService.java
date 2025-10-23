@@ -13,7 +13,6 @@ import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
 import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.dto.ProductOptionDto;
-import com.kh.shoppingmall.error.TargetNotfoundException;
 
 @Service
 public class ProductService {
@@ -32,7 +31,8 @@ public class ProductService {
     // ---------------- 상품 등록 ----------------
     @Transactional
     public void register(ProductDto productDto, List<ProductOptionDto> optionList, List<Integer> categoryNoList,
-                         MultipartFile thumbnailFile, List<MultipartFile> detailImageList) throws Exception {
+            MultipartFile thumbnailFile, List<MultipartFile> detailImageList) throws Exception {
+
         int thumbnailNo = attachmentService.save(thumbnailFile); // 썸네일 저장
         productDto.setProductThumbnailNo(thumbnailNo);
 
@@ -62,8 +62,8 @@ public class ProductService {
     // ---------------- 상품 수정 ----------------
     @Transactional
     public void update(ProductDto productDto, List<ProductOptionDto> newOptionList, List<Integer> newCategoryNoList,
-                       MultipartFile newThumbnailFile, List<MultipartFile> newDetailImageList,
-                       List<Integer> deleteAttachmentNoList) throws Exception {
+            MultipartFile newThumbnailFile, List<MultipartFile> newDetailImageList,
+            List<Integer> deleteAttachmentNoList) throws Exception {
 
         int productNo = productDto.getProductNo();
 
@@ -88,7 +88,8 @@ public class ProductService {
         for (ProductOptionDto oldOption : oldOptionList) {
             boolean exists = newOptionList.stream()
                     .anyMatch(newOption -> newOption.getOptionNo() == oldOption.getOptionNo());
-            if (!exists) productOptionDao.delete(oldOption.getOptionNo());
+            if (!exists)
+                productOptionDao.delete(oldOption.getOptionNo());
         }
 
         for (ProductOptionDto newOption : newOptionList) {
@@ -103,10 +104,12 @@ public class ProductService {
         // 카테고리 처리
         List<Integer> oldCategoryList = productCategoryMapDao.selectCategoryNosByProductNo(productNo);
         for (Integer oldCat : oldCategoryList) {
-            if (!newCategoryNoList.contains(oldCat)) productCategoryMapDao.delete(productNo, oldCat);
+            if (!newCategoryNoList.contains(oldCat))
+                productCategoryMapDao.delete(productNo, oldCat);
         }
         for (Integer newCat : newCategoryNoList) {
-            if (!oldCategoryList.contains(newCat)) productCategoryMapDao.insert(productNo, newCat);
+            if (!oldCategoryList.contains(newCat))
+                productCategoryMapDao.insert(productNo, newCat);
         }
 
         // 삭제할 상세 이미지 처리
@@ -131,44 +134,34 @@ public class ProductService {
     // ---------------- 상품 목록 조회 (검색 포함) ----------------
     public List<ProductDto> getProductList(String column, String keyword) {
         boolean isSearch = column != null && !column.isEmpty() && keyword != null && !keyword.isEmpty();
-        if (isSearch) return productDao.selectList(column, keyword);
-        else return productDao.selectList();
+        if (isSearch)
+            return productDao.selectList(column, keyword);
+        else
+            return productDao.selectList();
     }
 
-    // ---------------- 상품 삭제 ----------------
+    // ---------------- 상품 삭제 (안전하게 순서 조정) ----------------
     @Transactional
     public void delete(int productNo) {
-        ProductDto productDto = productDao.selectOne(productNo);
-        if (productDto == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
-
-        // 썸네일 삭제
-        Integer thumbnailNo = productDao.findThumbnail(productNo);
-        if (thumbnailNo != null) attachmentService.delete(thumbnailNo);
-
-        // 상세 이미지 삭제
-        List<Integer> detailAttachments = productDao.findDetailAttachments(productNo);
-        for (Integer attachmentNo : detailAttachments) {
-            attachmentService.delete(attachmentNo);
+        // 1. 첨부파일 삭제
+        List<Integer> attachmentIds = productDao.findDetailAttachments(productNo);
+        for (Integer attachmentNo : attachmentIds) {
+            attachmentDao.delete(attachmentNo); // AttachmentDao에서 delete 메서드 필요
         }
 
-        productDao.delete(productNo); // 상품 삭제
-    }
+        // 2. 리뷰 삭제
+        List<Integer> reviewIds = productDao.findReviewsByProduct(productNo);
+        for (Integer reviewNo : reviewIds) {
+            productDao.deleteReview(reviewNo);
+        }
 
-    // ---------------- 상품 평균 평점 업데이트 ----------------
-    @Transactional
-    public void updateAverageRatingForProduct(int productNo) {
-        Double avgRating = productDao.calculateAverageRating(productNo);
-        productDao.updateAverageRating(productNo, avgRating);
-    }
+        // 3. 위시리스트 삭제
+        List<Integer> wishlistIds = productDao.findWishlistIdsByProduct(productNo);
+        for (Integer wishlistNo : wishlistIds) {
+            productDao.deleteWishlist(wishlistNo);
+        }
 
-    // ---------------- 상세 이미지 목록 조회 ----------------
-    public List<Integer> getDetailAttachments(int productNo) {
-        return productDao.findDetailAttachments(productNo);
-    }
-
-    // ---------------- 첨부파일 삭제 ----------------
-    @Transactional
-    public void deleteAttachment(int attachmentNo) {
-        attachmentService.delete(attachmentNo);
+        // 4. 최종적으로 상품 삭제
+        productDao.delete(productNo);
     }
 }

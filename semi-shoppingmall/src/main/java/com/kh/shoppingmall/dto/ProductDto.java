@@ -13,5 +13,6 @@ public class ProductDto {
     private String productContent;
     private Integer productThumbnailNo; 
     private Integer parentCategoryNo; 
-    private Integer childCategoryNo;  
+    private Integer childCategoryNo;
+    private Double productAvgRating; //integer로 하면 소수점 구현 불가능
 }

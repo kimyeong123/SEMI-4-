@@ -89,6 +89,10 @@
 			<label>썸네일 *</label> <input type="file" name="thumbnailFile" required
 				class="field w-100">
 		</div>
+		<div class="cell">
+			<label>상세 이미지</label> <input type="file" name="detailImageList"
+				multiple>
+		</div>
 
 		<div class="cell mt-30">
 			<button class="btn btn-positive w-100">상품 등록</button>

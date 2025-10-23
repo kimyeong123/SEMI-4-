@@ -15,98 +15,110 @@ public class ProductDao {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-
 	@Autowired
 	private ProductMapper productMapper;
 
-	// 시퀀스 생성
+	// ---------------- 시퀀스에서 다음 product_no 가져오기 ----------------
 	public int sequence() {
-		String sql = "select product_seq.nextval from dual";
-		return jdbcTemplate.queryForObject(sql, int.class);
+		String sql = "SELECT product_seq.NEXTVAL FROM DUAL";
+		return jdbcTemplate.queryForObject(sql, Integer.class);
 	}
 
-	// 상품 등록
+	// ---------------- 상품 등록 ----------------
 	public void insert(ProductDto dto) {
-		String sql = "insert into product(product_no, product_name, product_price, product_content, product_thumbnail_no) "
-				+ "values(?, ?, ?, ?, ?)";
-		Object[] params = { dto.getProductNo(), dto.getProductName(), dto.getProductPrice(), dto.getProductContent(),
-				dto.getProductThumbnailNo() };
-		jdbcTemplate.update(sql, params);
+		String sql = "INSERT INTO product(product_no, product_name, product_price, product_content, product_thumbnail_no) "
+				+ "VALUES(?, ?, ?, ?, ?)";
+		jdbcTemplate.update(sql, dto.getProductNo(), dto.getProductName(), dto.getProductPrice(),
+				dto.getProductContent(), dto.getProductThumbnailNo());
 	}
 
-	// 상품 수정
+	// ---------------- 상품 수정 ----------------
 	public boolean update(ProductDto dto) {
-		String sql = "update product set "
-				+ "product_name=?, product_price=?, product_content=?, product_thumbnail_no=? " + "where product_no=?";
-		Object[] params = { dto.getProductName(), dto.getProductPrice(), dto.getProductContent(),
-				dto.getProductThumbnailNo(), dto.getProductNo() };
-		return jdbcTemplate.update(sql, params) > 0;
+		String sql = "UPDATE product SET product_name=?, product_price=?, product_content=?, product_thumbnail_no=? "
+				+ "WHERE product_no=?";
+		return jdbcTemplate.update(sql, dto.getProductName(), dto.getProductPrice(), dto.getProductContent(),
+				dto.getProductThumbnailNo(), dto.getProductNo()) > 0;
 	}
 
-	// 상품 삭제
+	// ---------------- 상품 삭제 ----------------
 	public boolean delete(int productNo) {
-		String sql = "delete from product where product_no=?";
-		Object[] params = { productNo };
-		return jdbcTemplate.update(sql, params) > 0;
+		String sql = "DELETE FROM product WHERE product_no=?";
+		return jdbcTemplate.update(sql, productNo) > 0;
 	}
 
-	// 전체 목록
+	// ---------------- 전체 목록 조회 ----------------
 	public List<ProductDto> selectList() {
-		String sql = "select * from product order by product_no asc";
+		String sql = "SELECT * FROM product ORDER BY product_no ASC";
 		return jdbcTemplate.query(sql, productMapper);
 	}
 
-	// 검색
+	// ---------------- 검색 ----------------
 	public List<ProductDto> selectList(String column, String keyword) {
-		Set<String> allowList = Set.of("product_name", "product_content");
-		if (!allowList.contains(column))
+		Set<String> allowColumns = Set.of("product_name", "product_content");
+		if (!allowColumns.contains(column))
 			return List.of();
 
-		String sql = "select * from product where instr(#1, ?) > 0 order by #1 asc, product_no asc";
-		sql = sql.replace("#1", column);
-
-		Object[] params = { keyword };
-		return jdbcTemplate.query(sql, productMapper, params);
+		String sql = "SELECT * FROM product WHERE INSTR(" + column + ", ?) > 0 ORDER BY product_no ASC";
+		return jdbcTemplate.query(sql, productMapper, keyword);
 	}
 
-	// 상세 조회
+	// ---------------- 단일 조회 ----------------
 	public ProductDto selectOne(int productNo) {
-		String sql = "select * from product where product_no = ?";
-		Object[] params = { productNo };
-		List<ProductDto> list = jdbcTemplate.query(sql, productMapper, params);
+		String sql = "SELECT * FROM product WHERE product_no=?";
+		List<ProductDto> list = jdbcTemplate.query(sql, productMapper, productNo);
 		return list.isEmpty() ? null : list.get(0);
 	}
 
-	// (+추가) 상품과 첨부파일 연결
+	// ---------------- 썸네일 연결 ----------------
 	public void connectThumbnail(int productNo, int attachmentNo) {
-		String sql = "insert into product_image(product_no, attachment_no) values(?, ?)";
-		Object[] params = { productNo, attachmentNo };
-		jdbcTemplate.update(sql, params);
+		String sql = "INSERT INTO product_image(product_no, attachment_no) VALUES(?, ?)";
+		jdbcTemplate.update(sql, productNo, attachmentNo);
 	}
 
-	// (+추가) 상품 번호로 썸네일 찾기
+	// ---------------- 상품 번호로 썸네일 조회 ----------------
 	public Integer findThumbnail(int productNo) {
-		String sql = "select product_thumbnail_no from product where product_no=?";
-		Object[] params = { productNo };
-		List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, params);
+		String sql = "SELECT product_thumbnail_no FROM product WHERE product_no=?";
+		List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, productNo);
 		return list.isEmpty() ? null : list.get(0);
 	}
 
-	// (+추가) 상품 번호로 상세 이미지 목록 찾기
+	// ---------------- 상품 번호로 상세 이미지 목록 조회 ----------------
 	public List<Integer> findDetailAttachments(int productNo) {
-		String sql = "select attachment_no from product_image where product_no=?";
-		Object[] params = { productNo };
-		return jdbcTemplate.queryForList(sql, Integer.class, params);
+		String sql = "SELECT attachment_no FROM attachment WHERE product_no = ?";
+		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
 	}
 
+	// ---------------- 평균 평점 계산 ----------------
 	// 평균 평점 계산
 	public Double calculateAverageRating(int productNo) {
-	    String sql = "select avg(review_rating) from review where product_no = ?";
-	    return jdbcTemplate.queryForObject(sql, new Object[]{productNo}, Double.class);
+		String sql = "select avg(review_rating) from review where product_no = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { productNo }, Double.class);
 	}
+
 	public void updateAverageRating(int productNo, Double avgRating) {
-	    String sql = "update product set product_avg_rating = ? where product_no = ?";
-	    Object[] params = { avgRating, productNo };
-	    jdbcTemplate.update(sql, params);
+		String sql = "UPDATE product SET product_avg_rating=? WHERE product_no=?";
+		jdbcTemplate.update(sql, avgRating, productNo);
+	}
+
+	// 상품의 리뷰 번호 리스트 조회
+	public List<Integer> findReviewsByProduct(int productNo) {
+		String sql = "SELECT review_no FROM review WHERE product_no=?";
+		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
+	}
+
+	// 리뷰 삭제
+	public void deleteReview(int reviewNo) {
+		String sql = "DELETE FROM review WHERE review_no=?";
+		jdbcTemplate.update(sql, reviewNo);
+	}
+
+	public List<Integer> findWishlistIdsByProduct(int productNo) {
+		String sql = "SELECT wishlist_no FROM wishlist WHERE product_no = ?";
+		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
+	}
+
+	public void deleteWishlist(int wishlistNo) {
+		String sql = "DELETE FROM wishlist WHERE wishlist_no = ?";
+		jdbcTemplate.update(sql, wishlistNo);
 	}
 }
