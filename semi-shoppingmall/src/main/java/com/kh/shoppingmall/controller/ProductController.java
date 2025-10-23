@@ -25,7 +25,7 @@ public class ProductController {
 	@Autowired
 	private CategoryService categoryService;
 
-	// ---------------- 상품 목록 ----------------
+	//상품 목록 
 	@GetMapping("/list")
 	public String list(@RequestParam(value = "column", required = false) String column,
 			@RequestParam(value = "keyword", required = false) String keyword, Model model) {
@@ -39,7 +39,7 @@ public class ProductController {
 		return "/WEB-INF/views/admin/product/list.jsp";
 	}
 
-	// ---------------- 상품 등록 페이지 ----------------
+	//상품 등록
 	@GetMapping("/add")
 	public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
 		List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
@@ -54,8 +54,6 @@ public class ProductController {
 
 		return "/WEB-INF/views/admin/product/add.jsp";
 	}
-
-	// ---------------- 상품 등록 처리 ----------------
 	@PostMapping("/add")
 	public String add(@ModelAttribute ProductDto productDto,
 			@RequestParam(required = false) List<Integer> categoryNoList, @RequestParam MultipartFile thumbnailFile,
@@ -70,13 +68,13 @@ public class ProductController {
 		return "redirect:addFinish";
 	}
 
-	// ---------------- 상품 등록 완료 ----------------
+	//상품 등록 완료
 	@GetMapping("/addFinish")
 	public String addFinish() {
 		return "/WEB-INF/views/admin/product/addFinish.jsp";
 	}
 
-	// ---------------- 상품 상세 ----------------
+	//상품 상세
 	@GetMapping("/detail")
 	public String detail(@RequestParam int productNo, Model model) {
 		ProductDto product = productService.getProduct(productNo);
@@ -87,7 +85,7 @@ public class ProductController {
 		return "/WEB-INF/views/admin/product/detail.jsp";
 	}
 
-	// ---------------- 상품 수정 페이지 ----------------
+	//상품 수정 페이지
 	@GetMapping("/edit")
 	public String editPage(@RequestParam int productNo, Model model) {
 		ProductDto product = productService.getProduct(productNo);
@@ -106,8 +104,6 @@ public class ProductController {
 
 		return "/WEB-INF/views/admin/product/edit.jsp";
 	}
-
-	// ---------------- 상품 수정 처리 ----------------
 	@PostMapping("/edit")
 	public String edit(@ModelAttribute ProductDto productDto,
 			@RequestParam(required = false) List<Integer> categoryNoList,
@@ -125,16 +121,13 @@ public class ProductController {
 		return "redirect:detail?productNo=" + productDto.getProductNo();
 	}
 
-	// ---------------- 상품 삭제 ----------------
+	//상품 삭제
 	@PostMapping("/delete")
 	public String delete(@RequestParam int productNo) throws Exception {
 		ProductDto product = productService.getProduct(productNo);
 		if (product == null)
 			throw new TargetNotfoundException("존재하지 않는 상품 번호");
-
-		// 상품 자체 삭제 (썸네일 + 상세 이미지 + 옵션 + 카테고리 매핑 모두 포함)
 		productService.delete(productNo);
-
 		return "redirect:list";
 	}
 
