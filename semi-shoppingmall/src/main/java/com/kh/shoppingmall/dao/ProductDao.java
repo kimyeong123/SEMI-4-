@@ -62,20 +62,20 @@ public class ProductDao {
 		return jdbcTemplate.query(sql, productMapper, keyword);
 	}
 
-	// ---------------- 단일 조회 ----------------
+	// 단일 조회 
 	public ProductDto selectOne(int productNo) {
 		String sql = "SELECT * FROM product WHERE product_no=?";
 		List<ProductDto> list = jdbcTemplate.query(sql, productMapper, productNo);
 		return list.isEmpty() ? null : list.get(0);
 	}
 
-	// ---------------- 썸네일 연결 ----------------
+	// 썸네일 연결 
 	public void connectThumbnail(int productNo, int attachmentNo) {
 		String sql = "INSERT INTO product_image(product_no, attachment_no) VALUES(?, ?)";
 		jdbcTemplate.update(sql, productNo, attachmentNo);
 	}
 
-	// ---------------- 상품 번호로 썸네일 조회 ----------------
+	// 상품 번호로 썸네일 조회 
 	public Integer findThumbnail(int productNo) {
 		String sql = "SELECT product_thumbnail_no FROM product WHERE product_no=?";
 		List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, productNo);
@@ -88,8 +88,7 @@ public class ProductDao {
 		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
 	}
 
-	// ---------------- 평균 평점 계산 ----------------
-	// 평균 평점 계산
+	//평균 평점 계산
 	public Double calculateAverageRating(int productNo) {
 		String sql = "select avg(review_rating) from review where product_no = ?";
 		return jdbcTemplate.queryForObject(sql, new Object[] { productNo }, Double.class);
@@ -99,8 +98,7 @@ public class ProductDao {
 		String sql = "UPDATE product SET product_avg_rating=? WHERE product_no=?";
 		jdbcTemplate.update(sql, avgRating, productNo);
 	}
-
-	// 상품의 리뷰 번호 리스트 조회
+	//상품의 리뷰 번호 리스트 조회
 	public List<Integer> findReviewsByProduct(int productNo) {
 		String sql = "SELECT review_no FROM review WHERE product_no=?";
 		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
@@ -111,12 +109,10 @@ public class ProductDao {
 		String sql = "DELETE FROM review WHERE review_no=?";
 		jdbcTemplate.update(sql, reviewNo);
 	}
-
 	public List<Integer> findWishlistIdsByProduct(int productNo) {
 		String sql = "SELECT wishlist_no FROM wishlist WHERE product_no = ?";
 		return jdbcTemplate.queryForList(sql, Integer.class, productNo);
 	}
-
 	public void deleteWishlist(int wishlistNo) {
 		String sql = "DELETE FROM wishlist WHERE wishlist_no = ?";
 		jdbcTemplate.update(sql, wishlistNo);
