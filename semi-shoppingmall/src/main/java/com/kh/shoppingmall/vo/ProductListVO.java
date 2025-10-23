@@ -1,8 +1,6 @@
 package com.kh.shoppingmall.vo;
 
-import java.sql.Timestamp;
 
-import com.kh.shoppingmall.dto.MemberDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
