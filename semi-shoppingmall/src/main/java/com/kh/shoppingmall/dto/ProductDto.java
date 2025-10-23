@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class ProductDto {
-	private int productNo;
-	private String productName;
-	private int productPrice;
-	private String productContent;
-	private int productThumbnailNo;
+    private int productNo;
+    private String productName;
+    private int productPrice;
+    private String productContent;
+    private Integer productThumbnailNo; 
+    private Integer parentCategoryNo; 
+    private Integer childCategoryNo;  
 }
