@@ -18,13 +18,12 @@ public class ProductDao {
 	@Autowired
 	private ProductMapper productMapper;
 
-	// ---------------- 시퀀스에서 다음 product_no 가져오기 ----------------
 	public int sequence() {
 		String sql = "SELECT product_seq.NEXTVAL FROM DUAL";
 		return jdbcTemplate.queryForObject(sql, Integer.class);
 	}
 
-	// ---------------- 상품 등록 ----------------
+	// 상품 등록
 	public void insert(ProductDto dto) {
 		String sql = "INSERT INTO product(product_no, product_name, product_price, product_content, product_thumbnail_no) "
 				+ "VALUES(?, ?, ?, ?, ?)";
@@ -32,7 +31,7 @@ public class ProductDao {
 				dto.getProductContent(), dto.getProductThumbnailNo());
 	}
 
-	// ---------------- 상품 수정 ----------------
+	// 상품 수정
 	public boolean update(ProductDto dto) {
 		String sql = "UPDATE product SET product_name=?, product_price=?, product_content=?, product_thumbnail_no=? "
 				+ "WHERE product_no=?";
@@ -40,25 +39,26 @@ public class ProductDao {
 				dto.getProductThumbnailNo(), dto.getProductNo()) > 0;
 	}
 
-	// ---------------- 상품 삭제 ----------------
+	// 상품 삭제
 	public boolean delete(int productNo) {
 		String sql = "DELETE FROM product WHERE product_no=?";
 		return jdbcTemplate.update(sql, productNo) > 0;
 	}
 
-	// ---------------- 전체 목록 조회 ----------------
+	// 전체 목록
 	public List<ProductDto> selectList() {
 		String sql = "SELECT * FROM product ORDER BY product_no ASC";
 		return jdbcTemplate.query(sql, productMapper);
 	}
 
-	// ---------------- 검색 ----------------
+	// 검색
 	public List<ProductDto> selectList(String column, String keyword) {
 		Set<String> allowColumns = Set.of("product_name", "product_content");
-		if (!allowColumns.contains(column))
-			return List.of();
+		if (!allowColumns.contains(column)) {
+			column = "product_name"; // 기본 검색 컬럼
+		}
 
-		String sql = "SELECT * FROM product WHERE INSTR(" + column + ", ?) > 0 ORDER BY product_no ASC";
+		String sql = "SELECT * FROM product WHERE INSTR(LOWER(" + column + "), LOWER(?)) > 0 ORDER BY product_no ASC";
 		return jdbcTemplate.query(sql, productMapper, keyword);
 	}
 
