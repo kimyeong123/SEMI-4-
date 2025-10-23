@@ -5,7 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>    
 
 <!-- 기존 메뉴(한줄짜리) -->
-<div class="menu">
+<div class="menu flex-box">
             
 <%-- 템플릿 페이지에서 작성하는 경로는 반드시 절대경로여야 한다 --%>
 <%-- 로그인 여부에 따라 다른 메뉴들을 표시 --%>

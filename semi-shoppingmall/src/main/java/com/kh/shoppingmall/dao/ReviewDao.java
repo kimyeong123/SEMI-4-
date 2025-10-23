@@ -92,7 +92,7 @@ public class ReviewDao {
     //회원의 리뷰조회
     public List<ReviewDetailVO> selectDetailListByMember(String memberId) {
         // ReviewDetailVO는 리뷰 정보와 함께, 첨부파일, 상품명 등 조인된 정보를 포함하는 VO라고 가정합니다.
-        String sql = "SELECT * FROM review_detail_view WHERE member_id = ? ORDER BY review_no DESC";
+        String sql = "SELECT * FROM review_detail WHERE member_id = ? ORDER BY review_no DESC";
         Object[] params = {memberId};
         
         return jdbcTemplate.query(sql, reviewDetailVOMapper, params); 
