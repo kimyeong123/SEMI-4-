@@ -151,6 +151,9 @@ public class MemberController {
 		List<OrdersSummaryVO> ordersList = ordersDao.selectSummaryListByMemberId(loginId);
 		model.addAttribute("ordersList", ordersList);
 		
+		List<ReviewDetailVO> reviewList = reviewDao.selectDetailListByMember(loginId);
+	    model.addAttribute("reviewList", reviewList);
+		
 		return "/WEB-INF/views/member/mypage.jsp";
 	}
 	

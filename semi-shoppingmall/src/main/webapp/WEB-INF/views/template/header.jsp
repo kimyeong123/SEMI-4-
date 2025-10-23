@@ -25,6 +25,12 @@
         .image-profile:hover {
             opacity: 1;
         }
+        
+	    .menu > a
+		{
+			width: auto !important;
+			font-size: 16px !important;
+		}        
     </style>
     
     <!-- jquery cdn -->
