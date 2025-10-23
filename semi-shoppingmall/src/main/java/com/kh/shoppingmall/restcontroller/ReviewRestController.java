@@ -25,51 +25,51 @@ public class ReviewRestController {
 
     // 1. 리뷰 목록 조회 (비회원도 가능)
     @GetMapping("/list")
-    public List<ReviewDetailVO> list(@RequestParam int productNo) {
+    public List<ReviewDetailVO> getReviews(@RequestParam int productNo) {
         return reviewService.getReviewsDetailByProduct(productNo);
     }
 
-    // 2. 리뷰 작성 (회원만)
+    // 2. 리뷰 등록
     @PostMapping("/add")
     public boolean addReview(
             HttpSession session,
             @ModelAttribute ReviewDto reviewDto,
             @RequestParam(required = false) List<MultipartFile> attachments) throws IOException {
 
-        String memberId = (String) session.getAttribute("loginId");
-        if (memberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+        String currentMemberId = (String) session.getAttribute("loginId");
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
 
-        reviewDto.setMemberId(memberId);
+        reviewDto.setMemberId(currentMemberId);
         if (attachments == null) attachments = List.of();
 
         return reviewService.insertReview(reviewDto, attachments);
     }
 
-    // 3. 리뷰 수정 (작성자만)
+    // 3. 리뷰 수정
     @PostMapping("/update")
     public boolean updateReview(HttpSession session, @RequestBody ReviewDto reviewDto) {
 
-        String memberId = (String) session.getAttribute("loginId");
-        if (memberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+        String currentMemberId = (String) session.getAttribute("loginId");
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
 
         String authorId = reviewService.getAuthorId(reviewDto.getReviewNo());
         if (authorId == null) throw new TargetNotfoundException("해당 리뷰를 찾을 수 없습니다.");
-        if (!memberId.equals(authorId)) throw new NeedPermissionException("리뷰 수정 권한이 없습니다.");
+        if (!currentMemberId.equals(authorId)) throw new NeedPermissionException("리뷰 수정 권한이 없습니다.");
 
         return reviewService.updateReview(reviewDto);
     }
 
-    // 4. 리뷰 삭제 (작성자만)
+    // 4. 리뷰 삭제
     @PostMapping("/delete")
     public boolean deleteReview(HttpSession session, @RequestParam int reviewNo) {
 
-        String memberId = (String) session.getAttribute("loginId");
-        if (memberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+        String currentMemberId = (String) session.getAttribute("loginId");
+        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
 
         String authorId = reviewService.getAuthorId(reviewNo);
         if (authorId == null) throw new TargetNotfoundException("해당 리뷰를 찾을 수 없습니다.");
-        if (!memberId.equals(authorId)) throw new NeedPermissionException("리뷰 삭제 권한이 없습니다.");
+        if (!currentMemberId.equals(authorId)) throw new NeedPermissionException("리뷰 삭제 권한이 없습니다.");
 
-        return reviewService.deleteReview(reviewNo);
+        return reviewService.deleteReview(reviewNo); 
     }
 }
