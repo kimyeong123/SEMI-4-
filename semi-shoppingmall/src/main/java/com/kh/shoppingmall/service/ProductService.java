@@ -36,12 +36,12 @@ public class ProductService {
     public void register(ProductDto productDto, List<ProductOptionDto> optionList, List<Integer> categoryNoList,
                          MultipartFile thumbnailFile, List<MultipartFile> detailImageList) throws Exception {
 
-        int thumbnailNo = attachmentService.save(thumbnailFile); // 썸네일 저장
+        int thumbnailNo = attachmentService.save(thumbnailFile);
         productDto.setProductThumbnailNo(thumbnailNo);
 
-        int productNo = productDao.sequence(); // 상품 번호 시퀀스
+        int productNo = productDao.sequence();
         productDto.setProductNo(productNo);
-        productDao.insert(productDto); // 상품 저장
+        productDao.insert(productDto);
 
         // 옵션 저장
         for (ProductOptionDto option : optionList) {
@@ -84,16 +84,16 @@ public class ProductService {
             }
         }
 
-        productDao.update(productDto); // 상품 정보 수정
+        productDao.update(productDto);
 
         // 옵션 처리
         List<ProductOptionDto> oldOptionList = productOptionDao.selectListByProduct(productNo);
         for (ProductOptionDto oldOption : oldOptionList) {
             boolean exists = newOptionList.stream()
                     .anyMatch(newOption -> newOption.getOptionNo() == oldOption.getOptionNo());
-            if (!exists)
-                productOptionDao.delete(oldOption.getOptionNo());
+            if (!exists) productOptionDao.delete(oldOption.getOptionNo());
         }
+
         for (ProductOptionDto newOption : newOptionList) {
             newOption.setProductNo(productNo);
             if (newOption.getOptionNo() == 0) {
@@ -160,7 +160,7 @@ public class ProductService {
             productDao.deleteWishlist(wishlistNo);
         }
 
-        // 최종적으로 상품 삭제
+        // 상품 삭제
         productDao.delete(productNo);
     }
 
