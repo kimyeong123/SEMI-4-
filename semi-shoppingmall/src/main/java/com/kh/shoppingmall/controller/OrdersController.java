@@ -50,7 +50,7 @@ public class OrdersController {
 
 		List<WishlistDetailVO> wishlist = wishlistService.getWishlistItems(memberId);
 		model.addAttribute("wishlist", wishlist); // 조회 결과를 모델에 추가
-		return "/orders/wishlist";
+		return "/WEB-INF/views/orders/wishlist.jsp";
 	}
 
 	// 장바구니 페이지
@@ -64,7 +64,7 @@ public class OrdersController {
 		}
 		List<CartDetailVO> cartlist = cartService.getCartItems(memberId);
 		model.addAttribute("cartlist", cartlist); // 조회 결과를 모델에 추가
-		return "/orders/cart";
+		return "/WEB-INF/views/orders/cart.jsp";
 	}
 
 	// 주문 작성(get, post로 나눠서 작성) 및 결제 페이지
@@ -88,7 +88,7 @@ public class OrdersController {
 		int totalPrice = ordersService.calculateTotalPrice(cartItems);
 		model.addAttribute("totalPrice", totalPrice);
 
-		return "/orders/payment";
+		return "/WEB-INF/views/orders/payment.jsp";
 	}
 
 	@PostMapping("/payment")
@@ -131,7 +131,7 @@ public class OrdersController {
 		// 모델에 리스트 전체를 담아줌
 		model.addAttribute("orderSummaryList", orderSummaryList); // 키 이름 변경
 
-		return "/orders/paymentComplete"; // 슬래시(/) 시작 권장
+		return "/WEB-INF/views/orders/paymentComplete.jsp"; // 슬래시(/) 시작 권장
 	}
 
 	// 주문 내역 확인 페이지
@@ -147,7 +147,7 @@ public class OrdersController {
 		List<OrdersDto> orderList = ordersService.getOrderListByMember(memberId); // 예시 메소드명, Dto 또는 VO 사용
 		model.addAttribute("orderList", orderList);
 
-		return "/orders/list";
+		return "/WEB-INF/views/orders/list.jsp";
 	}
 
 	// 주문 상세 내역 페이지
@@ -168,6 +168,6 @@ public class OrdersController {
 		
 		model.addAttribute("orderSummaryList", orderSummaryList);
 
-		return "/orders/detail";
+		return "/WEB-INF/views/orders/detail.jsp";
 	}
 }
