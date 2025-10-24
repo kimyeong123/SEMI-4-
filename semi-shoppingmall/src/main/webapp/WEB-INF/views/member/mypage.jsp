@@ -209,7 +209,7 @@
 	<%-- 2. 나의 찜 목록  --%>
 	<%-- =================================================== --%>
 	<div class = "cell center w-100">
-		<h2>나의 찜 목록</h2>
+		<h2>나의 위시리스트</h2>
 		<table class="w-100 table table-border">
 			<thead>
 				<tr>
@@ -230,7 +230,7 @@
 				</c:forEach>
                 <c:if test="${empty wishlistList}">
 				<tr>
-					<td colspan="3" class="center">찜한 상품이 없습니다.</td>
+					<td colspan="3" class="center">위시리스트가 없습니다.</td>
 				</tr>
 				</c:if>
 			</tbody>
@@ -318,7 +318,7 @@
 							</c:forEach>
 						</td>
 						<td>${review.reviewContent}</td>
-						<td><fmt:formatDate value="${review.reviewTime}" pattern="yyyy-MM-dd"/></td>
+						<td><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd"/></td>
 						<td>
 							<%-- 리뷰 수정/삭제 링크 (필요 시) --%>
 							<a href="/review/edit?reviewNo=${review.reviewNo}">수정</a> | 

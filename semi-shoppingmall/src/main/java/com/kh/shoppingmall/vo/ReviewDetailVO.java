@@ -13,6 +13,7 @@ public class ReviewDetailVO {
 	//1. 기본 정보
 	private int reviewNo;
 	private int productNo;
+	private String productName;
 	private String reviewContent;
 	private int reviewRating;
 	private Timestamp reviewCreatedAt;
