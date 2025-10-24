@@ -99,14 +99,14 @@ public class OrdersController {
 		List<CartDetailVO> cartItems = cartService.getCartItems(memberId);
 		if (cartItems.isEmpty()) { // 장바구니 비어있으면 주문 불가
 			// 에러 메시지와 함께 리다이렉트 또는 다른 처리
-			return "redirect:/order/cart?error=empty";
+			return "redirect:/orders/cart?error=empty";
 		}
 
 		// OrderService 호출하여 주문 생성
 		int ordersNo = ordersService.createOrders(ordersDto, cartItems, session); // Service에 위임
 
 		// 주문 완료 페이지로 리다이렉트 (주문 번호 전달)
-		return "redirect:/orders/paymentComplete?ordersNo=" + ordersNo;
+		return "redirect:/orders/paymentcomplete?ordersNo=" + ordersNo;
 	}
 
 	// 결제 완료 페이지

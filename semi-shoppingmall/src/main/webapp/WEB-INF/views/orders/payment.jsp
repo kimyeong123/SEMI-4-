@@ -156,7 +156,7 @@
 		<c:set var="shippingFee" value="${subtotal >= 50000 ? 0 : 3000}" />
 		<c:set var="finalTotal" value="${subtotal + shippingFee}" />
 
-		<form class="flex-box payment-form" action="orders/payment"
+		<form class="flex-box payment-form" action="/orders/payment"
 			method="post">
 
 			<div class="cell w-600">
