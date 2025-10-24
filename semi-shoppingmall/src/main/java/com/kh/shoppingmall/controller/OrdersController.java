@@ -110,7 +110,7 @@ public class OrdersController {
 	}
 
 	// 결제 완료 페이지
-	@GetMapping("/paymentComplete")
+	@GetMapping("/paymentcomplete")
 	public String paymentComplete(@RequestParam int ordersNo, Model model, HttpSession session) { // ordersNo 이름 일치
 		String memberId = (String) session.getAttribute("loginId");
 		if (memberId == null)
@@ -131,7 +131,7 @@ public class OrdersController {
 		// 모델에 리스트 전체를 담아줌
 		model.addAttribute("orderSummaryList", orderSummaryList); // 키 이름 변경
 
-		return "/WEB-INF/views/orders/paymentComplete.jsp"; // 슬래시(/) 시작 권장
+		return "/WEB-INF/views/orders/paymentcomplete.jsp"; // 슬래시(/) 시작 권장
 	}
 
 	// 주문 내역 확인 페이지
