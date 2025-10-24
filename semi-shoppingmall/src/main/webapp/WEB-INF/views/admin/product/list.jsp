@@ -6,27 +6,7 @@
 
 <head>
 <script type="text/javascript">
-$(document).on("click", ".wishlistIcon", function() {
-    var icon = $(this);
-    var productNo = icon.data("product-no");
-
-    $.ajax({
-        url: "${pageContext.request.contextPath}/rest/wishlist/toggle",
-        method: "post",
-        data: { productNo: productNo },
-        success: function(response) {
-            if(response.wishlisted) {
-                icon.removeClass("fa-regular").addClass("fa-solid");
-            } else {
-                icon.removeClass("fa-solid").addClass("fa-regular");
-            }
-            icon.siblings(".wishlist-count").text(response.count);
-        },
-        error: function() {
-            alert("로그인이 필요합니다.");
-        }
-    });
-});
+	
 </script>
 </head>
 <div class="container w-800">
@@ -76,8 +56,8 @@ $(document).on("click", ".wishlistIcon", function() {
 
 					<td>${p.productNo}</td>
 					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a>
-						<i class="wishlistIcon ${wishlistStatus[p.productNo] ? 'fa-solid' : 'fa-regular'} fa-heart red" data-product-no="${p.productNo}"></i>
-						<span class="wishlist-count">${wishlistCounts[p.productNo]}</span>
+					<td>${p.productName} <i class="fa-solid fa-heart red"></i> <span>${wishlistCounts[p.productNo]}</span>
+					</td>
 					<td>${p.productPrice}</td>
 					<td>${p.productAvgRating}</td>
 					<td><a href="edit?productNo=${p.productNo}">수정</a> |

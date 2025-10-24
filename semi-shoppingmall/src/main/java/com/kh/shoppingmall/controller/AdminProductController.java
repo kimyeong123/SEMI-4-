@@ -2,11 +2,16 @@ package com.kh.shoppingmall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dto.CategoryDto;
@@ -14,6 +19,7 @@ import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
+import com.kh.shoppingmall.service.WishlistService;
 
 @Controller
 @RequestMapping("/admin/product")
@@ -21,22 +27,26 @@ public class AdminProductController {
 
 	@Autowired
 	private ProductService productService;
-
 	@Autowired
 	private CategoryService categoryService;
+	@Autowired
+	private WishlistService wishlistService;
 
 	//상품 목록 
 	@GetMapping("/list")
 	public String list(@RequestParam(value = "column", required = false) String column,
-			@RequestParam(value = "keyword", required = false) String keyword, Model model) {
+	        @RequestParam(value = "keyword", required = false) String keyword, Model model) {
 
-		List<ProductDto> list = productService.getProductList(column, keyword);
+	    List<ProductDto> list = productService.getProductList(column, keyword);
 
-		model.addAttribute("productList", list);
-		model.addAttribute("column", column);
-		model.addAttribute("keyword", keyword);
+	    model.addAttribute("productList", list);
+	    model.addAttribute("column", column);
+	    model.addAttribute("keyword", keyword);
 
-		return "/WEB-INF/views/admin/product/list.jsp";
+	    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
+	    model.addAttribute("wishlistCounts", wishlistCounts);
+
+	    return "/WEB-INF/views/admin/product/list.jsp";
 	}
 
 	//상품 등록
@@ -81,6 +91,8 @@ public class AdminProductController {
 		if (product == null)
 			throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
+		int wishlistCount = wishlistService.count(productNo);
+		model.addAttribute("wishlistCount", wishlistCount);
 		model.addAttribute("product", product);
 		return "/WEB-INF/views/admin/product/detail.jsp";
 	}
