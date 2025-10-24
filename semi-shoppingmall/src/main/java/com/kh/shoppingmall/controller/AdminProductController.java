@@ -1,5 +1,6 @@
 package com.kh.shoppingmall.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,27 +39,39 @@ public class AdminProductController {
 	@Autowired
 	private ReviewService reviewService;
 
-	//상품 목록 
-	@GetMapping("/list")
-	public String list(@RequestParam(value = "column", required = false) String column,
-	        @RequestParam(value = "keyword", required = false) String keyword, Model model) {
+	// 상품 목록
+		@GetMapping("/list")
+		public String list(@RequestParam(value = "column", required = false) String column,
+		                   @RequestParam(value = "keyword", required = false) String keyword,
+		                   @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+		                   HttpSession session,
+		                   Model model) throws SQLException {
 
-	    List<ProductDto> list = productService.getProductList(column, keyword);
+			List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo);
 
-	    for (ProductDto p : list) {
-	        double avgRating = reviewService.getAverageRating(p.getProductNo());
-	        p.setProductAvgRating(avgRating);
-	    }
-	    
-	    model.addAttribute("productList", list);
-	    model.addAttribute("column", column);
-	    model.addAttribute("keyword", keyword);
-	    	
-	    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
-	    model.addAttribute("wishlistCounts", wishlistCounts);
+		    // 리뷰 평균 계산
+		    for (ProductDto p : list) {
+		        double avgRating = reviewService.getAverageRating(p.getProductNo());
+		        p.setProductAvgRating(avgRating);
+		    }
 
-	    return "/WEB-INF/views/admin/product/list.jsp";
-	}
+		    // 모델에 기본 정보 추가
+		    model.addAttribute("productList", list);
+		    model.addAttribute("column", column);
+		    model.addAttribute("keyword", keyword);
+
+		    // 로그인 아이디 확인
+//		    String loginId = (String) session.getAttribute("loginId");
+
+		    // 위시리스트 카운트
+		    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
+		    model.addAttribute("wishlistCounts", wishlistCounts);
+
+		    // 카테고리 트리 추가
+		    model.addAttribute("categoryTree", categoryService.getCategoryTree());
+
+		    return "/WEB-INF/views/admin/product/list.jsp";
+		}
 
 	//상품 등록
 	@GetMapping("/add")
@@ -77,13 +90,15 @@ public class AdminProductController {
 	}
 	@PostMapping("/add")
 	public String add(@ModelAttribute ProductDto productDto,
-			@RequestParam(required = false) List<Integer> categoryNoList, @RequestParam MultipartFile thumbnailFile,
-			@RequestParam(required = false) List<MultipartFile> detailImageList) throws Exception {
+	        @RequestParam("parentCategoryNo") Integer parentCategoryNo,
+	        @RequestParam("childCategoryNo") Integer childCategoryNo,
+	        @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+	        @RequestParam("detailImageList") List<MultipartFile> detailImageList) throws Exception {
 
-		if (categoryNoList == null)
-			categoryNoList = new ArrayList<>();
-		if (detailImageList == null)
-			detailImageList = new ArrayList<>();
+		// 선택된 카테고리 번호 리스트로 만들기
+	    List<Integer> categoryNoList = new ArrayList<>();
+	    if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
+	    if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
 
 		productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList);
 		return "redirect:addFinish";
