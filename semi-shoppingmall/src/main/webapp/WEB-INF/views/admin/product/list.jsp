@@ -55,9 +55,7 @@
 						</c:if></td>
 
 					<td>${p.productNo}</td>
-					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a>
-					<td>${p.productName} <i class="fa-solid fa-heart red"></i> <span>${wishlistCounts[p.productNo]}</span>
-					</td>
+					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a><i class="fa-solid fa-heart red"></i><span>${wishlistCounts[p.productNo]}</span></td>
 					<td>${p.productPrice}</td>
 					<td>${p.productAvgRating}</td>
 					<td><a href="edit?productNo=${p.productNo}">수정</a> |

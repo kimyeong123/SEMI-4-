@@ -48,6 +48,11 @@ public class ProductController {
 
         List<ProductDto> list = productService.getProductList(column, keyword);
 
+        for (ProductDto p : list) {
+	        double avgRating = reviewService.getAverageRating(p.getProductNo());
+	        p.setProductAvgRating(avgRating);
+	    }
+        
         model.addAttribute("productList", list);
         model.addAttribute("column", column);
         model.addAttribute("keyword", keyword);
@@ -124,6 +129,10 @@ public class ProductController {
         if (loginId != null) {
             wishlisted = wishlistService.checkItem(loginId, productNo);
         }
+     // 리뷰 평점 평균 계산
+	    double avg = reviewService.getAverageRating(productNo);
+	    product.setProductAvgRating(avg);
+	    
         List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
         model.addAttribute("reviewList", reviewList);
 

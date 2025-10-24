@@ -23,9 +23,9 @@ $(function() {
                 } else {
                     reviews.forEach(function(r) {
                         html += '<div id="review-'+r.reviewNo+'" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">';
-                        html += '<p><strong>' + r.memberId + '</strong>님 평점: ' + r.reviewRating + '점</p>';
+                        html += '<p>' + r.memberId + '님 평점: ' + r.reviewRating + '점</p>';
                         html += '<p class="review-content">' + r.reviewContent + '</p>';
-                        html += '<p><small>' + r.createdAt + '</small></p>';
+                        html += '<p>' + r.createdAt + '</p>';
 
                         // 로그인한 사용자의 리뷰에만 수정/삭제 버튼 표시
                         if(loginId && loginId === r.memberId) {
@@ -138,7 +138,7 @@ $(document).on("click", ".btn-update", function() {
 		</tr>
 		<tr>
 			<th>평균 평점</th>
-			<td>${reviewService.selectAverageRating(product.productNo)}</td>
+			<td>${product.productAvgRating}</td>
 		</tr>
 	</table>
 
