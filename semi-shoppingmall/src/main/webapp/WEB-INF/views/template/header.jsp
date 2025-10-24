@@ -54,8 +54,88 @@
                 <h1>KH Shop</h1>
             </div>
             <div class="w-25 center">
-                <h2 class="mb-0">24시간 상담</h2>
-                <p class="mt-0">1588-0000</p>
+                <c:choose>
+	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '일반회원'}">
+		<a href="/">
+			<i class="fa-solid fa-house"></i>
+			<span>홈</span>
+		</a>
+		
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
+		</a>
+		<a href="/member/mypage">
+			<i class="fa-solid fa-user"></i>
+			<span>내정보</span>
+		</a>
+		<a href="/member/logout">
+			<i class="fa-solid fa-right-from-bracket"></i>
+			<span>로그아웃</span>
+		</a>
+	</c:when>
+	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '우수회원'}">
+		<a href="/">
+			<i class="fa-solid fa-house"></i>
+			<span>홈</span>
+		</a>
+		
+		<div class="divider"></div>
+		
+		
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
+		</a>
+		<a href="/member/mypage">
+			<i class="fa-solid fa-user"></i>
+			<span>내정보</span>
+		</a>
+		<a href="/member/logout">
+			<i class="fa-solid fa-right-from-bracket"></i>
+			<span>로그아웃</span>
+		</a>
+	</c:when>
+	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
+		<a href="/">
+			<i class="fa-solid fa-house"></i>
+			<span>홈</span>
+		</a>
+		<a href="/board/list">
+			<i class="fa-solid fa-comments"></i>
+			<span>게시판</span>
+		</a>
+		
+		<div class="divider"></div>
+		
+		<a href="/admin/home" class="red">
+			<i class="fa-solid fa-wrench"></i>
+			<span>관리메뉴</span>
+		</a>
+		<a href="/member/logout">
+			<i class="fa-solid fa-right-from-bracket"></i>
+			<span>로그아웃</span>
+		</a>
+	</c:when>
+    <c:otherwise>
+   		<a href="/">
+			<i class="fa-solid fa-house"></i>
+			<span>홈</span>
+		</a>
+
+		<div class="divider"></div>
+						
+		<a href="/member/wishlist">
+			<i class="fa-regular fa-heart"></i>
+		</a>
+		<a href="/member/login">
+			<i class="fa-solid fa-right-to-bracket"></i>
+			<span>로그인</span>
+		</a>
+		<a href="/member/join">
+			<i class="fa-solid fa-user-plus"></i>
+			<span>회원가입</span>
+		</a>
+		</c:otherwise>
+	</c:choose>
             </div>
         </div>
         
