@@ -48,4 +48,9 @@ public class CartService {
     public int clearCart(String memberId) {
         return cartDao.deleteByMemberId(memberId);
     }
+    
+    public boolean removeItemByCartNo(int cartNo) {
+        // (CartDao에도 deleteByCartNo(int cartNo) 메소드가 추가되어야 함)
+        return cartDao.deleteByCartNo(cartNo); 
+    }
 }
