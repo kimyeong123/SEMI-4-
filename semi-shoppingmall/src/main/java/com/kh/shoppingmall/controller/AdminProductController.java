@@ -19,7 +19,9 @@ import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
+import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
+import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 @Controller
 @RequestMapping("/admin/product")
@@ -31,6 +33,8 @@ public class AdminProductController {
 	private CategoryService categoryService;
 	@Autowired
 	private WishlistService wishlistService;
+	@Autowired
+	private ReviewService reviewService;
 
 	//상품 목록 
 	@GetMapping("/list")
@@ -87,14 +91,24 @@ public class AdminProductController {
 	//상품 상세
 	@GetMapping("/detail")
 	public String detail(@RequestParam int productNo, Model model) {
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null)
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
+	    // 1. 상품 정보 조회
+	    ProductDto product = productService.getProduct(productNo);
+	    if (product == null) 
+	        throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-		int wishlistCount = wishlistService.count(productNo);
-		model.addAttribute("wishlistCount", wishlistCount);
-		model.addAttribute("product", product);
-		return "/WEB-INF/views/admin/product/detail.jsp";
+	    // 2. 위시리스트 개수 조회
+	    int wishlistCount = wishlistService.count(productNo);
+
+	    // 3. 리뷰 목록 조회
+	    List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
+
+	    // 4. 모델에 추가
+	    model.addAttribute("product", product);
+	    model.addAttribute("wishlistCount", wishlistCount);
+	    model.addAttribute("reviewList", reviewList);
+
+	    // 5. 관리자용 상세 JSP 반환
+	    return "/WEB-INF/views/admin/product/detail.jsp";
 	}
 
 	//상품 수정 페이지

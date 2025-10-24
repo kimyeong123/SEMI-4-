@@ -45,25 +45,30 @@ public class ReviewRestController {
         return reviewService.insertReview(reviewDto, attachments);
     }
 
-    // 3. 리뷰 수정
     @PostMapping("/update")
-    public boolean updateReview(HttpSession session, 
-    		@RequestParam int reviewNo,
+    public boolean updateReview(
+            HttpSession session,
+            @RequestParam int reviewNo,
             @RequestParam String reviewContent) {
 
         String currentMemberId = (String) session.getAttribute("loginId");
-        if (currentMemberId == null) throw new UnauthorizationException("로그인이 필요합니다.");
+        if (currentMemberId == null)
+            throw new UnauthorizationException("로그인이 필요합니다.");
 
-        String authorId = reviewService.getAuthorId(reviewNo);
-        if (authorId == null) throw new TargetNotfoundException("해당 리뷰를 찾을 수 없습니다.");
-        if (!currentMemberId.equals(authorId)) throw new NeedPermissionException("리뷰 수정 권한이 없습니다.");
+        // 리뷰 존재 확인
+        ReviewDto findDto = reviewService.selectOne(reviewNo);
+        if (findDto == null)
+            throw new TargetNotfoundException("존재하지 않는 리뷰");
 
-        ReviewDto reviewDto = new ReviewDto();
-        reviewDto.setReviewNo(reviewNo);
-        reviewDto.setReviewContent(reviewContent);
+        // 작성자 확인
+        if (!currentMemberId.equals(findDto.getMemberId()))
+            throw new NeedPermissionException("권한 부족");
 
-        return reviewService.updateReview(reviewDto);
+        // 수정
+        findDto.setReviewContent(reviewContent);
+        return reviewService.updateReview(findDto);
     }
+
 
     // 4. 리뷰 삭제
     @PostMapping("/delete")

@@ -20,7 +20,9 @@ import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
+import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
+import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -34,6 +36,8 @@ public class ProductController {
     private CategoryService categoryService;
     @Autowired
     private WishlistService wishlistService;
+    @Autowired
+    private ReviewService reviewService;
 
     // 상품 목록
     @GetMapping("/list")
@@ -120,6 +124,8 @@ public class ProductController {
         if (loginId != null) {
             wishlisted = wishlistService.checkItem(loginId, productNo);
         }
+        List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
+        model.addAttribute("reviewList", reviewList);
 
         model.addAttribute("wishlisted", wishlisted);
         model.addAttribute("wishlistCount", wishlistCount);

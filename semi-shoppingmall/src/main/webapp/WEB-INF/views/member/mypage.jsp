@@ -272,7 +272,7 @@
 			<c:forEach var="review" items="${reviewList}">
 				<tr>
 					<td><a
-						href="/admin/product/detail?productNo=${review.productNo}">${review.productName}</a></td>
+						href="/product/detail?productNo=${review.productNo}">${review.productName}</a></td>
 					<td><c:forEach begin="1" end="${review.reviewRating}">
 							<i class="fa-solid fa-star gold"></i>
 						</c:forEach> <c:forEach begin="${review.reviewRating+1}" end="5">
