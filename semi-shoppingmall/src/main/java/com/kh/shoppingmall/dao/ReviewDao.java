@@ -91,4 +91,9 @@ public class ReviewDao {
         String sql = "SELECT member_id FROM review WHERE review_no = ?";
         return jdbcTemplate.queryForObject(sql, String.class, reviewNo);
     }
+
+	public int deleteByMemberId(String memberId) {
+		String sql = "delete from review where member_id = ?";
+		return jdbcTemplate.update(sql, memberId);
+	}
 }

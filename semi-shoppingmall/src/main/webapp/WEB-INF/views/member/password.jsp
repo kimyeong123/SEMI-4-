@@ -16,11 +16,11 @@
 	<form action="password" method="post">
 		<div class = cell>
 			<label>기존 비밀번호 입력</label>
-			<input class ="field w-100" type="password" name="memberPw" required>
+			<input class ="field w-100" type="password" name="currentPw" required>
 		</div>
 		<div class = "cell">
 			<label>새 비밀번호 입력</label>
-			<input class ="field w-100" type="password" name = "newPw"  required>
+			<input class ="field w-100" type="password" name = "changePw"  required>
 		</div>
 		<div clas = "cell">
 			<button class ="btn btn-negative">비밀번호 변경</button>

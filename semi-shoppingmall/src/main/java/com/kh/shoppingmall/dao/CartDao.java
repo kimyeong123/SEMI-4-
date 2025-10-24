@@ -94,6 +94,12 @@ public class CartDao {
 		//삭제된 행 수를 반환
 		return jdbcTemplate.update(sql, params);
 	}
+	
+	public boolean deleteByCartNo(int cartNo) {
+	    String sql = "delete from cart where cart_no = ?";
+	    Object[] params = { cartNo };
+	    return jdbcTemplate.update(sql, params) > 0;
+	}
 }
 
 

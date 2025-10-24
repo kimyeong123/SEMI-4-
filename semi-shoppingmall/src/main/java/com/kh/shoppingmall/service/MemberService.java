@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.shoppingmall.dao.CartDao;
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dao.OrdersDao;
+import com.kh.shoppingmall.dao.ReviewDao;
 import com.kh.shoppingmall.dao.WishlistDao;
 import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
@@ -23,6 +24,8 @@ public class MemberService {
 	private OrdersDao ordersDao;
 	@Autowired
 	private CartDao cartDao;
+	@Autowired
+	private ReviewDao reviewDao;
 	
 	@Autowired
 	private AttachmentService attachmentService;
@@ -51,7 +54,10 @@ public class MemberService {
 		wishlistDao.deleteByMemberId(memberId);
 
 		//4-3. 장바구니 데이터 삭제 
-		cartDao.deleteByMemberId(memberId); 
+		cartDao.deleteByMemberId(memberId);
+		
+		//4-4. 리뷰 기록 삭제
+		reviewDao.deleteByMemberId(memberId);
 		
 		//5. 회원 삭제
 		boolean isDeleted = memberDao.delete(memberId);
