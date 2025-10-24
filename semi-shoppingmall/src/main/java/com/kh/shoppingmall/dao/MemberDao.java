@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.mapper.MemberMapper;
+import com.kh.shoppingmall.vo.PageVO;
 
 @Repository
 public class MemberDao {
@@ -121,40 +122,47 @@ public class MemberDao {
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 
-//	public int count(PageVO pageVO) {
-//		if(pageVO.isList()) {
-//			return 0;//목록은 데이터가 없다! (회원 검색의 특징)
-//			//String sql = "select count(*) from member";
-//			//return jdbcTemplate.queryForObject(sql, int.class);
-//		}
-//		else {
-//			String sql ="select count(*) from member "
-//					+ "where instr(#1, ?) > 0 and member_level != '관리자'";
-//			sql = sql.replace("#1", pageVO.getColumn());
-//			Object[] params = {pageVO.getKeyword()};
-//			return jdbcTemplate.queryForObject(sql, int.class, params);
-//		}
-//	}
+	public int count(PageVO pageVO) {
+		if(pageVO.isList()) {
+			return 0;//목록은 데이터가 없다! (회원 검색의 특징)
+			//String sql = "select count(*) from member";
+			//return jdbcTemplate.queryForObject(sql, int.class);
+		}
+		else {
+			String sql ="select count(*) from member "
+					+ "where instr(#1, ?) > 0 and member_level != '관리자'";
+			sql = sql.replace("#1", pageVO.getColumn());
+			Object[] params = {pageVO.getKeyword()};
+			return jdbcTemplate.queryForObject(sql, int.class, params);
+		}
+	}
 	
-//	public List<MemberDto> selectListWithPaging(PageVO pageVO) {
-//		if(pageVO.isList()) {//목록이라면
-//			return null;//return List.of();//목록은 현재 보여주지 않고 있다
-//		}
-//		else {//검색이라면
-//			String sql = "select * from ("
-//								+ "select rownum rn, TMP.* from ("
-//									+ "select * from member "
-//									+ "where instr(#1, ?) > 0 and member_level != '관리자' "
-//									+ "order by #1 asc, member_id asc"
-//								+ ")TMP"
-//							+ ") where rn between ? and ?";
-//			sql = sql.replace("#1", pageVO.getColumn());
-//			Object[] params = {
-//					pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()
-//			};//동적할당
-//			return jdbcTemplate.query(sql, memberMapper, params);
-//		}
-//	}
+	public List<MemberDto> selectListWithPaging(PageVO pageVO) {
+		if(pageVO.isList()) {//목록이라면
+			String sql = "select * from ("
+					+ "select rownum rn, TMP.* from ("
+						+ "select * from member "
+						+ "order by member_id desc"
+					+ ")TMP"
+				+ ") where rn between ? and ?";
+			Object[] params = {pageVO.getBegin(), pageVO.getEnd()};
+			return jdbcTemplate.query(sql, memberMapper, params);
+		}
+		else {//검색이라면
+			String sql = "select * from ("
+								+ "select rownum rn, TMP.* from ("
+									+ "select * from member "
+									+ "where instr(#1, ?) > 0 and member_level != '관리자' "
+									+ "order by #1 asc, member_id asc"
+								+ ")TMP"
+							+ ") where rn between ? and ?";
+			sql = sql.replace("#1", pageVO.getColumn());
+			Object[] params = {
+					pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()
+			};//동적할당
+			return jdbcTemplate.query(sql, memberMapper, params);
+		}
+	}
 	
 //	
 	//회원 프로필 기능
@@ -192,6 +200,7 @@ public class MemberDao {
 	    Object[] params = {attachmentNo, memberId};
 	    return jdbcTemplate.update(sql, params) > 0;
 	}
+
 }
 
 
