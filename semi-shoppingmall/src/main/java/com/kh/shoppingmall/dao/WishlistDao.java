@@ -1,6 +1,7 @@
 package com.kh.shoppingmall.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -86,6 +87,19 @@ public class WishlistDao {
 		
 		return jdbcTemplate.update(sql, params) > 0;
 		
+	}
+
+	public Map<Integer, Integer> selectProductWishlistCounts() {
+	    String sql = "SELECT product_no, COUNT(*) AS cnt FROM wishlist GROUP BY product_no";
+
+	    // query 결과를 Map 형태로 변환
+	    return jdbcTemplate.query(sql, rs -> {
+	        Map<Integer, Integer> map = new java.util.HashMap<>();
+	        while (rs.next()) {
+	            map.put(rs.getInt("product_no"), rs.getInt("cnt"));
+	        }
+	        return map;
+	    });
 	}
 	
 }

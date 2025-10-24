@@ -1,6 +1,7 @@
 package com.kh.shoppingmall.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import com.kh.shoppingmall.dao.AttachmentDao;
 import com.kh.shoppingmall.dao.ProductCategoryMapDao;
 import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
-import com.kh.shoppingmall.dao.ReviewDao;
+import com.kh.shoppingmall.dao.WishlistDao;
 import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.dto.ProductOptionDto;
 
@@ -27,7 +28,7 @@ public class ProductService {
     @Autowired
     private AttachmentDao attachmentDao;
     @Autowired
-    private ReviewDao reviewDao;
+    private WishlistDao wishlistDao;
     @Autowired
     private AttachmentService attachmentService;
 
@@ -158,6 +159,10 @@ public class ProductService {
 
         // 상품 삭제
         productDao.delete(productNo);
+    }
+
+    public Map<Integer, Integer> getWishlistCounts() {
+        return wishlistDao.selectProductWishlistCounts();
     }
 
     // ================= 평점 갱신 메서드 제거 =================
