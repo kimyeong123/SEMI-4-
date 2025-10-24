@@ -88,6 +88,10 @@ public class ReviewService {
     public String getAuthorId(int reviewNo) {
         return reviewDao.selectAuthorId(reviewNo);
     }
+    
+    public ReviewDto selectOne(int reviewNo) {
+        return reviewDao.selectOne(reviewNo);
+    }
 
     // ================= 평균 평점 조회 =================
     public double getAverageRating(int productNo) {
