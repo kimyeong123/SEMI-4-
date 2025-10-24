@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>	
+<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -42,6 +42,31 @@
 	flex-direction: column;
 }
 </style>
+<script type="text/javascript">
+$(function() {
+    $(".btn-delete").on("click", function() {
+        var productNo = $(this).data("product-no");
+        if(!confirm("정말 삭제하시겠습니까?")) return;
+
+        $.ajax({
+            url: "${pageContext.request.contextPath}/rest/wishlist/delete",
+            method: "post",
+            data: { productNo: productNo },
+            success: function(response) {
+                if(response) {
+                    alert("삭제되었습니다.");
+                    location.reload(); // 원하면 삭제 후 페이지 새로고침
+                } else {
+                    alert("삭제 실패");
+                }
+            },
+            error: function() {
+                alert("오류가 발생했습니다.");
+            }
+        });
+    });
+});
+</script>
 </head>
 <body>
 	<h2 style="text-align: center;">내 위시리스트</h2>
@@ -51,21 +76,20 @@
 		</c:if>
 		<c:forEach var="item" items="${wishlist}">
 			<div class="wishlist-card">
-				<%-- 				<img src="${item.productImage != null ? item.productImage : '/images/default.png'}" > --%>
-				<img src="https://dummyimage.com/250x200" alt="${item.productName}">
+				<img
+					src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${item.attachmentNo}"
+					alt="${item.productName}">
 				<h3>${item.productName}</h3>
-				<p class="price">${item.productPrice != null ? item.productPrice : 0}원</p>
+				<p class="price">${item.productPrice}원</p>
 
-				<!-- 장바구니 담기 -->
 				<form action="/cart/add" method="post">
 					<input type="hidden" name="productNo" value="${item.productNo}">
 					<button type="submit" class="btn-cart">장바구니 담기</button>
 				</form>
 
-				<!-- 위시리스트에서 삭제 -->
 				<form action="/member/wishlist/delete" method="post">
 					<input type="hidden" name="productNo" value="${item.productNo}">
-					<button type="submit" class="btn-delete">삭제</button>
+					<button type="button" class="btn-delete" data-product-no="${item.productNo}">삭제</button>
 				</form>
 			</div>
 		</c:forEach>

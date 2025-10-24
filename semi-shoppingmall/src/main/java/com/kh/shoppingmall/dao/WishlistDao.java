@@ -60,11 +60,12 @@ public class WishlistDao {
 	}
 	
 	public List<WishlistDetailVO> selectDetailListByMemberId(String memberId) {
-	    String sql = "select * from wishlist_detail where member_id = ?"; // 뷰(View) 조회
-	    Object[] params = {memberId};
-	    return jdbcTemplate.query(sql, wishlistDetailVOMapper, params);
+	    String sql = "SELECT wishlist_no, member_id, created_at, product_no, product_name, product_price, attachment_no, attachment_name " +
+	                 "FROM wishlist_detail WHERE member_id = ?";
+	    return jdbcTemplate.query(sql, wishlistDetailVOMapper, memberId);
 	}
-	
+
+
 	//갱신메서드 추가(회원 탈퇴시 갱신목적)
 	public boolean updateProductWishlistCount (int productNo) {
 		//1. 위시리스트 테이블에서 상품의 총 개수 확인

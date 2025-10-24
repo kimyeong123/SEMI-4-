@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.shoppingmall.dao.WishlistDao;
 import com.kh.shoppingmall.vo.WishlistDetailVO;
 
 @Service
+@Transactional	
 public class WishlistService {
     @Autowired private WishlistDao wishlistDao;
 
@@ -40,6 +42,23 @@ public class WishlistService {
     // 4. 특정 상품 찜 여부 확인 (상품 상세 페이지 등에서 사용)
     public boolean checkItem(String memberId, int productNo) {
         return wishlistDao.check(memberId, productNo);
+    }
+
+ // 4-1. 특정 상품 찜 개수 조회
+    public int count(int productNo) {
+        return wishlistDao.countByProductNo(productNo);
+    }
+
+    // 4-2. 특정 상품 찜 토글 (찜/해제)
+    public boolean toggle(String memberId, int productNo) {
+        boolean alreadyExists = wishlistDao.check(memberId, productNo);
+        if(alreadyExists) {
+            wishlistDao.delete(memberId, productNo); // 찜 해제
+            return false;
+        } else {
+            wishlistDao.insert(memberId, productNo); // 찜 추가
+            return true;
+        }
     }
 
 

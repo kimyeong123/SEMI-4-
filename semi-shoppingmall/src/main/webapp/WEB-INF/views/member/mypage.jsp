@@ -53,8 +53,8 @@
 			form.append("attach", list[0]);
 			
 			$.ajax({
-				processData : false, //전처리 제거
-				contentType : false, //MIME 제거
+				processData : false, 
+				contentType : false, 
 				url:"/rest/member/profile",
 				method:"post",
 				data: form,
@@ -84,6 +84,70 @@
 		});
 	});
 </script>
+<script>
+	$(document).on("click", ".btn-delete", function(){
+	    if(!confirm("정말 삭제하시겠습니까?")) return;
+
+	    var btn = $(this);
+	    var reviewNo = btn.data("review-no");
+
+	    $.ajax({
+	        url: "${pageContext.request.contextPath}/rest/review/delete",
+	        type: "post",
+	        data: { reviewNo: reviewNo },
+	        success: function(result) {
+	            if(result){
+	                btn.closest("tr").remove();
+	                alert("삭제 완료!");
+	            } else {
+	                alert("삭제 실패");
+	            }
+	        },
+	        error: function() {
+	            alert("삭제 중 오류가 발생했습니다.");
+	        }
+	    });
+	});
+	$(document).on("click", ".btn-edit", function() {
+	    var btn = $(this);
+	    var tr = btn.closest("tr");
+	    var contentTd = tr.find("td").eq(2); // 리뷰 내용 td
+	    var original = contentTd.text().trim();
+
+	    // 이미 편집 중이면 리턴
+	    if(contentTd.find("textarea").length > 0) return;
+
+	    // textarea로 변경
+	    contentTd.html('<textarea class="edit-content">' + original + '</textarea>');
+
+	    // 버튼을 완료 버튼으로 변경
+	    btn.text("완료").removeClass("btn-edit").addClass("btn-update");
+	});
+
+	$(document).on("click", ".btn-update", function() {
+	    var btn = $(this);
+	    var tr = btn.closest("tr");
+	    var reviewNo = btn.data("review-no");
+	    var newContent = tr.find("textarea.edit-content").val();
+
+	    $.ajax({
+	        url: "${pageContext.request.contextPath}/rest/review/update",
+	        type: "post",
+	        data: { reviewNo: reviewNo, reviewContent: newContent },
+	        success: function(result) {
+	            if(result) {
+	                tr.find("td").eq(2).text(newContent);
+	                btn.text("수정").removeClass("btn-update").addClass("btn-edit");
+	            } else {
+	                alert("수정 실패");
+	            }
+	        },
+	        error: function() {
+	            alert("수정 중 오류 발생");
+	        }
+	    });
+	});
+</script>	
 
 <div class="container w-600">
 	<div class = "cell center">
@@ -196,7 +260,7 @@
 				</c:forEach>
                 <c:if test="${empty cartList}">
 				<tr>
-					<td colspan="5" class="center">장바구니에 담긴 상품이 없습니다.</td>
+					<td colspan="5" class="center">//이거는 나중에 메뉴로 옮기면 될거같습니다</td>
 				</tr>
 				</c:if>
 			</tbody>
@@ -206,41 +270,7 @@
 <hr>
 
 	<%-- =================================================== --%>
-	<%-- 2. 나의 찜 목록  --%>
-	<%-- =================================================== --%>
-	<div class = "cell center w-100">
-		<h2>나의 위시리스트</h2>
-		<table class="w-100 table table-border">
-			<thead>
-				<tr>
-					<th>상품명</th>
-					<th>가격</th>
-					<th>관리</th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="wish" items="${wishlistList}">
-				<tr>
-					<td><a href="/product/detail?productNo=${wish.productNo}">${wish.productName}</a></td>
-					<td>${wish.productPrice}원</td>
-					<td>
-						<a href="/wishlist/delete?productNo=${wish.productNo}">삭제</a>
-					</td>
-				</tr>
-				</c:forEach>
-                <c:if test="${empty wishlistList}">
-				<tr>
-					<td colspan="3" class="center">위시리스트가 없습니다.</td>
-				</tr>
-				</c:if>
-			</tbody>
-		</table>
-	</div>
-	
-<hr>
-
-	<%-- =================================================== --%>
-	<%-- 3. 나의 상품 주문 내역 --%>
+	<%-- 2. 나의 상품 주문 내역 --%>
 	<%-- =================================================== --%>
 	<div class = "cell center w-100">
 		<h2>나의 상품 주문 내역</h2>
@@ -283,11 +313,9 @@
 		</table>
 	</div>	
 
-
-
-	
+		
 	<%-- =================================================== --%>
-	<%-- 4. 나의 리뷰 목록  --%>
+	<%-- 3. 나의 리뷰 목록  --%>
 	<%-- =================================================== --%>
 	<hr>
 		
@@ -308,7 +336,7 @@
 			<tbody>
 				<c:forEach var="review" items="${reviewList }">
 					<tr>
-						<td><a href = "/product/detail?productNo=${review.productNo }">${review.productName }</a></td>
+						<td><a href="/admin/product/detail?productNo=${review.productNo}">${review.productName}</a></td>
 						<td>
 							<c:forEach begin ="1"  end = "${review.reviewRating }">
 								<i class = "fa-solid fa-star gold"></i>
@@ -321,8 +349,8 @@
 						<td><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd"/></td>
 						<td>
 							<%-- 리뷰 수정/삭제 링크 (필요 시) --%>
-							<a href="/review/edit?reviewNo=${review.reviewNo}">수정</a> | 
-							<a href="/review/delete?reviewNo=${review.reviewNo}">삭제</a>
+							<button class="btn-edit" data-review-no="${review.reviewNo}">수정</button>
+							<button class="btn-delete" data-review-no="${review.reviewNo}">삭제</button>
 						</td>
 					</tr>
 				</c:forEach>

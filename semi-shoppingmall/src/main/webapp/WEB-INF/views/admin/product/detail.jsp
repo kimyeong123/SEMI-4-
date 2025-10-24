@@ -5,21 +5,20 @@
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
-<div class="container w-800">
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
-    const productNo = ${product.productNo}; // JS 변수 선언
+    var productNo = ${product.productNo}; // JS 변수 선언
 
     $(function() {
         $("#submitReviewBtn").on("click", function() {
-            const form = $("#reviewForm")[0];
-            const content = form.reviewContent.value.trim();
+            var form = $("#reviewForm")[0];
+            var content = form.reviewContent.value.trim();
             if(!content) {
                 alert("리뷰 내용을 입력해주세요.");
                 return;
             }
 
-            const formData = new FormData(form);
+            var formData = new FormData(form);
 
             fetch('${pageContext.request.contextPath}/rest/review/add', {
                 method: 'POST',
@@ -40,16 +39,16 @@
             });
         });
 
-        $("#wishlistBtn").on("click", function() {
+        $("#wishlistIcon").on("click", function() {
             $.ajax({
                 url: "${pageContext.request.contextPath}/rest/wishlist/toggle",
                 method: "post",
                 data: { productNo: productNo },
                 success: function(response) {
                     if(response.wishlisted) {
-                        $("#wishlistBtn i").removeClass("fa-regular").addClass("fa-solid");
+                        $("#wishlistIcon").removeClass("fa-regular").addClass("fa-solid");
                     } else {
-                        $("#wishlistBtn i").removeClass("fa-solid").addClass("fa-regular");
+                        $("#wishlistIcon").removeClass("fa-solid").addClass("fa-regular");
                     }
                     $("#wishlist-count").text(response.count);
                 },
@@ -58,8 +57,10 @@
                 }
             });
         });
+
     });
 </script>
+<div class="container w-800">
 	<h1>상품 상세정보</h1>
 
 	<!-- 썸네일 -->
@@ -68,11 +69,9 @@
 			src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${product.productThumbnailNo}"
 			width="150" height="150" style="object-fit: cover;">
 	</c:if>
-	<button type="button" id="wishlistBtn" class="btn btn-outline-danger">
-		<i class="fa-regular fa-heart red"></i> <span id="wishlist-count">0</span>
-	</button>
-	<br>
-	<br>
+		<i id="wishlistIcon" class="${wishlisted ? 'fa-solid' : 'fa-regular'} fa-heart red" style="cursor:pointer; font-size:24px;"></i>
+		<span id="wishlist-count">${wishlistCount}</span>
+	<br> <br>
 
 	<table border="1" width="100%">
 		<tr>
@@ -109,12 +108,10 @@
 				<option value="3" selected>3점</option>
 				<option value="4">4점</option>
 				<option value="5">5점</option>
-			</select> <br>
-			<br> <label>내용:</label><br>
+			</select> <br> <br> <label>내용:</label><br>
 			<textarea name="reviewContent" rows="4" cols="50"
 				placeholder="리뷰를 작성해주세요."></textarea>
-			<br>
-			<br>
+			<br> <br>
 
 			<button type="button" id="submitReviewBtn" class="btn btn-primary">리뷰
 				작성</button>
@@ -122,8 +119,8 @@
 	</div>
 
 	<div style="margin-top: 20px;">
-		<a href="list" class="btn btn-secondary">목록으로 이동</a> <a
-			href="edit?productNo=${product.productNo}" class="btn btn-primary">수정하기</a>
+		<a href="list" class="btn">목록으로 이동</a> <a
+			href="edit?productNo=${product.productNo}" class="btn">수정하기</a>
 
 		<form action="${pageContext.request.contextPath}/admin/product/delete"
 			method="post" style="display: inline;"
