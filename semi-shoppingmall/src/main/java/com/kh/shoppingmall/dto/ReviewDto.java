@@ -15,4 +15,7 @@ public class ReviewDto {
 	private String reviewContent;
 	private int reviewRating;
 	private Timestamp reviewCreatedAt;
+	
+	private String memberNickname;
+	private String memberProfileName;
 }
