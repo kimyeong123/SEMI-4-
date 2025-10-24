@@ -15,21 +15,6 @@
 			<i class="fa-solid fa-house"></i>
 			<span>홈</span>
 		</a>
-		<a href="/pokemon/list">
-                  <i class="fa-solid fa-ghost"></i>
-			<span>포켓몬</span>
-		</a>
-		<a href="/student/list">
-			<i class="fa-solid fa-graduation-cap"></i>
-			<span>학생정보</span>
-		</a>
-		<a href="/board/list">
-			<i class="fa-solid fa-comments"></i>
-			<span>게시판</span>
-		</a>
-		
-		<div class="divider"></div>
-		
 		
 		<a href="/member/wishlist">
 			<i class="fa-regular fa-heart"></i>
@@ -47,22 +32,6 @@
 		<a href="/">
 			<i class="fa-solid fa-house"></i>
 			<span>홈</span>
-		</a>
-		<a href="/pokemon/list">
-                  <i class="fa-solid fa-ghost"></i>
-			<span>포켓몬</span>
-		</a>
-		<a href="/student/list">
-			<i class="fa-solid fa-graduation-cap"></i>
-			<span>학생정보</span>
-		</a>
-		<a href="/book/list">
-			<i class="fa-solid fa-book"></i>
-			<span>도서정보</span>
-		</a>
-		<a href="/board/list">
-			<i class="fa-solid fa-comments"></i>
-			<span>게시판</span>
 		</a>
 		
 		<div class="divider"></div>
@@ -85,18 +54,6 @@
 			<i class="fa-solid fa-house"></i>
 			<span>홈</span>
 		</a>
-		<a href="/pokemon/list">
-                  <i class="fa-solid fa-ghost"></i>
-			<span>포켓몬</span>
-		</a>
-		<a href="/student/list">
-			<i class="fa-solid fa-graduation-cap"></i>
-			<span>학생정보</span>
-		</a>
-		<a href="/book/list">
-			<i class="fa-solid fa-book"></i>
-			<span>도서정보</span>
-		</a>
 		<a href="/board/list">
 			<i class="fa-solid fa-comments"></i>
 			<span>게시판</span>
@@ -117,14 +74,6 @@
    		<a href="/">
 			<i class="fa-solid fa-house"></i>
 			<span>홈</span>
-		</a>
-		<a href="/pokemon/list">
-                  <i class="fa-solid fa-ghost"></i>
-			<span>포켓몬</span>
-		</a>
-		<a href="/board/list">
-			<i class="fa-solid fa-comments"></i>
-			<span>게시판</span>
 		</a>
 
 		<div class="divider"></div>
