@@ -32,10 +32,6 @@ $(document).on("click", ".wishlistIcon", function() {
 <div class="container w-800">
 	<h1>상품 목록</h1>
 
-	<!-- 신규 등록 버튼 -->
-	<h2>
-		<a href="add" class="btn btn-positive">신규 등록</a>
-	</h2>
 
 	<!-- 상품 수 표시 -->
 	<h2>상품 수 : ${productList.size()}</h2>
@@ -61,7 +57,6 @@ $(document).on("click", ".wishlistIcon", function() {
 				<th>상품명</th>
 				<th>가격</th>
 				<th>평균 평점</th>
-				<th>작업</th>
 			</tr>
 		</thead>
 		<tbody align="center">

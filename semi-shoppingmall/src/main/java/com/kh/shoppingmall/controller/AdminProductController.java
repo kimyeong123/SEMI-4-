@@ -23,6 +23,8 @@ import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
 import com.kh.shoppingmall.vo.ReviewDetailVO;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/admin/product")
 public class AdminProductController {
@@ -43,10 +45,15 @@ public class AdminProductController {
 
 	    List<ProductDto> list = productService.getProductList(column, keyword);
 
+	    for (ProductDto p : list) {
+	        double avgRating = reviewService.getAverageRating(p.getProductNo());
+	        p.setProductAvgRating(avgRating);
+	    }
+	    
 	    model.addAttribute("productList", list);
 	    model.addAttribute("column", column);
 	    model.addAttribute("keyword", keyword);
-
+	    	
 	    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
 	    model.addAttribute("wishlistCounts", wishlistCounts);
 
@@ -88,28 +95,36 @@ public class AdminProductController {
 		return "/WEB-INF/views/admin/product/addFinish.jsp";
 	}
 
-	//상품 상세
+	// 상품 상세
 	@GetMapping("/detail")
-	public String detail(@RequestParam int productNo, Model model) {
+	public String detail(@RequestParam int productNo, Model model, HttpSession session) {
 	    // 1. 상품 정보 조회
 	    ProductDto product = productService.getProduct(productNo);
 	    if (product == null) 
 	        throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-	    // 2. 위시리스트 개수 조회
+	    // 2. 위시리스트 상태 및 개수 조회
+	    String loginId = (String) session.getAttribute("loginId");
+	    boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 	    int wishlistCount = wishlistService.count(productNo);
 
 	    // 3. 리뷰 목록 조회
 	    List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
 
+	    // 3-1. 리뷰 평점 평균 계산
+	    double avg = reviewService.getAverageRating(productNo);
+	    product.setProductAvgRating(avg);
+
 	    // 4. 모델에 추가
 	    model.addAttribute("product", product);
-	    model.addAttribute("wishlistCount", wishlistCount);
 	    model.addAttribute("reviewList", reviewList);
+	    model.addAttribute("wishlisted", wishlisted);
+	    model.addAttribute("wishlistCount", wishlistCount);
 
 	    // 5. 관리자용 상세 JSP 반환
 	    return "/WEB-INF/views/admin/product/detail.jsp";
 	}
+
 
 	//상품 수정 페이지
 	@GetMapping("/edit")
