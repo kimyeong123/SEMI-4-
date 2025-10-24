@@ -1,6 +1,9 @@
 package com.kh.shoppingmall.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,11 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.shoppingmall.dao.CategoryDao;
 import com.kh.shoppingmall.dao.ProductCategoryMapDao;
 import com.kh.shoppingmall.dto.CategoryDto;
+import com.kh.shoppingmall.vo.CategoryTreeVO;
 
 @Service
 public class CategoryService {
-    @Autowired private CategoryDao categoryDao;
-    @Autowired private ProductCategoryMapDao productCategoryMapDao;
+    @Autowired 
+    private CategoryDao categoryDao;
+    @Autowired 
+    private ProductCategoryMapDao productCategoryMapDao;
+
 
     // 1. 카테고리 추가 (관리자)
     public void addCategory(CategoryDto categoryDto) {
@@ -58,4 +65,48 @@ public class CategoryService {
     public List<CategoryDto> getChildrenByParent(int parentCategoryNo) {
         return categoryDao.selectChildren(parentCategoryNo);
     }
+    
+    
+    //카테고리 계층 처리
+    public List<CategoryTreeVO> getCategoryTree(){
+    	
+    	//모든 카테고리 호출
+    	List<CategoryDto> categoryList = categoryDao.selectList();
+    	
+    	//계층 구조로 변환
+    	Map<Integer, CategoryTreeVO> menuMap = new HashMap<>(); //번호로 노드를 빠르게 찾기 위한 Map
+    	List<CategoryTreeVO> rootMenu = new ArrayList<>(); //최상위 메뉴만 담는 리스트
+    	
+    	//Dto를 VO로 변환
+    	for(CategoryDto categoryDto : categoryList) {
+    		menuMap.put(categoryDto.getCategoryNo(), new CategoryTreeVO(categoryDto));
+    	}
+    	
+    	//부모-자식 관계 설정
+    	for(CategoryTreeVO menu : menuMap.values()) {
+    		Integer parentNo = menu.getParentCategoryNo();
+    		
+    		//부모 번호가 없으면 최상위 메뉴에 추가
+    		if(parentNo == null || parentNo == 0) {
+    			rootMenu.add(menu);
+    		}
+    		else {
+    			CategoryTreeVO parentMenu = menuMap.get(parentNo);
+    			if(parentMenu != null) {
+    				parentMenu.getChildren().add(menu);
+    			}
+    		}
+    	}
+    	
+    	//최상위 메뉴 반환
+    	return rootMenu;
+    }
+    
+    
+    
 }
+
+
+
+
+
