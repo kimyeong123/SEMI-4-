@@ -16,6 +16,8 @@ import com.kh.shoppingmall.service.AttachmentService;
 //import com.kh.shoppingmall.vo.PageVO;
 import com.kh.shoppingmall.vo.PageVO;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/admin/member")
 public class AdminMemberController {
@@ -56,7 +58,7 @@ public class AdminMemberController {
 //	}
 	
 	@RequestMapping("/detail")
-	public String detail(@RequestParam String memberId, Model model) //, HttpSession session
+	public String detail(@RequestParam String memberId, Model model, HttpSession session) //, HttpSession session
 	{
 		MemberDto memberDto = memberDao.selectOne(memberId);
 		if(memberDto == null)
@@ -64,6 +66,22 @@ public class AdminMemberController {
 			throw new TargetNotfoundException("존재하지 않는 멤버");
 		}
 		model.addAttribute("memberDto", memberDto);
+
+
+		// 2. 💡 로그인한 관리자 정보 조회 (추가된 로직)
+	    String loginId = (String) session.getAttribute("loginId"); // 세션에서 로그인 ID를 가져옴
+	    if (loginId != null) {
+	        // 로그인 ID로 DB에서 회원 전체 정보(Level 포함)를 다시 조회
+	        MemberDto loginUserDto = memberDao.selectOne(loginId); 
+	        if (loginUserDto != null) {
+	            // JSP에서 'loginUserLevel'이라는 이름으로 레벨을 사용할 수 있도록 모델에 추가
+	            model.addAttribute("loginUserLevel	", loginUserDto.getMemberLevel());
+	            // 필요한 경우 로그인 사용자 ID도 모델에 다시 추가 (JSP 코드 호환성을 위함)
+	            model.addAttribute("loginId", loginId);
+	        }
+	    }
+		
+		
 //		if(session.getAttribute(memberId) != null) session.removeAttribute(memberId);
 //		session.setAttribute("currentId", memberId);
 //		model.addAttribute("boardList", boardDao.selectListByMember(memberId));
