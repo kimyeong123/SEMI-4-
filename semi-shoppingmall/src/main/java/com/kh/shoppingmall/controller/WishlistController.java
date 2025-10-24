@@ -1,6 +1,8 @@
 package com.kh.shoppingmall.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,13 +26,10 @@ public class WishlistController {
     
     @GetMapping("")
     public String list(HttpSession session, Model model) {
-        // String currentMemberId = (String) session.getAttribute("loginId");
-        // if (currentMemberId == null) {
-        //     return "redirect:/login"; // 비회원이면 로그인 페이지로
-        // }
-
-        // 임시로 테스트용 memberId 설정
-        String currentMemberId = "testmember1";
+         String currentMemberId = (String) session.getAttribute("loginId");
+         if (currentMemberId == null) {
+             return "redirect:/login"; // 비회원이면 로그인 페이지로
+         }
 
         List<WishlistDetailVO> wishlist = wishlistService.getWishlistItems(currentMemberId);
         model.addAttribute("wishlist", wishlist);
@@ -40,10 +39,8 @@ public class WishlistController {
 
     @PostMapping("/add")
     public String addWishlist(HttpSession session, @RequestParam int productNo) {
-        // String currentMemberId = (String) session.getAttribute("loginId");
-        // if (currentMemberId == null) return "redirect:/login";
-
-        String currentMemberId = "testMember"; // 테스트용
+         String currentMemberId = (String) session.getAttribute("loginId");
+         if (currentMemberId == null) return "redirect:/login";
 
         wishlistService.addItem(currentMemberId, productNo);
         return "redirect:/member/wishlist/";
@@ -51,12 +48,30 @@ public class WishlistController {
 
     @PostMapping("/delete")
     public String deleteWishlist(HttpSession session, @RequestParam int productNo) {
-        // String currentMemberId = (String) session.getAttribute("loginId");
-        // if (currentMemberId == null) return "redirect:/login";
-
-        String currentMemberId = "testMember"; // 테스트용
+         String currentMemberId = (String) session.getAttribute("loginId");
+         if (currentMemberId == null) return "redirect:/login";
 
         wishlistService.removeItem(currentMemberId, productNo);
         return "redirect:/member/wishlist/";
+    }
+    
+    @PostMapping("/toggle")
+    public Map<String, Object> toggleWishlist(@RequestParam int productNo, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+
+        String memberId = (String) session.getAttribute("loginId"); // 세션에서 로그인 ID 가져오기
+        if (memberId == null) {
+            result.put("wishlisted", false);
+            result.put("count", 0);
+            result.put("error", "login required");
+            return result;
+        }
+
+        boolean wishlisted = wishlistService.toggle(memberId, productNo);
+        int count = wishlistService.count(productNo);
+
+        result.put("wishlisted", wishlisted);
+        result.put("count", count);
+        return result;
     }
 }

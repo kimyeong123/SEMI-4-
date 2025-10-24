@@ -1,9 +1,15 @@
 package com.kh.shoppingmall.restcontroller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.shoppingmall.error.UnauthorizationException;
 import com.kh.shoppingmall.service.WishlistService;
@@ -50,5 +56,24 @@ public class WishlistRestController {
     public boolean check(HttpSession session, @RequestParam int productNo) {
         String loginId = (String) session.getAttribute("loginId");
         return loginId != null && wishlistService.checkItem(loginId, productNo); // boolean 반환
+    }
+    
+    @PostMapping("/toggle")
+    @ResponseBody
+    public Map<String,Object> toggleWishlist(@RequestParam int productNo, HttpSession session) {
+        Map<String,Object> result = new HashMap<>();
+        String memberId = (String) session.getAttribute("loginId");
+        if(memberId == null) {
+            result.put("wishlisted", false);
+            result.put("count", 0);
+            result.put("error", "login required");
+            return result;
+        }	
+        boolean wishlisted = wishlistService.toggle(memberId, productNo);
+        int count = wishlistService.count(productNo);
+
+        result.put("wishlisted", wishlisted);
+        result.put("count", count);
+        return result; 
     }
 }
