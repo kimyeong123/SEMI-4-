@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내가 만든 홈페이지</title>
+    <title>KH쇼핑</title>
     <link rel="stylesheet" type="text/css" href="/css/commons.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <style>
@@ -46,7 +46,7 @@
     <div class="container w-1100 flex-box flex-vertical">
 
         <!-- 헤더(Header) -->
-        <div class="flex-box">
+        <div class="flex-box" style="height: 50px; align-items: center;">
             <div class="w-25 flex-box flex-center">
                 <img src="https://dummyimage.com/200x50">
             </div>
@@ -58,12 +58,12 @@
 	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '일반회원'}">
 		<a href="/">
 			<i class="fa-solid fa-house"></i>
-			<span>홈</span>
 		</a>
-		
+		<span>/</span>
 		<a href="/member/wishlist">
 			<i class="fa-regular fa-heart"></i>
 		</a>
+		<span>/</span>
 		<a href="/member/mypage">
 			<i class="fa-solid fa-user"></i>
 			<span>내정보</span>
@@ -72,19 +72,17 @@
 			<i class="fa-solid fa-right-from-bracket"></i>
 			<span>로그아웃</span>
 		</a>
+
 	</c:when>
 	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '우수회원'}">
 		<a href="/">
 			<i class="fa-solid fa-house"></i>
-			<span>홈</span>
 		</a>
-		
-		<div class="divider"></div>
-		
-		
+		<span>/</span>
 		<a href="/member/wishlist">
 			<i class="fa-regular fa-heart"></i>
 		</a>
+		<span>/</span>
 		<a href="/member/mypage">
 			<i class="fa-solid fa-user"></i>
 			<span>내정보</span>
@@ -97,18 +95,15 @@
 	<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
 		<a href="/">
 			<i class="fa-solid fa-house"></i>
-			<span>홈</span>
+		</a>					
+		<a href="/member/login">
+			<i class="fa-solid fa-right-to-bracket"></i>
 		</a>
-		<a href="/board/list">
-			<i class="fa-solid fa-comments"></i>
-			<span>게시판</span>
+		<a href="/member/join">
+			<i class="fa-solid fa-user-plus"></i>
 		</a>
-		
-		<div class="divider"></div>
-		
-		<a href="/admin/home" class="red">
-			<i class="fa-solid fa-wrench"></i>
-			<span>관리메뉴</span>
+		<a href="/admin/home">
+			<span class="red">관리메뉴</span>
 		</a>
 		<a href="/member/logout">
 			<i class="fa-solid fa-right-from-bracket"></i>
@@ -118,23 +113,16 @@
     <c:otherwise>
    		<a href="/">
 			<i class="fa-solid fa-house"></i>
-			<span>홈</span>
 		</a>
-
-		<div class="divider"></div>
-						
-		<a href="/member/wishlist">
-			<i class="fa-regular fa-heart"></i>
-		</a>
+		<span>/</span>					
 		<a href="/member/login">
-			<i class="fa-solid fa-right-to-bracket"></i>
 			<span>로그인</span>
 		</a>
+		<span>/</span>
 		<a href="/member/join">
-			<i class="fa-solid fa-user-plus"></i>
 			<span>회원가입</span>
 		</a>
-		</c:otherwise>
+	</c:otherwise>
 	</c:choose>
             </div>
         </div>
