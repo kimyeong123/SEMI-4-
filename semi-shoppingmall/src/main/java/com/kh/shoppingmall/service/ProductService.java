@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.service;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dao.AttachmentDao;
+import com.kh.shoppingmall.dao.CategoryDao;
 import com.kh.shoppingmall.dao.ProductCategoryMapDao;
 import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
 import com.kh.shoppingmall.dao.WishlistDao;
+import com.kh.shoppingmall.dto.CategoryDto;
 import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.dto.ProductOptionDto;
 
@@ -21,6 +25,8 @@ public class ProductService {
 
     @Autowired
     private ProductDao productDao;
+    @Autowired
+    private CategoryDao categoryDao;
     @Autowired
     private ProductOptionDao productOptionDao;
     @Autowired
@@ -31,6 +37,8 @@ public class ProductService {
     private WishlistDao wishlistDao;
     @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private ReviewService reviewService;
 
     // ================= 상품 등록 =================
     @Transactional
@@ -164,7 +172,33 @@ public class ProductService {
     public Map<Integer, Integer> getWishlistCounts() {
         return wishlistDao.selectProductWishlistCounts();
     }
+    
+    public List<ProductDto> getFilteredProducts(String column, String keyword, Integer categoryNo) {
+        List<ProductDto> list;
 
+        if (categoryNo != null) {
+            // 선택한 카테고리 + 하위 카테고리 조회
+            List<Integer> categoryNos = new ArrayList<>();
+            categoryNos.add(categoryNo);
+            List<CategoryDto> children = categoryDao.selectChildren(categoryNo);
+            for (CategoryDto c : children) {
+                categoryNos.add(c.getCategoryNo());
+            }
+            list = productDao.selectByCategories(categoryNos);
+        } else {
+            // 검색이 있을 때
+            list = getProductList(column, keyword);
+        }
+
+        // 리뷰 평균 계산
+        for (ProductDto p : list) {
+            double avgRating = reviewService.getAverageRating(p.getProductNo());
+            p.setProductAvgRating(avgRating);
+        }
+
+        return list;
+    }
+    
     // ================= 평점 갱신 메서드 제거 =================
     // 이제 평점은 ReviewDao.selectAverageRating(productNo)로 실시간 계산
 }

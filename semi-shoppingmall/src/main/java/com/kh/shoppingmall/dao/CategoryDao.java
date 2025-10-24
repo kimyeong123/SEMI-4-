@@ -18,8 +18,8 @@ public class CategoryDao {
 
     // C
     public void insert(CategoryDto categoryDto) {
-        String sql = "INSERT INTO category (category_no, category_name, parent_category_no) "
-                   + "VALUES (category_seq.nextval, ?, ?)";
+        String sql = "insert into category (category_no, category_name, parent_category_no) "
+                   + "values (category_seq.nextval, ?, ?)";
         Object[] params = {
             categoryDto.getCategoryName(),
             categoryDto.getParentCategoryNo()
@@ -29,13 +29,13 @@ public class CategoryDao {
 
     // R
     public List<CategoryDto> selectList() {
-        String sql = "SELECT * FROM category";
+        String sql = "select * from category";
         return jdbcTemplate.query(sql, categoryMapper);
     }
 
     // R
     public CategoryDto selectOne(int categoryNo) {
-        String sql = "SELECT * FROM category WHERE category_no=?";
+        String sql = "select * from category where category_no = ?";
         Object[] params = { categoryNo };
         List<CategoryDto> list = jdbcTemplate.query(sql, categoryMapper, params);
         return list.isEmpty() ? null : list.get(0);
@@ -43,27 +43,27 @@ public class CategoryDao {
 
     // 부모 카테고리만 조회
     public List<CategoryDto> selectParentCategories() {
-        String sql = "SELECT * FROM category WHERE parent_category_no IS NULL ORDER BY category_no ASC";
+        String sql = "select * from category where parent_category_no is null order by category_no asc";
         return jdbcTemplate.query(sql, categoryMapper);
     }
 
     // 특정 부모 카테고리의 하위 카테고리 조회
     public List<CategoryDto> selectChildren(int parentCategoryNo) {
-        String sql = "SELECT * FROM category WHERE parent_category_no = ? ORDER BY category_no ASC";
+        String sql = "select * from category where parent_category_no = ? order by category_no asc";
         Object[] params = { parentCategoryNo };
         return jdbcTemplate.query(sql, categoryMapper, params);
     }
 
     // 자식 카테고리 개수
     public int countByParent(int categoryNo) {
-        String sql = "SELECT COUNT(*) FROM category WHERE parent_category_no = ?";
+        String sql = "select count(*) from category where parent_category_no = ?";
         Object[] params = { categoryNo };
         return jdbcTemplate.queryForObject(sql, int.class, params);
     }
 
     // U
     public boolean update(CategoryDto categoryDto) {
-        String sql = "UPDATE category SET category_name=?, parent_category_no=? WHERE category_no=?";
+        String sql = "update category set category_name = ?, parent_category_no = ? where category_no = ?";
         Object[] params = {
             categoryDto.getCategoryName(),
             categoryDto.getParentCategoryNo(),
@@ -74,7 +74,7 @@ public class CategoryDao {
 
     // D
     public boolean delete(int categoryNo) {
-        String sql = "DELETE FROM category WHERE category_no=?";
+        String sql = "delete from category where category_no = ?";
         Object[] params = { categoryNo };
         return jdbcTemplate.update(sql, params) > 0;
     }
