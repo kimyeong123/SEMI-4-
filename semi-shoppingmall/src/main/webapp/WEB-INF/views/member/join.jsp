@@ -138,26 +138,26 @@
                     <label>이메일 <i class="fa-solid fa-asterisk red"></i></label>
                     <div class="flex-box" style="flex-wrap: wrap;">
                         <input type="text" inputmode="email" name="memberEmail" class="field w-50 flex-fill">
-<!--                         <button type="button" class="btn btn-neutral ms-20 btn-cert-send"> -->
-<!--                             <i class="fa-solid fa-paper-plane"></i> -->
-<!--                             <span>인증번호 보내기</span> -->
-<!--                         </button> -->
+                        <button type="button" class="btn btn-neutral ms-20 btn-cert-send">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>인증번호 보내기</span>
+                        </button>
                         <div class="success-feedback w-100">(이메일 인증이 완료되었습니다) 올바른 이메일 형식입니다</div>
                         <div class="fail-feedback w-100">올바른 이메일 형식이 아닙니다</div>
                         <div class="fail2-feedback w-100">이메일 인증이 완료되지 않았습니다</div>
                     </div>
                 </div>
     
-                <!--인증번호입력창-->
-<!--                 <div class="cell flex-box cell-cert-input" style="display: none; flex-wrap: wrap;"> -->
-<!--                     <input type="text" inputmode="numeric" class="field cert-input" placeholder="인증번호 입력"> -->
-<!--                     <button type="button" class="btn btn-positive ms-20 btn-cert-check"> -->
-<!--                         <i class="fa-solid fa-key"></i> -->
-<!--                         <span>인증번호 확인</span> -->
-<!--                     </button> -->
-<!--                     <div class="fail-feedback w-100">인증번호는 숫자 6자리입니다</div> -->
-<!--                     <div class="fail2-feedback w-100">인증번호가 일치하지 않습니다</div> -->
-<!--                 </div> -->
+<!--                 인증번호입력창 -->
+                <div class="cell flex-box cell-cert-input" style="display: none; flex-wrap: wrap;">
+                    <input type="text" inputmode="numeric" class="field cert-input" placeholder="인증번호 입력">
+                    <button type="button" class="btn btn-positive ms-20 btn-cert-check">
+                        <i class="fa-solid fa-key"></i>
+                        <span>인증번호 확인</span>
+                    </button>
+                    <div class="fail-feedback w-100">인증번호는 숫자 6자리입니다</div>
+                    <div class="fail2-feedback w-100">인증번호가 일치하지 않습니다</div>
+                </div>
             </div>
             
             <!-- 연락처+생년월일 -->

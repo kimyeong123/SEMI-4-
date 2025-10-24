@@ -19,14 +19,14 @@
 		</div>
 		<button class="feild w-100 btn btn-positive mt-20 mb-30">로그인</button>
 		
-		<%--아이디 및 비번 찾기 
+		<%--아이디 및 비번 찾기 --%>
 		<div class="cell center mt-30">
 			<a href="findMemberId">아이디가 기억나지 않아요</a>
 		</div>
 		<div class="cell center">
 			<a href="findMemberPw">비밀번호가 기억나지 않아요</a>
 		</div>
-		--%>
+		 
 		
 	</form>
 </div>

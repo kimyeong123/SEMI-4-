@@ -50,10 +50,10 @@
             <div class="flex-box" style="flex-wrap: wrap;">
                 <input type="text" inputmode="email" name="memberEmail" class="field w-50 flex-fill" 
                        value="${memberDto.memberEmail}" 
-                       data-initial-value="${memberDto.memberEmail}" >
-<!--                 <button type="button" class="btn btn-neutral ms-20 btn-cert-send"> -->
-<!--                     <i class="fa-solid fa-rotate-right"></i> <span>인증번호 재발송</span> -->
-<!--                 </button> -->
+                       data-initial-value="${memberDto.memberEmail}" readonly >
+                <button type="button" class="btn btn-neutral ms-20 btn-cert-send">
+                    <i class="fa-solid fa-rotate-right"></i> <span>인증번호 재발송</span>
+                </button>
                 <div class="success-feedback w-100">이메일 인증이 완료되었습니다</div>
                 <div class="fail-feedback w-100">올바른 이메일 형식이 아닙니다</div>
             </div>
