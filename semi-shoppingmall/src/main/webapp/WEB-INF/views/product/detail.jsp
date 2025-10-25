@@ -9,97 +9,106 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-	$(function() {
-		// 리뷰 수정
-		$(document)
-				.on(
-						"click",
-						".btn-edit",
-						function() {
-							var btn = $(this);
-							var tr = btn.closest("tr");
-							var contentTd = tr.find("td.review-content");
-							var original = contentTd.text().trim();
+$(function() {
+    // 리뷰 수정
+    $(document).on("click", ".btn-edit", function() {
+        var btn = $(this);
+        var tr = btn.closest("tr");
+        var contentTd = tr.find("td.review-content");
+        var original = contentTd.text().trim();
 
-							if (contentTd.find("textarea").length > 0)
-								return; // 이미 수정중이면 패스
+        if (contentTd.find("textarea").length > 0) return; // 이미 수정 중이면 패스
 
-							contentTd
-									.html('<textarea class="edit-content" rows="3" cols="50">'
-											+ original + '</textarea>');
-							btn.text("완료").removeClass("btn-edit").addClass(
-									"btn-update");
-						});
+        contentTd.html('<textarea class="edit-content" rows="3" cols="50">' + original + '</textarea>');
+        btn.text("완료").removeClass("btn-edit").addClass("btn-update");
+    });
 
-		// 수정 완료
-		$(document)
-				.on(
-						"click",
-						".btn-update",
-						function() {
-							var btn = $(this);
-							var tr = btn.closest("tr");
-							var reviewNo = btn.data("review-no");
-							var newContent = tr.find("textarea.edit-content")
-									.val().trim();
+    // 수정 완료
+    $(document).on("click", ".btn-update", function() {
+        var btn = $(this);
+        var tr = btn.closest("tr");
+        var reviewNo = btn.data("review-no");
+        var newContent = tr.find("textarea.edit-content").val().trim();
 
-							if (!newContent) {
-								alert("내용을 입력해주세요.");
-								return;
-							}
+        if (!newContent) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
 
-							$
-									.ajax({
-										url : "${pageContext.request.contextPath}/rest/review/update",
-										type : "post",
-										data : {
-											reviewNo : reviewNo,
-											reviewContent : newContent
-										},
-										success : function(result) {
-											if (result) {
-												tr.find("td.review-content")
-														.text(newContent);
-												btn.text("수정").removeClass(
-														"btn-update").addClass(
-														"btn-edit");
-											} else {
-												alert("수정 실패");
-											}
-										},
-										error : function() {
-											alert("수정 중 오류 발생");
-										}
-									});
-						});
+        $.ajax({
+            url: "${pageContext.request.contextPath}/rest/review/update",
+            type: "post",
+            data: {
+                reviewNo: reviewNo,
+                reviewContent: newContent
+            },
+            success: function(result) {
+                if (result) {
+                    tr.find("td.review-content").text(newContent);
+                    btn.text("수정").removeClass("btn-update").addClass("btn-edit");
+                } else {
+                    alert("수정 실패");
+                }
+            },
+            error: function() {
+                alert("수정 중 오류 발생");
+            }
+        });
+    });
 
-		// 리뷰 삭제
-		$(document).on("click", ".btn-delete", function() {
-			var btn = $(this);
-			var reviewNo = btn.data("review-no");
-			if (!confirm("정말 삭제하시겠습니까?"))
-				return;
+    // 리뷰 삭제
+    $(document).on("click", ".btn-delete", function() {
+        var btn = $(this);
+        var reviewNo = btn.data("review-no");
+        if (!confirm("정말 삭제하시겠습니까?")) return;
 
-			$.ajax({
-				url : "${pageContext.request.contextPath}/rest/review/delete",
-				type : "post",
-				data : {
-					reviewNo : reviewNo
-				},
-				success : function(result) {
-					if (result) {
-						$('#review-' + reviewNo).remove();
-						alert("삭제 완료!");
-					} else {
-						alert("삭제 실패");
-					}
-				},
-				error : function() {
-					alert("삭제 중 오류 발생");
-				}
-			});
-		});
-	});
+        $.ajax({
+            url: "${pageContext.request.contextPath}/rest/review/delete",
+            type: "post",
+            data: { reviewNo: reviewNo },
+            success: function(result) {
+                if (result) {
+                    $('#review-' + reviewNo).remove();
+                    alert("삭제 완료!");
+                } else {
+                    alert("삭제 실패");
+                }
+            },
+            error: function() {
+                alert("삭제 중 오류 발생");
+            }
+        });
+    });
+
+    // 리뷰 등록
+    $("#submitReviewBtn").click(function() {
+        var formData = new FormData($("#reviewForm")[0]);
+
+        $.ajax({
+            url: "${pageContext.request.contextPath}/rest/review/add", // ✅ 컨트롤러에 맞게 수정
+            type: "post",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(result) {
+                if (result) {
+                    alert("리뷰가 등록되었습니다!");
+                    location.reload(); // 새로고침해서 목록 반영
+                } else {
+                    alert("리뷰 등록 실패");
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 401) {
+                    alert("로그인이 필요합니다.");
+                } else {
+                    alert("리뷰 등록 중 오류가 발생했습니다.");
+                }
+            }
+        });
+    });
+});
+
 </script>
 
 <div class="container w-800">
