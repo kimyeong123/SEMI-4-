@@ -1,21 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<head>
-<script type="text/javascript">
-	
-</script>
-</head>
 <div class="container w-800">
 	<h1>상품 목록</h1>
 
-	<!-- 신규 등록 버튼 -->
-	<h2>
-		<a href="add" class="btn btn-positive">신규 등록</a>
-	</h2>
+	<!-- 상단 버튼들 -->
+	<div class="cell" style="display:flex; gap:10px; align-items:center;">
+		<a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
+		<a href="${pageContext.request.contextPath}/admin/product/option/manage"
+		   class="btn btn-secondary">+ 옵션 신규 등록</a>
+	</div>
 
 	<!-- 상품 수 표시 -->
 	<h2>상품 수 : ${productList.size()}</h2>
@@ -27,8 +23,8 @@
 				${column == 'product_name' ? 'selected' : ''}>상품명</option>
 			<option value="product_content"
 				${column == 'product_content' ? 'selected' : ''}>상품내용</option>
-		</select> <input type="search" name="keyword" value="${keyword}"
-			placeholder="검색어 입력">
+		</select>
+		<input type="search" name="keyword" value="${keyword}" placeholder="검색어 입력">
 		<button type="submit">검색</button>
 	</form>
 
@@ -47,28 +43,44 @@
 		<tbody align="center">
 			<c:forEach var="p" items="${productList}">
 				<tr>
-					<!-- 썸네일 표시 -->
-					<td><c:if test="${p.productThumbnailNo != null}">
-							<img
-								src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${p.productThumbnailNo}"
+					<td>
+						<c:if test="${p.productThumbnailNo != null}">
+							<img src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${p.productThumbnailNo}"
 								width="50" height="50" style="object-fit: cover;">
-						</c:if></td>
-
+						</c:if>
+					</td>
 					<td>${p.productNo}</td>
-					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a><i class="fa-solid fa-heart red"></i><span>${wishlistCounts[p.productNo]}</span></td>
+					<td>
+						<a href="detail?productNo=${p.productNo}">${p.productName}</a>
+						<i class="fa-solid fa-heart red"></i>
+						<span>${wishlistCounts[p.productNo]}</span>
+					</td>
 					<td>${p.productPrice}</td>
 					<td>${p.productAvgRating}</td>
-					<td><a href="edit?productNo=${p.productNo}">수정</a> |
-						<form
-							action="${pageContext.request.contextPath}/admin/product/delete"
-							method="post" style="display: inline;">
+					<td>
+						<a href="edit?productNo=${p.productNo}">수정</a> |
+						<form action="${pageContext.request.contextPath}/admin/product/delete"
+							method="post" style="display:inline;">
 							<input type="hidden" name="productNo" value="${p.productNo}" />
 							<button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
-						</form></td>
+						</form>
+					</td>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
 </div>
+
+<style>
+	.btn {
+		border: none;
+		padding: 6px 10px;
+		border-radius: 5px;
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.btn-positive { background: #4CAF50; color: white; }
+	.btn-secondary { background: #2196F3; color: white; }
+</style>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

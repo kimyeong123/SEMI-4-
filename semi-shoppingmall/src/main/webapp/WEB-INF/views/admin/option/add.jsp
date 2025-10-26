@@ -44,7 +44,7 @@
             </select>
         </div>
 
-        <!-- ✅ 옵션 등록 -->
+        <!-- ✅ 옵션 등록 폼 -->
         <div class="cell mt-40">
             <h3>옵션 등록</h3>
             <div id="option-container">

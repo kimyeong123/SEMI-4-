@@ -3,188 +3,164 @@ package com.kh.shoppingmall.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dto.CategoryDto;
 import com.kh.shoppingmall.dto.ProductDto;
+import com.kh.shoppingmall.dto.ProductOptionDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
 import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
-import com.kh.shoppingmall.vo.ReviewDetailVO;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin/product")
 public class AdminProductController {
 
-	@Autowired
-	private ProductService productService;
-	@Autowired
-	private CategoryService categoryService;
-	@Autowired
-	private WishlistService wishlistService;
-	@Autowired
-	private ReviewService reviewService;
+    @Autowired private ProductService productService;
+    @Autowired private CategoryService categoryService;
+    @Autowired private WishlistService wishlistService;
+    @Autowired private ReviewService reviewService;
 
-	// 상품 목록
-		@GetMapping("/list")
-		public String list(@RequestParam(value = "column", required = false) String column,
-		                   @RequestParam(value = "keyword", required = false) String keyword,
-		                   @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
-		                   HttpSession session,
-		                   Model model) throws SQLException {
+    // ---------------- 상품 목록 ----------------
+    @GetMapping("/list")
+    public String list(@RequestParam(value = "column", required = false) String column,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+                       HttpSession session, Model model) throws SQLException {
 
-			List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo);
+        List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo);
+        for (ProductDto p : list)
+            p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo()));
 
-		    // 리뷰 평균 계산
-		    for (ProductDto p : list) {
-		        double avgRating = reviewService.getAverageRating(p.getProductNo());
-		        p.setProductAvgRating(avgRating);
-		    }
+        model.addAttribute("productList", list);
+        model.addAttribute("column", column);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("wishlistCounts", productService.getWishlistCounts());
+        model.addAttribute("categoryTree", categoryService.getCategoryTree());
+        return "/WEB-INF/views/admin/product/list.jsp";
+    }
 
-		    // 모델에 기본 정보 추가
-		    model.addAttribute("productList", list);
-		    model.addAttribute("column", column);
-		    model.addAttribute("keyword", keyword);
+    // ---------------- 상품 등록 (GET) ----------------
+    @GetMapping("/add")
+    public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
+        model.addAttribute("parentCategoryList", categoryService.getParentCategories());
+        List<CategoryDto> childList = (parentCategoryNo != null)
+                ? categoryService.getChildrenByParent(parentCategoryNo)
+                : new ArrayList<>();
+        model.addAttribute("childCategoryList", childList);
+        model.addAttribute("selectedParentNo", parentCategoryNo);
+        return "/WEB-INF/views/admin/product/add.jsp";
+    }
 
-		    // 로그인 아이디 확인
-//		    String loginId = (String) session.getAttribute("loginId");
+    // ---------------- 상품 등록 (POST, 다중 옵션 포함) ----------------
+    @PostMapping("/add")
+    public String add(@ModelAttribute ProductDto productDto,
+                      @RequestParam(value = "parentCategoryNo", required = false) Integer parentCategoryNo,
+                      @RequestParam(value = "childCategoryNo", required = false) Integer childCategoryNo,
+                      @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+                      @RequestParam("detailImageList") List<MultipartFile> detailImageList,
+                      @RequestParam(value = "optionNameList", required = false) List<String> optionNameList,
+                      @RequestParam(value = "optionValueList", required = false) List<String> optionValueList
+    ) throws Exception {
 
-		    // 위시리스트 카운트
-		    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
-		    model.addAttribute("wishlistCounts", wishlistCounts);
+        // ✅ 1. 카테고리 구성
+        List<Integer> categoryNoList = new ArrayList<>();
+        if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
+        if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
 
-		    // 카테고리 트리 추가
-		    model.addAttribute("categoryTree", categoryService.getCategoryTree());
+        // ✅ 2. 옵션 구성 (이 부분 수정됨)
+        List<ProductOptionDto> optionList = new ArrayList<>();
+        if (optionNameList != null && !optionNameList.isEmpty() &&
+            optionValueList != null && !optionValueList.isEmpty()) {
 
-		    return "/WEB-INF/views/admin/product/list.jsp";
-		}
+            // 옵션 이름은 한 세트로 처리 (예: 색상)
+            String optionName = optionNameList.get(0);
 
-	//상품 등록
-	@GetMapping("/add")
-	public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
-		List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
-		model.addAttribute("parentCategoryList", parentCategoryList);
+            // 여러 값 (예: 빨강, 파랑, 노랑)
+            for (String value : optionValueList) {
+                if (value != null && !value.trim().isEmpty()) {
+                    ProductOptionDto option = new ProductOptionDto();
+                    option.setOptionName(optionName);
+                    option.setOptionValue(value);
+                    option.setOptionStock(10); // 기본 재고
+                    optionList.add(option);
+                }
+            }
+        }
 
-		List<CategoryDto> childCategoryList = new ArrayList<>();
-		if (parentCategoryNo != null) {
-			childCategoryList = categoryService.getChildrenByParent(parentCategoryNo);
-		}
-		model.addAttribute("childCategoryList", childCategoryList);
-		model.addAttribute("selectedParentNo", parentCategoryNo);
+        // ✅ 3. 상품 등록
+        int productNo = productService.register(productDto, optionList, categoryNoList, thumbnailFile, detailImageList);
 
-		return "/WEB-INF/views/admin/product/add.jsp";
-	}
-	@PostMapping("/add")
-	public String add(@ModelAttribute ProductDto productDto,
-	        @RequestParam("parentCategoryNo") Integer parentCategoryNo,
-	        @RequestParam("childCategoryNo") Integer childCategoryNo,
-	        @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
-	        @RequestParam("detailImageList") List<MultipartFile> detailImageList) throws Exception {
+        // ✅ 4. 상세 페이지로 이동
+        return "redirect:/admin/product/detail?productNo=" + productNo;
+    }
 
-		// 선택된 카테고리 번호 리스트로 만들기
-	    List<Integer> categoryNoList = new ArrayList<>();
-	    if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
-	    if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
+    // ---------------- 상품 상세 ----------------
+    @GetMapping("/detail")
+    public String detail(@RequestParam int productNo, Model model, HttpSession session) {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null)
+            throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-		productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList);
-		return "redirect:addFinish";
-	}
+        List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo);
 
-	//상품 등록 완료
-	@GetMapping("/addFinish")
-	public String addFinish() {
-		return "/WEB-INF/views/admin/product/addFinish.jsp";
-	}
+        String loginId = (String) session.getAttribute("loginId");
+        boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 
-	// 상품 상세
-	@GetMapping("/detail")
-	public String detail(@RequestParam int productNo, Model model, HttpSession session) {
-	    // 1. 상품 정보 조회
-	    ProductDto product = productService.getProduct(productNo);
-	    if (product == null) 
-	        throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        model.addAttribute("product", product);
+        model.addAttribute("optionList", optionList);
+        model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
+        model.addAttribute("wishlisted", wishlisted);
+        model.addAttribute("wishlistCount", wishlistService.count(productNo));
+        model.addAttribute("avgRating", reviewService.getAverageRating(productNo));
 
-	    // 2. 위시리스트 상태 및 개수 조회
-	    String loginId = (String) session.getAttribute("loginId");
-	    boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
-	    int wishlistCount = wishlistService.count(productNo);
+        return "/WEB-INF/views/admin/product/detail.jsp";
+    }
 
-	    // 3. 리뷰 목록 조회
-	    List<ReviewDetailVO> reviewList = reviewService.getReviewsDetailByProduct(productNo);
+    // ---------------- 상품 수정 ----------------
+    @GetMapping("/edit")
+    public String editPage(@RequestParam int productNo, Model model) {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null)
+            throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-	    // 3-1. 리뷰 평점 평균 계산
-	    double avg = reviewService.getAverageRating(productNo);
-	    product.setProductAvgRating(avg);
+        model.addAttribute("product", product);
+        model.addAttribute("parentCategoryList", categoryService.getParentCategories());
+        List<CategoryDto> child = (product.getParentCategoryNo() != null)
+                ? categoryService.getChildrenByParent(product.getParentCategoryNo())
+                : new ArrayList<>();
+        model.addAttribute("childCategoryList", child);
+        return "/WEB-INF/views/admin/product/edit.jsp";
+    }
 
-	    // 4. 모델에 추가
-	    model.addAttribute("product", product);
-	    model.addAttribute("reviewList", reviewList);
-	    model.addAttribute("wishlisted", wishlisted);
-	    model.addAttribute("wishlistCount", wishlistCount);
+    @PostMapping("/edit")
+    public String edit(@ModelAttribute ProductDto productDto,
+                       @RequestParam(required = false) List<Integer> categoryNoList,
+                       @RequestParam(required = false) MultipartFile thumbnailFile,
+                       @RequestParam(required = false) List<MultipartFile> detailImageList,
+                       @RequestParam(required = false) List<Integer> deleteAttachmentNoList) throws Exception {
 
-	    // 5. 관리자용 상세 JSP 반환
-	    return "/WEB-INF/views/admin/product/detail.jsp";
-	}
+        if (categoryNoList == null) categoryNoList = new ArrayList<>();
+        if (detailImageList == null) detailImageList = new ArrayList<>();
 
+        productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList, deleteAttachmentNoList);
+        return "redirect:detail?productNo=" + productDto.getProductNo();
+    }
 
-	//상품 수정 페이지
-	@GetMapping("/edit")
-	public String editPage(@RequestParam int productNo, Model model) {
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null)
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
-
-		List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
-		List<CategoryDto> childCategoryList = new ArrayList<>();
-		if (product.getParentCategoryNo() != null) {
-			childCategoryList = categoryService.getChildrenByParent(product.getParentCategoryNo());
-		}
-
-		model.addAttribute("product", product);
-		model.addAttribute("parentCategoryList", parentCategoryList);
-		model.addAttribute("childCategoryList", childCategoryList);
-
-		return "/WEB-INF/views/admin/product/edit.jsp";
-	}
-	@PostMapping("/edit")
-	public String edit(@ModelAttribute ProductDto productDto,
-			@RequestParam(required = false) List<Integer> categoryNoList,
-			@RequestParam(required = false) MultipartFile thumbnailFile,
-			@RequestParam(required = false) List<MultipartFile> detailImageList,
-			@RequestParam(required = false) List<Integer> deleteAttachmentNoList) throws Exception {
-
-		if (categoryNoList == null)
-			categoryNoList = new ArrayList<>();
-		if (detailImageList == null)
-			detailImageList = new ArrayList<>();
-
-		productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList,
-				deleteAttachmentNoList);
-		return "redirect:detail?productNo=" + productDto.getProductNo();
-	}
-
-	//상품 삭제
-	@PostMapping("/delete")
-	public String delete(@RequestParam int productNo) throws Exception {
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null)
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
-		productService.delete(productNo);
-		return "redirect:list";
-	}
-
+    // ---------------- 상품 삭제 ----------------
+    @PostMapping("/delete")
+    public String delete(@RequestParam int productNo) throws Exception {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null)
+            throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        productService.delete(productNo);
+        return "redirect:list";
+    }
 }
