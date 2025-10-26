@@ -50,7 +50,8 @@
 		var origin = $(".image-profile").attr("src");
 		var viewingId = '${memberDto.memberId}'; // 현재 페이지의 멤버 ID (타겟)
 		var loginId = '${sessionScope.loginId}'; // 로그인한 사용자 ID
-		var memberLevel = '${sessionScope.memberLevel}'; // 로그인 사용자 등급
+
+		var loginIdLevel = "";
 		
 		// ===================================================
 		// 1. 프로필 변경/삭제 기능 제어 (본인만 가능)
@@ -142,6 +143,47 @@
 		        error: function() { alert("회원 삭제 처리 중 오류 발생."); }
 		    });
 		});
+		
+		if(loginId) {
+			$.ajax({
+		        url: '${pageContext.request.contextPath}/rest/member/checkMemberLevel',
+		        type: 'GET',
+		        data: { memberId: loginId },
+		        success: function(level) {
+		            loginUserLevel = level; // 조회된 레벨 값을 저장
+		            console.log("AJAX로 조회된 로그인 레벨:", loginUserLevel);
+		            
+		            // 🚩 레벨을 조회한 후, 권한에 따라 UI를 업데이트하는 함수 실행
+		            applyAdminPermissions();
+		        },
+		        error: function() { 
+		            console.error("사용자 레벨 조회 실패");
+		            // 실패 시 일반 사용자 권한으로 간주하거나, 기본값 설정
+		            loginUserLevel = "일반회원";
+		            applyAdminPermissions();
+		        }
+		    });
+		}
+		else {
+			loginUserLevel = "비회원"
+		}
+		
+		// 🚩 권한에 따라 UI를 제어하는 함수
+        function applyAdminPermissions() {
+            // 1. 회원 삭제 버튼 표시 제어 (관리자 권한)
+            if (loginUserLevel === '관리자' && viewingId !== loginId) {
+                $("#member-delete-area").show();
+            } else {
+                $("#member-delete-area").hide();
+            }
+            
+            // 2. 리뷰 삭제 버튼 표시 제어 (관리자 권한)
+            if (loginUserLevel === '관리자') {
+                // 'admin-delete-btn' 클래스를 가진 모든 버튼을 표시
+                $(".admin-delete-btn").show();
+            }
+		}
+		
 	});
 </script>
 
@@ -250,8 +292,11 @@
 						<td>${review.reviewContent}</td>
 						<td><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd" /></td>
 						<td>
-							<c:if test="${loginUserLevel eq '관리자' || sessionScope.loginId eq review.memberId}">
+							<c:if test="${sessionScope.loginId eq review.memberId}">
 								<button class="btn-delete" data-review-no="${review.reviewNo}">삭제</button>
+							</c:if>
+							<c:if test ="${sessionScope.loginId ne review.memberId }">
+								<button class ="btn-delete admin-delete-btn" data-review-no = "${review.reviewNo}"  style="display:none;">삭제(관리자)</button>
 							</c:if>
 						</td>
 					</tr>
@@ -263,14 +308,12 @@
 		</table>
 	</div>
 
-	<div class="cell center" style="margin-top: 20px;">
-		<c:if test="${loginUserLevel eq '관리자'}">
-			<c:if test="${memberDto.memberId ne sessionScope.loginId}">
-				<button id="btn-member-delete" class="btn btn-danger">회원 삭제</button>
-			</c:if>
-			<c:if test="${memberDto.memberId eq sessionScope.loginId}">
-				<p class="red">본인 계정은 여기서 삭제할 수 없습니다. 회원 탈퇴 기능을 이용하세요.</p>
-			</c:if>
+	<div class="cell center" style="margin-top: 20px;" id = "member-delete-area">
+		<c:if test="${memberDto.memberId ne sessionScope.loginId}">
+			<button id="btn-member-delete" class="btn btn-danger">회원 삭제</button>
+		</c:if>
+		<c:if test="${memberDto.memberId eq sessionScope.loginId}">
+			<p class="red">본인 계정은 여기서 삭제할 수 없습니다. 회원 탈퇴 기능을 이용하세요.</p>
 		</c:if>
 	</div>
 	<hr>
@@ -281,9 +324,9 @@
 		<h2><a href="drop">회원 탈퇴하기</a></h2>
 	</c:if>
 	
-	<p style="color: red;">DEBUG: 로그인 레벨: [${memberDto.memberLevel}]</p>
-	<p style="color: red;">DEBUG: 로그인 레벨: [${sessionScope.loginId}]</p>
-	<p style="color: red;">DEBUG: 로그인 레벨: [${memberLevel}]</p>
+<%-- 	<p style="color: red;">DEBUG: 로그인 레벨: [${memberDto.memberLevel}]</p> --%>
+<%-- 	<p style="color: red;">DEBUG: 로그인 레벨: [${sessionScope.loginId}]</p> --%>
+<%-- 	<p style="color: red;">DEBUG: 로그인 레벨: [${loginUserLevel}]</p> --%>
 	
 </div>
 
