@@ -18,7 +18,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    // ---------------- 목록 ----------------
+    // ---------------- 카테고리 목록 ----------------
     @GetMapping("/list")
     public String list(Model model) {
         List<CategoryDto> categoryList = categoryService.getAllCategories();
@@ -26,7 +26,7 @@ public class CategoryController {
         return "/WEB-INF/views/admin/category/list.jsp";
     }
 
-    // ---------------- 등록 페이지 ----------------
+    // ---------------- 카테고리 등록 페이지 ----------------
     @GetMapping("/add")
     public String addPage(Model model) {
         List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
@@ -34,28 +34,21 @@ public class CategoryController {
         return "/WEB-INF/views/admin/category/add.jsp";
     }
 
-    // ---------------- 등록 처리 ----------------
+    // ---------------- 카테고리 등록 처리 ----------------
     @PostMapping("/add")
     public String add(@ModelAttribute CategoryDto categoryDto) {
         categoryService.addCategory(categoryDto);
         return "redirect:list";
     }
 
-    // ---------------- 수정 페이지 ----------------
+    // ---------------- 카테고리 수정 페이지 ----------------
     @GetMapping("/edit")
     public String editPage(@RequestParam int categoryNo, Model model) {
         List<CategoryDto> allCategories = categoryService.getAllCategories();
-        CategoryDto category = null;
-        for (CategoryDto c : allCategories) {
-            if (c.getCategoryNo() == categoryNo) {
-                category = c;
-                break;
-            }
-        }
-
-        if (category == null) {
-            throw new TargetNotfoundException("존재하지 않는 카테고리 번호");
-        }
+        CategoryDto category = allCategories.stream()
+                .filter(c -> c.getCategoryNo() == categoryNo)
+                .findFirst()
+                .orElseThrow(() -> new TargetNotfoundException("존재하지 않는 카테고리 번호"));
 
         List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
         model.addAttribute("category", category);
@@ -64,44 +57,37 @@ public class CategoryController {
         return "/WEB-INF/views/admin/category/edit.jsp";
     }
 
-    // ---------------- 수정 처리 ----------------
+    // ---------------- 카테고리 수정 처리 ----------------
     @PostMapping("/edit")
     public String edit(@ModelAttribute CategoryDto categoryDto) {
         categoryService.updateCategory(categoryDto);
         return "redirect:list";
     }
 
-    // ---------------- 삭제 ----------------
+    // ---------------- 카테고리 삭제 ----------------
     @GetMapping("/delete")
     public String delete(@RequestParam int categoryNo) {
         categoryService.deleteCategory(categoryNo);
         return "redirect:list";
     }
 
-    // ---------------- 상세 페이지 ----------------
+    // ---------------- 카테고리 상세 페이지 ----------------
     @GetMapping("/detail")
     public String detail(@RequestParam int categoryNo, Model model) {
         List<CategoryDto> allCategories = categoryService.getAllCategories();
-        CategoryDto category = null;
-        for (CategoryDto c : allCategories) {
-            if (c.getCategoryNo() == categoryNo) {
-                category = c;
-                break;
-            }
-        }
-
-        if (category == null) {
-            throw new TargetNotfoundException("존재하지 않는 카테고리 번호");
-        }
+        CategoryDto category = allCategories.stream()
+                .filter(c -> c.getCategoryNo() == categoryNo)
+                .findFirst()
+                .orElseThrow(() -> new TargetNotfoundException("존재하지 않는 카테고리 번호"));
 
         model.addAttribute("category", category);
         return "/WEB-INF/views/admin/category/detail.jsp";
     }
 
-    // ---------------- 부모 선택 시 하위 카테고리 반환 ----------------
+    // ---------------- ✅ 부모 선택 시 하위 카테고리 반환 (AJAX용) ----------------
     @GetMapping("/children")
     @ResponseBody
-    public List<CategoryDto> getChildren(@RequestParam int parentCategoryNo) {
+    public List<CategoryDto> getChildren(@RequestParam("parentCategoryNo") int parentCategoryNo) {
         return categoryService.getChildrenByParent(parentCategoryNo);
     }
 }

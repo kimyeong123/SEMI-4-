@@ -1,6 +1,5 @@
 package com.kh.shoppingmall.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,52 +22,55 @@ import com.kh.shoppingmall.dto.ProductOptionDto;
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductDao productDao;
-    @Autowired
-    private CategoryDao categoryDao;
-    @Autowired
-    private ProductOptionDao productOptionDao;
-    @Autowired
-    private ProductCategoryMapDao productCategoryMapDao;
-    @Autowired
-    private AttachmentDao attachmentDao;
-    @Autowired
-    private WishlistDao wishlistDao;
-    @Autowired
-    private AttachmentService attachmentService;
-    @Autowired
-    private ReviewService reviewService;
+    @Autowired private ProductDao productDao;
+    @Autowired private CategoryDao categoryDao;
+    @Autowired private ProductOptionDao productOptionDao;
+    @Autowired private ProductCategoryMapDao productCategoryMapDao;
+    @Autowired private AttachmentDao attachmentDao;
+    @Autowired private WishlistDao wishlistDao;
+    @Autowired private AttachmentService attachmentService;
+    @Autowired private ReviewService reviewService;
 
     // ================= 상품 등록 =================
     @Transactional
-    public void register(ProductDto productDto, List<ProductOptionDto> optionList, List<Integer> categoryNoList,
-                         MultipartFile thumbnailFile, List<MultipartFile> detailImageList) throws Exception {
+    public int register(ProductDto productDto, List<ProductOptionDto> optionList, List<Integer> categoryNoList,
+                        MultipartFile thumbnailFile, List<MultipartFile> detailImageList) throws Exception {
 
+        // 1️⃣ 썸네일 저장
         int thumbnailNo = attachmentService.save(thumbnailFile);
         productDto.setProductThumbnailNo(thumbnailNo);
 
+        // 2️⃣ 상품 등록
         int productNo = productDao.sequence();
         productDto.setProductNo(productNo);
         productDao.insert(productDto);
 
-        // 옵션 저장
+        // 3️⃣ 옵션 등록
         for (ProductOptionDto option : optionList) {
             option.setProductNo(productNo);
             option.setOptionNo(productOptionDao.sequence());
             productOptionDao.insert(option);
         }
 
-        // 카테고리 매핑 저장
+        // 4️⃣ 카테고리 매핑
         for (Integer categoryNo : categoryNoList) {
             productCategoryMapDao.insert(productNo, categoryNo);
         }
 
-        // 상세 이미지 저장
+        // 5️⃣ 상세 이미지 등록
         for (MultipartFile imageFile : detailImageList) {
-            int attachmentNo = attachmentService.save(imageFile);
-            attachmentDao.updateProductNo(attachmentNo, productNo);
+            if (imageFile != null && !imageFile.isEmpty()) {
+                int attachmentNo = attachmentService.save(imageFile);
+                attachmentDao.updateProductNo(attachmentNo, productNo);
+            }
         }
+
+        return productNo;
+    }
+
+    // ✅ 옵션 리스트 조회
+    public List<ProductOptionDto> getOptionsByProduct(int productNo) {
+        return productOptionDao.selectListByProduct(productNo);
     }
 
     // ================= 상품 수정 =================
@@ -78,63 +80,54 @@ public class ProductService {
                        List<Integer> deleteAttachmentNoList) throws Exception {
 
         int productNo = productDto.getProductNo();
-        ProductDto currentProduct = productDao.selectOne(productNo);
-        Integer oldThumbnailNo = (currentProduct != null) ? currentProduct.getProductThumbnailNo() : null;
+        ProductDto current = productDao.selectOne(productNo);
+        Integer oldThumb = (current != null) ? current.getProductThumbnailNo() : null;
 
         // 썸네일 교체
         if (newThumbnailFile != null && !newThumbnailFile.isEmpty()) {
-            int newThumbnailNo = attachmentService.save(newThumbnailFile);
-            productDto.setProductThumbnailNo(newThumbnailNo);
-
-            if (oldThumbnailNo != null && oldThumbnailNo > 0 && !oldThumbnailNo.equals(newThumbnailNo)) {
-                attachmentService.delete(oldThumbnailNo);
+            int newThumb = attachmentService.save(newThumbnailFile);
+            productDto.setProductThumbnailNo(newThumb);
+            if (oldThumb != null && oldThumb > 0 && !oldThumb.equals(newThumb)) {
+                attachmentService.delete(oldThumb);
             }
         }
 
+        // 상품 기본정보 수정
         productDao.update(productDto);
 
-        // 옵션 처리
-        List<ProductOptionDto> oldOptionList = productOptionDao.selectListByProduct(productNo);
-        for (ProductOptionDto oldOption : oldOptionList) {
-            boolean exists = newOptionList.stream()
-                    .anyMatch(newOption -> newOption.getOptionNo() == oldOption.getOptionNo());
-            if (!exists) productOptionDao.delete(oldOption.getOptionNo());
-        }
-        for (ProductOptionDto newOption : newOptionList) {
-            newOption.setProductNo(productNo);
-            if (newOption.getOptionNo() == 0) {
-                productOptionDao.insert(newOption);
-            } else {
-                productOptionDao.update(newOption);
+        // 옵션은 별도 Controller에서 관리
+        // ✅ 옵션 수정 로직 제거
+
+        // 카테고리 매핑 갱신
+        List<Integer> oldCats = productCategoryMapDao.selectCategoryNosByProductNo(productNo);
+        for (Integer old : oldCats) {
+            if (!newCategoryNoList.contains(old)) {
+                productCategoryMapDao.delete(productNo, old);
             }
         }
-
-        // 카테고리 처리
-        List<Integer> oldCategoryList = productCategoryMapDao.selectCategoryNosByProductNo(productNo);
-        for (Integer oldCat : oldCategoryList) {
-            if (!newCategoryNoList.contains(oldCat))
-                productCategoryMapDao.delete(productNo, oldCat);
-        }
         for (Integer newCat : newCategoryNoList) {
-            if (!oldCategoryList.contains(newCat))
+            if (!oldCats.contains(newCat)) {
                 productCategoryMapDao.insert(productNo, newCat);
+            }
         }
 
         // 상세 이미지 삭제
         if (deleteAttachmentNoList != null) {
-            for (Integer attachmentNo : deleteAttachmentNoList) {
-                attachmentService.delete(attachmentNo);
+            for (Integer no : deleteAttachmentNoList) {
+                attachmentService.delete(no);
             }
         }
 
-        // 새 상세 이미지 저장
-        for (MultipartFile imageFile : newDetailImageList) {
-            int attachmentNo = attachmentService.save(imageFile);
-            attachmentDao.updateProductNo(attachmentNo, productNo);
+        // 새 상세 이미지 등록
+        for (MultipartFile f : newDetailImageList) {
+            if (f != null && !f.isEmpty()) {
+                int attNo = attachmentService.save(f);
+                attachmentDao.updateProductNo(attNo, productNo);
+            }
         }
     }
 
-    // ================= 조회 =================
+    // ================= 상품 조회 =================
     public ProductDto getProduct(int productNo) {
         return productDao.selectOne(productNo);
     }
@@ -144,61 +137,64 @@ public class ProductService {
         return isSearch ? productDao.selectList(column, keyword) : productDao.selectList();
     }
 
-    // ================= 삭제 =================
+    // ================= 상품 삭제 =================
     @Transactional
     public void delete(int productNo) {
-        // 첨부파일 삭제
+
+        // 1️⃣ 옵션 삭제
+        List<ProductOptionDto> optionList = productOptionDao.selectListByProduct(productNo);
+        for (ProductOptionDto opt : optionList) {
+            productOptionDao.delete(opt.getOptionNo());
+        }
+
+        // 2️⃣ 카테고리 매핑 삭제
+        productCategoryMapDao.deleteAllByProductNo(productNo);
+
+        // 3️⃣ 첨부파일 삭제
         List<Integer> attachmentIds = productDao.findDetailAttachments(productNo);
-        for (Integer attachmentNo : attachmentIds) {
-            attachmentDao.delete(attachmentNo);
+        for (Integer no : attachmentIds) {
+            attachmentDao.delete(no);
         }
 
-        // 리뷰 삭제
+        // 4️⃣ 리뷰 삭제
         List<Integer> reviewIds = productDao.findReviewsByProduct(productNo);
-        for (Integer reviewNo : reviewIds) {
-            productDao.deleteReview(reviewNo);
+        for (Integer no : reviewIds) {
+            productDao.deleteReview(no);
         }
 
-        // 위시리스트 삭제
-        List<Integer> wishlistIds = productDao.findWishlistIdsByProduct(productNo);
-        for (Integer wishlistNo : wishlistIds) {
-            productDao.deleteWishlist(wishlistNo);
+        // 5️⃣ 위시리스트 삭제
+        List<Integer> wishIds = productDao.findWishlistIdsByProduct(productNo);
+        for (Integer no : wishIds) {
+            productDao.deleteWishlist(no);
         }
 
-        // 상품 삭제
+        // 6️⃣ 마지막으로 상품 삭제
         productDao.delete(productNo);
     }
 
+    // ================= 위시리스트 개수 =================
     public Map<Integer, Integer> getWishlistCounts() {
         return wishlistDao.selectProductWishlistCounts();
     }
-    
+
+    // ================= 필터 조회 =================
     public List<ProductDto> getFilteredProducts(String column, String keyword, Integer categoryNo) {
         List<ProductDto> list;
 
         if (categoryNo != null) {
-            // 선택한 카테고리 + 하위 카테고리 조회
             List<Integer> categoryNos = new ArrayList<>();
             categoryNos.add(categoryNo);
             List<CategoryDto> children = categoryDao.selectChildren(categoryNo);
-            for (CategoryDto c : children) {
-                categoryNos.add(c.getCategoryNo());
-            }
+            for (CategoryDto c : children) categoryNos.add(c.getCategoryNo());
             list = productDao.selectByCategories(categoryNos);
         } else {
-            // 검색이 있을 때
             list = getProductList(column, keyword);
         }
 
-        // 리뷰 평균 계산
         for (ProductDto p : list) {
-            double avgRating = reviewService.getAverageRating(p.getProductNo());
-            p.setProductAvgRating(avgRating);
+            p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo()));
         }
 
         return list;
     }
-    
-    // ================= 평점 갱신 메서드 제거 =================
-    // 이제 평점은 ReviewDao.selectAverageRating(productNo)로 실시간 계산
 }
