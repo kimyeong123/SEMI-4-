@@ -44,6 +44,14 @@ public class MemberRestController {
 		return memberDto != null;
 	}
 	
+	//세션 정보에 따른 멤버 레벨 찾기
+	@GetMapping("/checkMemberLevel")
+	public String checkMemberLevel(@RequestParam String memberId) {
+		MemberDto memberDto = memberDao.selectOne(memberId);
+		String memberLevel = memberDto.getMemberLevel();
+		return memberLevel;
+	}
+	
 	@GetMapping("/checkMemberNickname")
 	public boolean checkMemberNickname(@RequestParam String memberNickname) {
 		MemberDto memberDto = memberDao.selectOneByMemberNickname(memberNickname);

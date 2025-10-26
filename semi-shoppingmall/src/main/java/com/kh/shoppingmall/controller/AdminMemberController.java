@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dto.MemberDto;
@@ -136,6 +137,44 @@ public class AdminMemberController {
 		//return "redirect:/admin/member/list";
 		return "redirect:list";
 	}
+	
+	
+	// 기존의 /drop, /realDrop 대신 단일 POST API를 만듭니다.
+	// ⚠️ 반드시 이 컨트롤러는 @RestController 이거나, 메서드에 @ResponseBody가 붙어야 합니다.
+	@PostMapping("/delete") // 새로운, 명확한 API 주소
+	@ResponseBody // (만약 클래스가 @Controller라면 이 어노테이션을 붙여야 함)
+	public boolean adminMemberDelete(@RequestParam String memberId) {
+	    
+	    // 1. 필요한 권한 검증 로직 (세션 등)을 추가해야 안전합니다. (현재 생략됨)
+	    // if (!isAdmin()) return false; 
+	    
+	    if(memberId == null) {
+	        return false; // ID가 없으면 실패 반환
+	    }
+
+	    try {
+	        // 2. 회원 데이터 삭제
+	        memberDao.delete(memberId);
+	        
+	        // 3. 첨부파일/프로필 삭제 (선택적)
+	        try {
+	            int attchmentNo = memberDao.findAttachment(memberId);
+	            if (attchmentNo > 0) {
+	                 attachmentService.delete(attchmentNo);
+	            }
+	        } catch(Exception e) {
+	            // 프로필이 없는 경우는 정상으로 간주하고 로깅만 할 수 있습니다.
+	        }
+	        
+	        return true; // 성공 시 true 반환 (클라이언트의 success(result)로 전달됨)
+	        
+	    } catch (Exception e) {
+	        // DB 오류 등 예외 발생 시
+	        return false;
+	    }
+	}
+	
+	
 	
 	
 }
