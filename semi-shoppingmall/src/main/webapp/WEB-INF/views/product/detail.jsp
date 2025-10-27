@@ -132,6 +132,33 @@ $(function() {
 		</c:choose>
 		<span id="wishlist-count">${wishlistCount}</span>
 	</div>
+	
+	<%-- 장바구니 추가 폼 --%>
+    <%-- (CSS로 위치 조정 필요: 예: display: inline-block; vertical-align: middle; margin-left: 15px;) --%>
+    <form action="${pageContext.request.contextPath}/cart/add" method="post" style="display: inline-block; vertical-align: middle; margin-left: 15px;">
+        <input type="hidden" name="productNo" value="${product.productNo}">
+
+        <select name="optionNo" required style="padding: 5px; margin-right: 5px;">
+            <option value="">-- 옵션 선택 --</option>
+            <c:forEach var="option" items="${optionList}">
+                <c:if test="${option.optionStock > 0}">
+                    <option value="${option.optionNo}">${option.optionValue} (${option.optionName})</option>
+                </c:if>
+                <c:if test="${option.optionStock <= 0}">
+                    <option value="${option.optionNo}" disabled>${option.optionValue} (${option.optionName}) - 품절</option>
+                </c:if>
+            </c:forEach>
+        </select>
+
+        <%-- 수량 입력 --%>
+        <input type="number" name="amount" value="1" min="1" required style="width: 50px; padding: 5px; margin-right: 5px;">
+
+        <%-- 장바구니 버튼 --%>
+        <button type="submit" class="btn btn-primary">
+             <i class="fa-solid fa-cart-shopping"></i> <%-- 장바구니 아이콘 (선택) --%>
+             장바구니
+        </button>
+    </form>
 
 	<br>
 	<br>
