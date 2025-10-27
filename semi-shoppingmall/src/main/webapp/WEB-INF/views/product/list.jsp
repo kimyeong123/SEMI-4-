@@ -74,7 +74,7 @@ $(document).on("click", ".wishlistIcon", function() {
 					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a>
 						<i class="wishlistIcon ${wishlistStatus[p.productNo] ? 'fa-solid' : 'fa-regular'} fa-heart red" data-product-no="${p.productNo}"></i>
 						<span class="wishlist-count">${wishlistCounts[p.productNo]}</span>
-					<td>${p.productPrice}</td>
+					<td><fmt:formatNumber value="${p.productPrice}" pattern="#,##0"/>원</td>
 					<td><fmt:formatNumber value="${p.productAvgRating}" pattern="0.00"/></td>
 				</tr>
 			</c:forEach>

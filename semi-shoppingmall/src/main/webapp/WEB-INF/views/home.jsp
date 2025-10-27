@@ -7,6 +7,6 @@
 <!-- 동적 include -->
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 	랜덤 상품 이미지? (Swiper)
-<a href="/product/list"></a>
+<a href="/csBoard/list">고객 센터</a>
 <%-- <%@ include file="/WEB-INF/views/template/footer.jsp" %> --%>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

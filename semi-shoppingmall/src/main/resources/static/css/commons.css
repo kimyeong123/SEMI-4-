@@ -186,7 +186,7 @@ textarea.field {
 .table {
     /* border: 1px solid #636e72; */
     border-collapse: collapse;
-    font-size: 16px;
+    font-size: 16px  !important;
     font-weight: 400 !important;
 }
 .table > thead > tr > th, 

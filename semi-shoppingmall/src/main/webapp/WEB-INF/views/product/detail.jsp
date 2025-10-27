@@ -319,13 +319,14 @@
             </div>
             
             <div style="margin-top: 15px;">
-                <label for="cartQuantity">수량:</label>
+                <label for="cartQuantity">수량 입력</label>
+            </div>
+            <div style="margin-top: 15px;">
                 <input type="number" id="cartQuantity" value="1" min="1" class="field" style="width: 80px;">
             </div>
 
             <div id="purchase-buttons" style="display:flex; gap: 10px; margin-top: 20px;">
                 <button id="addToCartBtn" class="btn btn-cart">장바구니 담기</button>
-                <button class="btn btn-purchase">바로 구매</button>
             </div>
             
         </div>

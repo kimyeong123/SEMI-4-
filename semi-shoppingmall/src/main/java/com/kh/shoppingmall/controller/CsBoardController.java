@@ -59,7 +59,7 @@ public class CsBoardController {
 		
 		model.addAttribute("pageVO", pageVO);//전달!
 		
-		return "/WEB-INF/views/board/list.jsp";
+		return "/WEB-INF/views/csBoard/list.jsp";
 	}
 	
 //	상세
