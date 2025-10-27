@@ -50,11 +50,12 @@ public class ProductController {
 	public String list(@RequestParam(value = "column", required = false) String column,
 	                   @RequestParam(value = "keyword", required = false) String keyword,
 	                   @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+	                   @RequestParam(required = false) String order,
 	                   HttpSession session,
 	                   Model model) throws SQLException {
 
 	    // 1. 필터링된 상품 조회
-	    List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo);
+	    List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, keyword);
 
 	    // 2. 리뷰 평균 계산
 	    list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));

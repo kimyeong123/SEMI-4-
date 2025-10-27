@@ -95,9 +95,6 @@ public class ProductService {
         // 상품 기본정보 수정
         productDao.update(productDto);
 
-        // 옵션은 별도 Controller에서 관리
-        // ✅ 옵션 수정 로직 제거
-
         // 카테고리 매핑 갱신
         List<Integer> oldCats = productCategoryMapDao.selectCategoryNosByProductNo(productNo);
         for (Integer old : oldCats) {
@@ -177,24 +174,49 @@ public class ProductService {
         return wishlistDao.selectProductWishlistCounts();
     }
 
-    // ================= 필터 조회 =================
-    public List<ProductDto> getFilteredProducts(String column, String keyword, Integer categoryNo) {
+ // ================= 필터 조회 (정렬 기능 추가) =================
+    public List<ProductDto> getFilteredProducts(String column, String keyword, Integer categoryNo, String order) {
         List<ProductDto> list;
 
         if (categoryNo != null) {
+            // 1. 카테고리 필터링 로직
             List<Integer> categoryNos = new ArrayList<>();
             categoryNos.add(categoryNo);
+            
+            // 하위 카테고리 번호 수집
             List<CategoryDto> children = categoryDao.selectChildren(categoryNo);
-            for (CategoryDto c : children) categoryNos.add(c.getCategoryNo());
-            list = productDao.selectByCategories(categoryNos);
+            for (CategoryDto c : children) {
+                categoryNos.add(c.getCategoryNo());
+            }
+            list = productDao.selectByCategories(categoryNos, column, order); 
+            
         } else {
-            list = getProductList(column, keyword);
+            // 2. 검색/전체 목록 조회 로직
+            list = getProductList(column, keyword, order); 
         }
 
+        // 3. 평점 조회 로직
         for (ProductDto p : list) {
             p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo()));
         }
-
         return list;
+    }
+
+    public List<ProductDto> getProductList(String column, String keyword, String order) {
+        // 1. 검색 여부 확인
+        boolean isSearch = column != null && !column.isEmpty() && keyword != null && !keyword.isEmpty();
+        
+        if (isSearch) {
+            // 2. 검색 시에는 검색 컬럼, 키워드, 정렬 방향을 DAO로 전달
+            return productDao.selectList(column, keyword, order);
+        } else {
+            // 3. 검색이 아닐 경우 (전체 목록)에도 정렬 기준(기본값)과 방향을 DAO로 전달
+            // 이 때, column은 정렬 기준으로 사용되므로 "product_no" 같은 기본값을 명시적으로 전달하는 것이 좋습니다.
+            return productDao.selectList(null, null, order);
+            
+            // 참고: 만약 DAO의 selectList(column, keyword) 메서드를 유지하고 싶다면,
+            // 해당 메서드가 DAO 내부에서 selectList(column, keyword, order)를 호출하도록 이미 수정했으므로,
+            // 기존의 코드를 사용해도 됩니다. (하지만 3개 인자를 받는 핵심 메서드를 직접 호출하는 것이 더 명확합니다.)
+        }
     }
 }
