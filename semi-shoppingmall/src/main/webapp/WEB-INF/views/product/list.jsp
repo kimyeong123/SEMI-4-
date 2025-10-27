@@ -3,6 +3,7 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <head>
 <script type="text/javascript">
@@ -74,7 +75,7 @@ $(document).on("click", ".wishlistIcon", function() {
 						<i class="wishlistIcon ${wishlistStatus[p.productNo] ? 'fa-solid' : 'fa-regular'} fa-heart red" data-product-no="${p.productNo}"></i>
 						<span class="wishlist-count">${wishlistCounts[p.productNo]}</span>
 					<td>${p.productPrice}</td>
-					<td>${p.productAvgRating}</td>
+					<td><fmt:formatNumber value="${p.productAvgRating}" pattern="0.00"/></td>
 				</tr>
 			</c:forEach>
 		</tbody>
