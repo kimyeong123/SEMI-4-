@@ -2,7 +2,17 @@
 	pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
+<style>
+	.btn {
+		border: none;
+		padding: 6px 10px;
+		border-radius: 5px;
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.btn-positive { background: #4CAF50; color: white; }
+	.btn-secondary { background: #2196F3; color: white; }
+</style>
 <div class="container w-800">
 	<h1>상품 목록</h1>
 
@@ -70,17 +80,5 @@
 		</tbody>
 	</table>
 </div>
-
-<style>
-	.btn {
-		border: none;
-		padding: 6px 10px;
-		border-radius: 5px;
-		cursor: pointer;
-		text-decoration: none;
-	}
-	.btn-positive { background: #4CAF50; color: white; }
-	.btn-secondary { background: #2196F3; color: white; }
-</style>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

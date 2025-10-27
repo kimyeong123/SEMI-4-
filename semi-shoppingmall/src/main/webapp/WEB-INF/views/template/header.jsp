@@ -141,8 +141,6 @@
 						test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
 						<a href="/"> <i class="fa-solid fa-house"></i>
 						</a>
-						<a href="/orders/cart"> <i class="fa-solid fa-cart-shopping"></i>
-						</a>
 						<a href="/admin/home" class="admin-link"> 
 							<i class="fa-solid fa-gear"></i>
 							<span>관리메뉴</span>
