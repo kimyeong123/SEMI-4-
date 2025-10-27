@@ -161,8 +161,11 @@ public class OrdersService {
 	//주문 취소시 로직 작성
 	@Transactional
 	public boolean cancelOrder(int ordersNo, String memberId) {
-	    // 1. 주문 정보 확인
+		System.out.println("주문 취소 시작: " + ordersNo);
+		
+		// 1. 주문 정보 확인
 	    OrdersDto order = ordersDao.selectOneByOrderNo(ordersNo);
+	    System.out.println("주문 정보 확인 : " + order);
 	    if (order == null || !order.getOrdersId().equals(memberId)) {
 	        return false; // 주문 없거나 내 주문 아님
 	    }
@@ -177,7 +180,9 @@ public class OrdersService {
 
 	    // 4. 재고 복구
 	    for (OrderDetailDto detail : details) {
+	    	System.out.println("optionNo : " + detail.getOptionNo() +  "detail" + detail.getOrderAmount());
 	        boolean stockUpdated = productOptionDao.updateStock(detail.getOptionNo(), detail.getOrderAmount()); // 수량만큼 다시 더함
+	        System.out.println("stockUpdated" + stockUpdated);
 	        if (!stockUpdated) {
 	            // 재고 복구 실패 시 롤백
 	            throw new RuntimeException("재고 복구 중 오류 발생: 옵션 " + detail.getOptionNo());
@@ -186,6 +191,7 @@ public class OrdersService {
 
 	    // 5. 주문 상태 변경
 	    return ordersDao.update(ordersNo, "주문취소");
+	    
 	}
 
 }
