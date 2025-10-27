@@ -12,26 +12,26 @@ import lombok.NoArgsConstructor;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class CsBoardListVO {
-	private int CsBoardNo;
-	private String CsBoardTitle;
+	private int csBoardNo;
+	private String csBoardTitle;
 	//외래키
-	private String CsBoardWriter;
-	private Timestamp CsBoardWtime;
-	private Timestamp CsBoardEtime;
+	private String csBoardWriter;
+	private Timestamp csBoardWtime;
+	private Timestamp csBoardEtime;
 	//컨텐츠 삭제
-	private int CsBoardRead;
-	private int CsBoardLike;
-	private int CsBoardReply;
+	private int csBoardRead;
+	private int csBoardLike;
+	private int csBoardReply;
 	@Builder.Default
-	private String CsBoardNotice = "N";
-	private int CsBoardGroup;
-	private Integer CsBoardOrigin;
-	private int CsBoardDepth;
+	private String csBoardNotice = "N";
+	private int csBoardGroup;
+	private Integer csBoardOrigin;
+	private int csBoardDepth;
 	
 	//EL에서 ${boardDto.boardWriteTime}으로부를 수 있는 메소드
 	public String getBoardWriteTime()
 	{
-		LocalDateTime wtime = CsBoardWtime.toLocalDateTime();
+		LocalDateTime wtime = csBoardWtime.toLocalDateTime();
 		LocalDate today = LocalDate.now();
 		LocalDate wday = wtime.toLocalDate();
 		if(wday.isBefore(today))

@@ -24,7 +24,7 @@
 </style>
 
 
-<div class="container w-850">
+<div class="container w-850 mb-30">
 	<div class="cell center" >
 		<h1>문의계시판</h1>
 	</div>
@@ -70,7 +70,7 @@
 				<c:forEach var="csBoardListVO" items="${csBoardList}" varStatus="status">
 					<tr>
 						
-						<td>${csBoardListVO.getCsBoardNo()}</td>
+						<td>${csBoardListVO.csBoardNo}</td>
 						<td style=" ">
 							<div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
 <%-- 							<div class="flex-box" style="width:400px; padding-left:${boardListVO.boardDepth * 20  + 10}px"> --%>
@@ -83,12 +83,12 @@
 									<span class="badge">공지</span>
 								</c:if>
 								
-								<a class="ellipsis" href="detail?boardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">${csBoardListVO.csBoardTitle}</a>
+								<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">${csBoardListVO.csBoardTitle}</a>
 							</div>
 						</td>
 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td>
 						<td>
-									${csBoardListVO.getCsBoardWriteTime() }
+									${csBoardListVO.csBoardWtime }
 						</td>
 						<td>${csBoardListVO.csBoardEtime }</td>
 						<td>${csBoardListVO.csBoardRead}</td>
@@ -119,10 +119,10 @@
 			<button class ="btn btn-netural" type ="submit">검색</button>
 		</div>
 	</form>
-	</div>	
+	<jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include>
+</div>	
 
 
 
-<jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include>
 
 <jsp:include page = "/WEB-INF/views/template/footer.jsp"></jsp:include>
