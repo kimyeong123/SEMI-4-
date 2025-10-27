@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.shoppingmall.dao.ProductOptionDao;
 import com.kh.shoppingmall.dto.CategoryDto;
 import com.kh.shoppingmall.dto.ProductDto;
+import com.kh.shoppingmall.dto.ProductOptionDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
 import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
-import com.kh.shoppingmall.vo.CategoryTreeVO;
 import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +41,9 @@ public class ProductController {
 	private WishlistService wishlistService;
 	@Autowired
 	private ReviewService reviewService;
+	
+	@Autowired
+	private ProductOptionDao productOptionDao;
 
 	// 인터셉터 구현후에 관리자 기능 삭제
 	// 상품 목록
@@ -132,7 +136,12 @@ public class ProductController {
 			throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
 		model.addAttribute("product", product);
-
+		
+		//상품 옵션 목록 조회
+		List<ProductOptionDto> optionList = productOptionDao.selectListByProduct(productNo);
+	    model.addAttribute("optionList", optionList);
+	    
+	    //위시리스트 정보 조회
 		String loginId = (String) session.getAttribute("loginId");
 		boolean wishlisted = false;
 		int wishlistCount = wishlistService.count(productNo); // 총 찜 개수
@@ -148,6 +157,7 @@ public class ProductController {
 
 		model.addAttribute("wishlisted", wishlisted);
 		model.addAttribute("wishlistCount", wishlistCount);
+		
 
 		return "/WEB-INF/views/product/detail.jsp";
 	}
