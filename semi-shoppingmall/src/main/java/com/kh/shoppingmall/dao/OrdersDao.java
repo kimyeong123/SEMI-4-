@@ -45,7 +45,7 @@ public class OrdersDao {
 		jdbcTemplate.update(sql, params);
 	}
 	
-	// 1. R(Select): 내 주문 내역 목록 조회 (member_id 기준)
+	//내 주문 내역 목록 조회
 	public List<OrdersDto> selectListByMemberId(String ordersId) {
 		String sql = "select * from orders where orders_id = ? order by orders_no desc";
 
@@ -53,7 +53,7 @@ public class OrdersDao {
 		return jdbcTemplate.query(sql, ordersMapper, param);
 	}
 	
-	//1-1. 내 주문 내역 조회(마이페이지용 member_id기준) (추가한 내용)
+	//내 주문 내역 조회
 	public List<OrdersSummaryVO> selectSummaryListByMemberId(String ordersId) {
 		String sql = "select * from order_summary where orders_id = ? order by orders_no desc";
 		
@@ -62,7 +62,6 @@ public class OrdersDao {
 	}
 	
 	
-	// 2. R(Select): 주문 1건 기본 상세조회 (orders_no 기준)
 	// 이 함수는 OrdersDto의 기본 정보만 가져옴. 나중에 OrderDetailsVO로 확장 필요.
 	public OrdersDto selectOneByOrderNo(int ordersNo) {
 		String sql = "select * from orders where orders_no = ?";
@@ -85,7 +84,7 @@ public class OrdersDao {
 		
 	}
 	
-	//멤버 아이디 지우는 기능(추가됨)
+	//멤버 아이디 지우는 기능
 	public boolean clearMemberId(String memberId) {
 		String sql = "update orders set orders_id = null where orders_id = ? ";
 		Object[] param = {memberId};
