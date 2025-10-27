@@ -19,7 +19,7 @@ public class CartController {
 	private CartService cartService;
 
 	@PostMapping("/add")
-	public String add(@RequestParam int productNo, 
+	public String add(@RequestParam int productNo,
 			@RequestParam int optionNo,
             @RequestParam(defaultValue = "1") int amount,
             HttpSession session

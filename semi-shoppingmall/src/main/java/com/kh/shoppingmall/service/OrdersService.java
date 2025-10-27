@@ -10,14 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.shoppingmall.dao.CartDao;
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dao.OrderDetailDao;
+import com.kh.shoppingmall.dao.OrderListDao;
 import com.kh.shoppingmall.dao.OrdersDao;
 import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
-import com.kh.shoppingmall.dto.CartDto;
 import com.kh.shoppingmall.dto.OrderDetailDto;
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.vo.CartDetailVO;
+import com.kh.shoppingmall.vo.OrderListVO;
 import com.kh.shoppingmall.vo.OrdersSummaryVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -36,6 +37,9 @@ public class OrdersService {
 
 	@Autowired
 	private CartDao cartDao;
+	
+	@Autowired
+	private OrderListDao orderListDao;
 
 	// 장바구니에 담은 제품의 가격이 변동될 경우 다시 조회하는 경우 사용
 	@Autowired
@@ -146,6 +150,42 @@ public class OrdersService {
 	//memberId로 주문 내역 가져오기
 	public List<OrdersDto> getOrderListByMember(String memberId) {
 	    return ordersDao.selectListByMemberId(memberId);
+	}
+	
+	//memberId로 주문 내역 가져오기
+	public List<OrderListVO> getOrderListSummaryByMember(String memberId) {
+	    // 단순 조회이므로 DAO 호출만으로 충분
+	    return orderListDao.selectList(memberId);
+	}
+	
+	//주문 취소시 로직 작성
+	@Transactional
+	public boolean cancelOrder(int ordersNo, String memberId) {
+	    // 1. 주문 정보 확인
+	    OrdersDto order = ordersDao.selectOneByOrderNo(ordersNo);
+	    if (order == null || !order.getOrdersId().equals(memberId)) {
+	        return false; // 주문 없거나 내 주문 아님
+	    }
+
+	    // 2. 취소 가능한 상태인지 확인 (예: '결제완료' 또는 '배송준비중')
+	    if (!order.getOrdersStatus().equals("결제완료") && !order.getOrdersStatus().equals("배송준비중")) {
+	        return false; // 취소 불가 상태
+	    }
+
+	    // 3. 주문 상세 내역 조회
+	    List<OrderDetailDto> details = orderDetailDao.selectListByOrdersNo(ordersNo);
+
+	    // 4. 재고 복구
+	    for (OrderDetailDto detail : details) {
+	        boolean stockUpdated = productOptionDao.updateStock(detail.getOptionNo(), detail.getOrderAmount()); // 수량만큼 다시 더함
+	        if (!stockUpdated) {
+	            // 재고 복구 실패 시 롤백
+	            throw new RuntimeException("재고 복구 중 오류 발생: 옵션 " + detail.getOptionNo());
+	        }
+	    }
+
+	    // 5. 주문 상태 변경
+	    return ordersDao.update(ordersNo, "주문취소");
 	}
 
 }

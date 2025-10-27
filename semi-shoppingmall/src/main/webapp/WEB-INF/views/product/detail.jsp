@@ -199,8 +199,7 @@
 		});
 		
 		// ===================================
-		// 6. ⭐리뷰 별점 기능 (Star Rating)⭐
-		// ⭐⭐ 이 코드가 $(function() { ... }); 블록 안으로 들어와야 작동합니다. ⭐⭐
+		// 6. 리뷰 별점 기능 (Star Rating)
 		// ===================================
 
 		// 6-1. 마우스 오버 시 채우기
@@ -245,188 +244,25 @@
 				}
 			});
 		});
-		// 7. ⭐장바구니 담기 기능⭐
-        // ===================================
-        $("#addToCartBtn").on("click", function() {
-            var quantity = $("#cartQuantity").val();
-            
-            if (quantity < 1 || isNaN(quantity)) {
-                alert("수량을 1개 이상 입력해주세요.");
-                $("#cartQuantity").val(1);
-                return;
-            }
+		
+		// ===================================
+		// 7. 장바구니 담기 기능
+		// ===================================
+        $("#addToCartBtn").on("click", function() {
+            var quantity = $("#cartQuantity").val();
+            
+            if (quantity < 1 || isNaN(quantity)) {
+                alert("수량을 1개 이상 입력해주세요.");
+                $("#cartQuantity").val(1);
+                return;
+            }
 
-            $.ajax({
-                url: "${pageContext.request.contextPath}/rest/cart/add",
-                method: "post",
-                data: {
-                    productNo: productNo,
-                    cartAmount: quantity 
-                },
-                success: function(response) {
-                    // response는 성공/실패 여부 또는 추가 정보를 담을 수 있습니다.
-                    if (response.result) { // 서버에서 { "result": true } 등을 반환한다고 가정
-                        if (confirm("장바구니에 상품을 담았습니다. 지금 장바구니로 이동하시겠습니까?")) {
-                            location.href = "${pageContext.request.contextPath}/cart/list"; // 장바구니 목록 페이지로 이동
-                        }
-                    } else {
-                        alert("장바구니 담기에 실패했습니다.");
-                    }
-                }
-            });
-        });
-	}); 
-</script>
-
-<div class="container w-1100">
-	<h1>상품 상세정보</h1>
-
-	<c:if test="${product.productThumbnailNo != null}">
-		<img
-			src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${product.productThumbnailNo}"
-			width="150" height="150" style="object-fit: cover;">
-	</c:if>
-
-	<div id="wishlist-heart"
-		style="cursor: pointer; font-size: 24px; display: inline-block; margin-top: 10px;">
-		<c:choose>
-			<c:when test="${wishlisted}">
-				<i class="fa-solid fa-heart" style="color: red; font-size: 22px;"></i>
-			</c:when>
-			<c:otherwise>
-				<i class="fa-regular fa-heart" style="color: red; font-size: 22px;"></i>
-			</c:otherwise>
-		</c:choose>
-		<span id="wishlist-count">${wishlistCount}</span>
-	</div>
-	
-	<%-- 장바구니 추가 폼 --%>
-    <%-- (CSS로 위치 조정 필요: 예: display: inline-block; vertical-align: middle; margin-left: 15px;) --%>
-    <form action="${pageContext.request.contextPath}/cart/add" method="post" style="display: inline-block; vertical-align: middle; margin-left: 15px;">
-        <input type="hidden" name="productNo" value="${product.productNo}">
-
-        <select name="optionNo" required style="padding: 5px; margin-right: 5px;">
-            <option value="">-- 옵션 선택 --</option>
-            <c:forEach var="option" items="${optionList}">
-                <c:if test="${option.optionStock > 0}">
-                    <option value="${option.optionNo}">${option.optionValue} (${option.optionName})</option>
-                </c:if>
-                <c:if test="${option.optionStock <= 0}">
-                    <option value="${option.optionNo}" disabled>${option.optionValue} (${option.optionName}) - 품절</option>
-                </c:if>
-            </c:forEach>
-        </select>
-
-        <%-- 수량 입력 --%>
-        <input type="number" name="amount" value="1" min="1" required style="width: 50px; padding: 5px; margin-right: 5px;">
-
-        <%-- 장바구니 버튼 --%>
-        <button type="submit" class="btn btn-primary">
-             <i class="fa-solid fa-cart-shopping"></i> <%-- 장바구니 아이콘 (선택) --%>
-             장바구니
-        </button>
-    </form>
-	
-	<div style="margin-top: 30px;">
-	<br> <br>
-
-	<table border="1" width="100%" class="table table-bordered">
-		<tr>
-			<th width="25%">번호</th>
-			<td>${product.productNo}</td>
-		</tr>
-		<tr>
-			<th>이름</th>
-			<td>${product.productName}</td>
-		</tr>
-		<tr>
-			<th>가격</th>
-			<td><fmt:formatNumber value="${product.productPrice}"
-					pattern="#,###원" /></td>
-		</tr>
-		<tr>
-			<th>설명</th>
-			<td>${product.productContent}</td>
-		</tr>
-		<tr>
-			<th>평균 평점</th>
-			<td><c:if test="${product.productAvgRating != null}">
-					<fmt:formatNumber value="${product.productAvgRating}" pattern="0.0" /> 점
-                </c:if> <c:if test="${product.productAvgRating == null}">
-                    아직 평점이 없습니다.
-                </c:if></td>
-		</tr>
-	</table>
-
-	<div style="margin-top: 30px;">
-		<h3>리뷰 작성</h3>
-		<form id="reviewForm" enctype="multipart/form-data">
-			<input type="hidden" name="productNo" value="${product.productNo}">
-
-			<div id="reviewRatingStars"
-				style="font-size: 20px; color: #ccc; cursor: pointer; display: inline-block;">
-				<i class="fa-regular fa-star star-input" data-rating="1"></i> <i
-					class="fa-regular fa-star star-input" data-rating="2"></i> <i
-					class="fa-regular fa-star star-input" data-rating="3"></i> <i
-					class="fa-regular fa-star star-input" data-rating="4"></i> <i
-					class="fa-regular fa-star star-input" data-rating="5"></i>
-			</div>
-			<input type="hidden" name="reviewRating" id="reviewRatingInput"
-				value="0"><br>
-			<textarea name="reviewContent" rows="4" cols="50"
-				class="form-control" placeholder="리뷰를 작성해주세요."></textarea>
-			<br> <label>첨부파일:</label>
-			<%-- attachments 이름으로 다중 파일 첨부 필드 추가 --%>
-			<input type="file" name="attachments" multiple class="form-control">
-			<br>
-
-			<button type="button" id="submitReviewBtn" class="btn btn-primary">리뷰
-				작성</button>
-		</form>
-	</div>
-
-	<h3>리뷰 목록</h3>
-	<table class="w-100 table table-bordered review-table-fixed">
-		<thead>
-			<tr>
-				<th style="width: 15%;">작성자</th>
-				<th style="width: 15%;">평점</th>
-				<th style="width: auto;">내용</th>
-				<th style="width: 15%;">작성일</th>
-				<th>관리</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="review" items="${reviewList}">
-				<tr id="review-${review.reviewNo}">
-					<td>${review.memberNickname}</td>
-					<td><span style="white-space: nowrap;"> <c:forEach
-								begin="1" end="${review.reviewRating}">
-								<i class="fa-solid fa-star text-warning"></i>
-							</c:forEach> <c:forEach begin="${review.reviewRating + 1}" end="5">
-								<i class="fa-regular fa-star"></i>
-							</c:forEach>
-					</span></td>
-					<td class="review-content">${review.reviewContent}</td>
-					<td><fmt:formatDate value="${review.reviewCreatedAt}"
-							pattern="yyyy-MM-dd" /></td>
-					<td><c:if test="${sessionScope.loginId == review.memberId}">
-							<%-- data-review-no 속성을 사용하여 리뷰 번호 전달 --%>
-							<button class="btn btn-sm btn-edit"
-								data-review-no="${review.reviewNo}">수정</button>
-							<button class="btn btn-sm btn-danger btn-delete"
-								data-review-no="${review.reviewNo}">삭제</button>
-						</c:if></td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-
-	<div style="margin-top: 20px;">
-		<a href="list" class="btn btn-secondary">목록으로 이동</a>
-	</div>
-
-	<hr>
-</div>
-
-<jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
+            $.ajax({
+                url: "${pageContext.request.contextPath}/rest/cart/add",
+                method: "post",
+                data: {
+                    productNo: productNo,
+                    cartAmount: quantity 
+                },
+                success: function(response) {
+                    // response는 성공/실패 여부
