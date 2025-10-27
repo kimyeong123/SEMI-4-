@@ -30,9 +30,9 @@ public class CsBoardDao {
 				+ ") "
 				+ "values(?, ?, ?, systimestamp, ?, ?, ?, ?, ?)"; //기존 방식
 		Object[] params = {
-				csBoardDto.getCsBoardNo() ,csBoardDto.getCsBoardTitle(), csBoardDto.getCsBoardWriter(),
-				 csBoardDto.getCsBoardContent(), csBoardDto.getCsBoardNotice(), csBoardDto.getCsBoardGroup(), 
-				 csBoardDto.getCsBoardOrigin(), csBoardDto.getCsBoardDepth()
+				csBoardDto.getCsBoardNo() ,csBoardDto.getCsBoardTitle(), csBoardDto.getCsBoardWriter(), 
+				csBoardDto.getCsBoardContent(), csBoardDto.getCsBoardNotice(), 
+				csBoardDto.getCsBoardGroup(), csBoardDto.getCsBoardOrigin(), csBoardDto.getCsBoardDepth()
 		};
 		
 		jdbcTemplate.update(sql, params);
@@ -58,7 +58,7 @@ public class CsBoardDao {
 
 	public boolean update (CsBoardDto csBoardDto) {
 		String sql  = "update cs_board set cs_board_title = ?, cs_board_etime = systimestamp, "
-				+ "cs_board_content = ?, cs_board_notice = ?, where cs_board_no = ?";
+				+ "cs_board_content = ?, cs_board_notice = ? where cs_board_no = ?";
 		Object[] params = {csBoardDto.getCsBoardTitle(), csBoardDto.getCsBoardContent(), 
 				csBoardDto.getCsBoardNotice(), csBoardDto.getCsBoardNo()};
 		
@@ -179,6 +179,13 @@ public class CsBoardDao {
 		Object[] param = {csBoardWriter};
 		
 		return jdbcTemplate.query(sql, csBoardListMapper, param);
+	}
+	
+	public int countReplies(int csBoardGroup) {
+		String sql = "select count (*) from cs_board  where cs_board_group = ? and cs_board_depth = 1";
+		Object[] param = {csBoardGroup};
+		
+		return jdbcTemplate.queryForObject(sql, Integer.class, param);
 	}
 	
 }

@@ -49,7 +49,15 @@
 	
 	<div class="cell">
 		<a href="write" class="btn btn-positive">글쓰기</a> 
-		<a href="write?csBoardOrigin=${csBoardDto.csBoardNo}" class="btn btn-positive">답글쓰기</a> 
+		
+		<c:if test="${sessionScope.loginLevel == '관리자'}">
+        	<%-- 1. 관리자만 볼 수 있고, 2. 답글이 없으며, 3. 현재 글이 Depth 0(원본 문의)일 때만 답글쓰기 버튼 표시 --%>
+        	<c:if test="${!hasReply && csBoardDto.csBoardDepth == 0}">
+            	<a href="write?csBoardOrigin=${csBoardDto.csBoardNo}" class="btn btn-positive">답글쓰기</a> 
+        	</c:if>
+    	</c:if>
+		
+<%-- 		<a href="write?csBoardOrigin=${csBoardDto.csBoardNo}" class="btn btn-positive">답글쓰기</a>  --%>
 		<%-- 내 글일 경우 수정 삭제를 모두 표시 --%>
 		<c:if test="${sessionScope.loginId != null}">
 		<c:choose>
