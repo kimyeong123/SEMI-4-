@@ -56,15 +56,10 @@ public class InterceptorConfiguration implements WebMvcConfigurer{ //웹 기본 
 		.addPathPatterns("/admin/member/detail", "/admin/member/edit","/admin/member/drop")//현재는 "/member/~"
 		.order(4);
 		
-		//관리자 물품 상세/수정/삭제 금지 인터셉터 등록
-		registry.addInterceptor(preventAdminInterceptor)
-		.addPathPatterns("/admin/product/detail", "/admin/product/edit","/admin/product/delete")
-		.order(4);
-		
 		//리뷰 작성자만 (수정/삭제) 인터셉터
 		registry.addInterceptor(reviewAuthorInterceptor)
 		.addPathPatterns("/rest/review/update", "/rest/review/delete")
-		.order(5);
+		.order(4);
 		
 		//(추후) 문의글 (수정, 삭제), 관리자(삭제)_ 인터셉터 등록
 //		registry.addInterceptor(boardOwnerInterceptor)

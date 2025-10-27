@@ -4,121 +4,77 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <style>
+/* ... (CSS 스타일은 생략하고 기존과 동일하게 유지됩니다) ... */
 .menu.flex-box {
     display: flex;
-    justify-content: center; /* 가운데 정렬 */
+    justify-content: center; 
     width: 100%;
-    border-bottom: 2px solid #333; /* 메뉴 아래쪽에 굵은 선 추가 */
+    border-bottom: 2px solid #333; 
     margin-bottom: 20px;
 }
+.category-menu { width: auto; white-space: nowrap; }
+.category-menu ul { list-style: none; padding: 0; margin: 0; display: flex; width: 100%; }
+.category-menu > ul > li { position: relative; display: inline-block; font-weight: bold; text-transform: uppercase; flex-shrink: 0; }
+.category-menu a { text-decoration: none; padding: 10px 20px; display: block; color: #333; letter-spacing: 0.5px; transition: background-color 0.2s; }
+.category-menu a:hover { background-color: #ebebeb; }
+.sub-menu { display: none !important; position: absolute; top: 100%; left: 0; z-index: 20; min-width: 180px; background-color: #f7f7f7; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+.sub-menu li { display: block; }
+.sub-menu a { padding: 12px 15px; display: block; white-space: nowrap; color: #333; font-weight: normal; }
+.category-menu > ul > li:hover > .sub-menu { display: block !important; }
 
-.category-menu {
-    width: auto; 
-    white-space: nowrap; 
-}
-
-.category-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    width: 100%;
-}
-
-/* ⭐수정: li display 유지 및 flex-shrink: 0 설정 (줄어듦 방지)⭐ */
-.category-menu > ul > li {
-    position: relative;
-    display: inline-block;
-    font-weight: bold; 
-    text-transform: uppercase;
-    flex-shrink: 0; 
-}
-
-/* 최상위 메뉴 항목 스타일 */
-.category-menu a {
-    text-decoration: none;
-    padding: 10px 20px; 
-    display: block;
-    color: #333; /* 글씨 색상 */
-    letter-spacing: 0.5px; /* 글자 간격 약간 추가 */
-    transition: background-color 0.2s; 
-}
-
-.category-menu a:hover {
-    background-color: #ebebeb; /* 호버 배경색 */
-}
-
-/* 서브 메뉴 숨기기 */
-.sub-menu {
-    display: none !important; 
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 20; /* 헤더 메뉴보다 높게 설정 */
-    min-width: 180px; 
-    background-color: #f7f7f7; 
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); 
-}
-
-.sub-menu li {
-    display: block;
-}
-
-.sub-menu a {
-    padding: 12px 15px; 
-    display: block;
-    white-space: nowrap;
+/* 관리자 메뉴 링크에만 스타일 적용 (필요하다면) */
+.category-menu a.admin-mode {
     color: #333;
-    font-weight: normal; /* 서브 메뉴는 기본 굵기로 */
-}
-
-/* 마우스 호버 시 서브 메뉴 표시 */
-.category-menu > ul > li:hover > .sub-menu {
-    /* ⭐수정: !important로 표시 강제⭐ */
-    display: block !important;
-}
-.category-menu a.admin-menu-link {
-    color: #dc3545; /* 빨간색 글씨 */
     font-weight: bold;
 }
-.category-menu a.admin-menu-link:hover {
-    background-color: #f8d7da; /* 살짝 옅은 빨간색 배경 */
+.category-menu a.admin-mode:hover {
+    background-color: #f8d7da;
     color: #dc3545;
 }
 </style>
 <div class="menu flex-box">
 	<nav class="category-menu">
 		<ul>
+			<%-- 1. URL 경로 설정: 관리자 여부에 따라 접두사(prefix)와 스타일 클래스를 설정합니다. --%>
+			<c:set var="urlPrefix" value=""/>
+			<c:set var="linkClass" value=""/>
+			<c:if test="${sessionScope.loginLevel == '관리자'}">
+				<c:set var="urlPrefix" value="/admin"/>
+				<c:set var="linkClass" value="admin-mode"/>
+			</c:if>
+			
+			<%-- 2. 전체 상품 목록 링크 --%>
 			<li>
-			    <a href="/product/list">
+			    <a href="${urlPrefix}/product/list" class="${linkClass}">
 			        전체
 			    </a>
 			</li>
 			
-			<%-- 2. 최상위 카테고리 반복 (가운데) --%>
+			<%-- 3. 카테고리 반복: 설정된 접두사(${urlPrefix})와 클래스(${linkClass})를 사용하여 링크 생성 --%>
 			<c:forEach var="topCategory" items="${categoryTree}">
-				<li><a
-					href="/product/list?categoryNo=${topCategory.categoryNo}">
-						${topCategory.categoryName} </a> <c:if
-						test="${not empty topCategory.children}">
+				<li>
+					<a href="${urlPrefix}/product/list?categoryNo=${topCategory.categoryNo}" class="${linkClass}">
+						${topCategory.categoryName} 
+					</a> 
+					<c:if test="${not empty topCategory.children}">
 						<ul class="sub-menu">
 							<c:forEach var="subCategory" items="${topCategory.children}">
-								<li><a
-									href="/product/list?categoryNo=${subCategory.categoryNo}">
-										${subCategory.categoryName} </a></li>
+								<li>
+									<a href="${urlPrefix}/product/list?categoryNo=${subCategory.categoryNo}" class="${linkClass}">
+										${subCategory.categoryName} 
+									</a>
+								</li>
 							</c:forEach>
 						</ul>
-					</c:if></li>
+					</c:if>
+				</li>
 			</c:forEach>
 			
-			<c:if test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
-			<li>
-			    <a href="/admin/product/list" class="admin-menu-link">
-			        상품 관리
-			    </a>
-			</li>
+			<%-- ⭐ 추가 관리자 메뉴가 필요하면 여기에 추가 ⭐
+			<c:if test="${sessionScope.loginLevel == '관리자'}">
+				<li><a href="/admin/order/list" class="admin-mode">주문 관리</a></li>
 			</c:if>
+			--%>
 		</ul>
 	</nav>
 </div>

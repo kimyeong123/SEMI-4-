@@ -70,12 +70,12 @@ public class AdminProductController {
                       @RequestParam(value = "optionValueList", required = false) List<String> optionValueList
     ) throws Exception {
 
-        // ✅ 1. 카테고리 구성
+        //  1. 카테고리 구성
         List<Integer> categoryNoList = new ArrayList<>();
         if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
         if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
 
-        // ✅ 2. 옵션 구성 (이 부분 수정됨)
+        //  2. 옵션 구성 (이 부분 수정됨)
         List<ProductOptionDto> optionList = new ArrayList<>();
         if (optionNameList != null && !optionNameList.isEmpty() &&
             optionValueList != null && !optionValueList.isEmpty()) {
@@ -95,34 +95,51 @@ public class AdminProductController {
             }
         }
 
-        // ✅ 3. 상품 등록
+        //  3. 상품 등록
         int productNo = productService.register(productDto, optionList, categoryNoList, thumbnailFile, detailImageList);
 
-        // ✅ 4. 상세 페이지로 이동
+        //  4. 상세 페이지로 이동
         return "redirect:/admin/product/detail?productNo=" + productNo;
     }
 
     // ---------------- 상품 상세 ----------------
-    @GetMapping("/detail")
-    public String detail(@RequestParam int productNo, Model model, HttpSession session) {
-        ProductDto product = productService.getProduct(productNo);
-        if (product == null)
-            throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        @GetMapping("/detail")
+        public String adminDetail(
+            @RequestParam(required = false) Integer productNo, 
+            Model model, 
+            HttpSession session) {
+            
+            // 1. productNo 누락 시 처리: 관리자 목록으로 리다이렉트
+            if (productNo == null) {
+                return "redirect:/admin/product/list"; 
+            }
 
-        List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo);
+            // 2. 상품 조회 및 예외 처리
+            ProductDto product = productService.getProduct(productNo);
+            if (product == null) {
+                throw new TargetNotfoundException("존재하지 않는 상품 번호");
+            }
+            
+            // 상품 옵션 목록 조회
+            List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo); // productService 사용 권장
 
-        String loginId = (String) session.getAttribute("loginId");
-        boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
+            // 위시리스트 정보 조회 (관리자 페이지에서는 이 정보가 필요 없을 수도 있지만, 기존 로직 유지)
+            String loginId = (String) session.getAttribute("loginId");
+            boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 
-        model.addAttribute("product", product);
-        model.addAttribute("optionList", optionList);
-        model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
-        model.addAttribute("wishlisted", wishlisted);
-        model.addAttribute("wishlistCount", wishlistService.count(productNo));
-        model.addAttribute("avgRating", reviewService.getAverageRating(productNo));
+            // 리뷰 평점 평균 계산
+            double avg = reviewService.getAverageRating(productNo);
+            product.setProductAvgRating(avg);
 
-        return "/WEB-INF/views/admin/product/detail.jsp";
-    }
+            model.addAttribute("product", product);
+            model.addAttribute("optionList", optionList);
+            model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
+            model.addAttribute("wishlisted", wishlisted);
+            model.addAttribute("wishlistCount", wishlistService.count(productNo));
+            model.addAttribute("avgRating", avg); // 평균 평점 다시 추가
+
+            return "/WEB-INF/views/admin/product/detail.jsp";
+        }
 
     // ---------------- 상품 수정 ----------------
     @GetMapping("/edit")
