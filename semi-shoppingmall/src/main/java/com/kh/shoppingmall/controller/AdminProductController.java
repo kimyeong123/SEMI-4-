@@ -33,15 +33,20 @@ public class AdminProductController {
     public String list(@RequestParam(value = "column", required = false) String column,
                        @RequestParam(value = "keyword", required = false) String keyword,
                        @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+                       @RequestParam(value = "order", required = false, defaultValue = "desc") String order,
                        HttpSession session, Model model) throws SQLException {
 
-        List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo);
-        for (ProductDto p : list)
-            p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo()));
+        // Service에서 이미 평점 계산을 포함한 정렬된 리스트를 가져옴
+        List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, order);
+        
+        // ⭐ Service에서 이미 평점을 계산했으므로 이 코드는 제거합니다. ⭐
+        // for (ProductDto p : list)
+        //     p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo()));
 
         model.addAttribute("productList", list);
         model.addAttribute("column", column);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("order", order); 
         model.addAttribute("wishlistCounts", productService.getWishlistCounts());
         model.addAttribute("categoryTree", categoryService.getCategoryTree());
         return "/WEB-INF/views/admin/product/list.jsp";
@@ -75,7 +80,7 @@ public class AdminProductController {
         if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
         if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
 
-        //  2. 옵션 구성 (이 부분 수정됨)
+        //  2. 옵션 구성
         List<ProductOptionDto> optionList = new ArrayList<>();
         if (optionNameList != null && !optionNameList.isEmpty() &&
             optionValueList != null && !optionValueList.isEmpty()) {
@@ -121,9 +126,9 @@ public class AdminProductController {
             }
             
             // 상품 옵션 목록 조회
-            List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo); // productService 사용 권장
+            List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo);
 
-            // 위시리스트 정보 조회 (관리자 페이지에서는 이 정보가 필요 없을 수도 있지만, 기존 로직 유지)
+            // 위시리스트 정보 조회
             String loginId = (String) session.getAttribute("loginId");
             boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 
@@ -136,7 +141,7 @@ public class AdminProductController {
             model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
             model.addAttribute("wishlisted", wishlisted);
             model.addAttribute("wishlistCount", wishlistService.count(productNo));
-            model.addAttribute("avgRating", avg); // 평균 평점 다시 추가
+            model.addAttribute("avgRating", avg);
 
             return "/WEB-INF/views/admin/product/detail.jsp";
         }

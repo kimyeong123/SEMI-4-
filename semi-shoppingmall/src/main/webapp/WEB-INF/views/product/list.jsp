@@ -53,8 +53,7 @@ $(document).on("click", ".wishlistIcon", function() {
 	<table border="1" width="100%">
 		<thead>
 			<tr>
-				<th>썸네일</th>
-				<th>번호</th>
+				<th>이미지</th>
 				<th>상품명</th>
 				<th>가격</th>
 				<th>평균 평점</th>
@@ -70,7 +69,6 @@ $(document).on("click", ".wishlistIcon", function() {
 								width="50" height="50" style="object-fit: cover;">
 						</c:if></td>
 
-					<td>${p.productNo}</td>
 					<td><a href="detail?productNo=${p.productNo}">${p.productName}</a>
 						<i class="wishlistIcon ${wishlistStatus[p.productNo] ? 'fa-solid' : 'fa-regular'} fa-heart red" data-product-no="${p.productNo}"></i>
 						<span class="wishlist-count">${wishlistCounts[p.productNo]}</span>
