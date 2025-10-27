@@ -1,18 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 			</div>
-
-            <!-- 사이드바(생략가능) -->
-            <!-- <div class="w-200">우측</div> -->
-
+            </div>
         </div>
+    <div class="main-footer" style="width: 100%; padding: 30px 0; background-color: #f7f7f7; border-top: 1px solid #ddd;">
         
-        <!-- 푸터 영역 -->
-        <hr>
-        <div class="flex-box mb-50">
+        <div class="content-area mb-50" style="display: flex; min-height: unset; padding: 0;">
+            
             <div class="w-50">
                 <div class="cell">
-                    <h2>KH정보교육원</h2>
+                    <h2>KH Shopping</h2>
                 </div>
                 <div class="cell">
                     OO시 OO구 OO동 000-000번지
@@ -84,7 +82,6 @@
                 </div>
             </div>
         </div>
-        
     </div>
-</body>
+    </body>
 </html>

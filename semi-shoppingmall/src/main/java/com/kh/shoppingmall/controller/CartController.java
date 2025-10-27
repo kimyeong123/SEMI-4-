@@ -17,19 +17,19 @@ public class CartController {
 
 	@Autowired
 	private CartService cartService;
-	
+
 	@PostMapping("/add")
-	public String add(@RequestParam int productNo, 
+	public String add(@RequestParam int productNo,
 			@RequestParam int optionNo,
             @RequestParam(defaultValue = "1") int amount,
             HttpSession session
 						) {
-		
+
 		String memberId = (String) session.getAttribute("loginId");
-		
+
 		// 1. 로그인 확인
         if (memberId == null) return "redirect:/member/login";
-        
+
         try {
             //CartDto 생성 및 정보 설정
             CartDto cartDto = new CartDto();
