@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dto.MemberDto;
@@ -19,6 +20,7 @@ import com.kh.shoppingmall.service.CartService;
 import com.kh.shoppingmall.service.OrdersService;
 import com.kh.shoppingmall.service.WishlistService;
 import com.kh.shoppingmall.vo.CartDetailVO;
+import com.kh.shoppingmall.vo.OrderListVO;
 import com.kh.shoppingmall.vo.OrdersSummaryVO;
 import com.kh.shoppingmall.vo.WishlistDetailVO;
 
@@ -144,7 +146,7 @@ public class OrdersController {
 			return "redirect:/member/login";
 
 		// 주문 내역 목록 조회 (OrdersService에 메소드 필요)
-		List<OrdersDto> orderList = ordersService.getOrderListByMember(memberId); // 예시 메소드명, Dto 또는 VO 사용
+		List<OrderListVO> orderList = ordersService.getOrderListSummaryByMember(memberId); // 예시 메소드명, Dto 또는 VO 사용
 		model.addAttribute("orderList", orderList);
 
 		return "/WEB-INF/views/orders/list.jsp";
@@ -170,4 +172,30 @@ public class OrdersController {
 
 		return "/WEB-INF/views/orders/detail.jsp";
 	}
+	
+	//주문 취소 메소드
+	@PostMapping("/cancel")
+	public String cancel(@RequestParam int ordersNo, 
+				HttpSession session, RedirectAttributes redirectAttributes
+			) {
+		String memberId = (String) session.getAttribute("loginId");
+	    if (memberId == null) {
+	        return "redirect:/member/login";
+	    }
+
+	    try {
+	        boolean success = ordersService.cancelOrder(ordersNo, memberId); // Service 호출
+	        if (success) {
+	            redirectAttributes.addFlashAttribute("message", "주문이 정상적으로 취소되었습니다.");
+	        } else {
+	            redirectAttributes.addFlashAttribute("error", "주문을 취소할 수 없습니다."); // 예: 이미 배송중
+	        }
+	    } catch (Exception e) {
+	        // log.error("주문 취소 오류", e);
+	        redirectAttributes.addFlashAttribute("error", "주문 취소 중 오류가 발생했습니다.");
+	    }
+
+	    return "redirect:/orders/list"; // 주문 내역 페이지로 리다이렉트
+	}
+	
 }
