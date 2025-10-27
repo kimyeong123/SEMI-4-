@@ -19,7 +19,8 @@ public class OrderListDao {
 	private OrderListMapper orderListMapper;
 	
 	public List<OrderListVO> selectList(String ordersId){
-		String sql = "select * from order_list_summary where orders_id=?";
+		String sql = "select * from order_list_summary "
+				+ "where orders_id=? order by orders_no desc";
 		
 		Object[] params = { ordersId };
 		
