@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.vo;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class OrdersSummaryVO {
 	private int ordersNo;
 	private String ordersId;
-	private int totalPrice;
+	private int ordersTotalPrice;
 	private String ordersRecipient;
 	private String ordersRecipientContact;
 	private String ordersShippingPost;
@@ -30,4 +32,9 @@ public class OrdersSummaryVO {
 	
 	//썸네일 불러오기
 	private String thumbnailName;
+	
+	private Integer productThumbnailNo;
+	
+	// 주문 생성 시간
+	private Timestamp ordersCreatedAt;
 }

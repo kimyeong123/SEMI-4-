@@ -244,7 +244,7 @@
 					<td>${order.ordersNo}</td>
 					<td><a href="/order/detail?ordersNo=${order.ordersNo}">${order.productName}</a></td>
 					<td>${order.ordersTotalPrice}원</td>
-					<td><fmt:formatDate value="${order.ordersDate}"
+					<td><fmt:formatDate value="${order.ordersCreatedAt}"
 							pattern="yyyy-MM-dd HH:mm" /></td>
 					<td>${order.ordersStatus}</td>
 					<td><a href="/order/detail?ordersNo=${order.ordersNo}"

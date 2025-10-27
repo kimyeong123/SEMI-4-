@@ -15,12 +15,12 @@ public class OrdersSummaryMapper implements RowMapper<OrdersSummaryVO> {
 		return OrdersSummaryVO.builder()
 					.ordersNo(rs.getInt("orders_no"))
 					.ordersId(rs.getString("orders_id"))
-					.totalPrice(rs.getInt("total_price"))
+					.ordersTotalPrice(rs.getInt("orders_totalprice"))
 					.ordersRecipient(rs.getString("orders_recipient"))
-					.ordersRecipientContact(rs.getString("orders_recipient_contact"))
-					.ordersShippingPost(rs.getString("orders_shipping_post"))
-					.ordersShippingAddress1(rs.getString("orders_shipping_address1"))
-					.ordersShippingAddress2(rs.getString("orders_shipping_address2"))
+					.ordersRecipientContact(rs.getString("orders_recipientcontact"))
+					.ordersShippingPost(rs.getString("orders_shippingpost"))
+					.ordersShippingAddress1(rs.getString("orders_shippingaddress1"))
+					.ordersShippingAddress2(rs.getString("orders_shippingaddress2"))
 					.ordersStatus(rs.getString("orders_status"))
 					.orderAmount(rs.getInt("order_amount"))
 					.pricePerItem(rs.getInt("price_per_item"))
@@ -29,6 +29,8 @@ public class OrdersSummaryMapper implements RowMapper<OrdersSummaryVO> {
 					.optionName(rs.getString("option_name"))
 					.optionValue(rs.getString("option_value"))
 					.thumbnailName(rs.getString("thumbnail_name"))
+					.productThumbnailNo(rs.getInt("product_thumbnail_no"))
+					.ordersCreatedAt(rs.getTimestamp("orders_created_at"))
 				.build();
 	}
 }
