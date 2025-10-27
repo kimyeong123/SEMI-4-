@@ -12,7 +12,7 @@ public class CartDto {
 	private int cartNo;
 	private String memberId;
 	private int productNo;
-	private int optionNo;
+	private Integer optionNo;
 	private int cartAmount;
 	private Timestamp cartCreatedAt;
 }

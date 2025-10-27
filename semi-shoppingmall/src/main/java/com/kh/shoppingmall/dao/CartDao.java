@@ -54,7 +54,7 @@ public class CartDao {
 	}
 	
 	// 장바구니에 이미 담긴 상품인지 확인하는 메소드
-	public CartDto findItem(String memberId, int optionNo) {
+	public CartDto findItem(String memberId, Integer optionNo) {
 	    String sql = "select * from cart where member_id = ? and option_no = ?";
 	    Object[] params = {memberId, optionNo};
 	    List<CartDto> list = jdbcTemplate.query(sql, cartMapper, params);

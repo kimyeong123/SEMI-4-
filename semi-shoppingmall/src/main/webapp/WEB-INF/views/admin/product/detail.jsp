@@ -5,7 +5,14 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp" />
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
+<style>
+    .field { padding:6px; border:1px solid #ccc; border-radius:5px; }
+    .btn { border:none; padding:6px 10px; border-radius:5px; cursor:pointer; }
+    .btn-positive { background:#4CAF50; color:white; }
+    .btn-primary { background:#2196F3; color:white; }
+    .btn-secondary { background:#999; color:white; text-decoration:none; padding:6px 12px; border-radius:5px; }
+    .btn-danger { background:#e74c3c; color:white; }
+</style>
 <script>
 $(function() {
 
@@ -114,7 +121,6 @@ $(function() {
 
     <hr>
 
-    <!-- ✅ 옵션 등록 폼 -->
     <h3>옵션 등록</h3>
     <form id="option-add-form">
         <input type="hidden" name="productNo" value="${product.productNo}">
@@ -134,7 +140,6 @@ $(function() {
         </table>
     </form>
 
-    <!-- ✅ 옵션 목록 -->
     <h3>옵션 목록</h3>
     <table border="1" width="100%">
         <thead>
@@ -166,7 +171,6 @@ $(function() {
 
     <hr>
 
-    <!-- ✅ 리뷰 목록 -->
     <h3>리뷰 목록</h3>
     <table class="w-100 table table-border">
         <thead>
@@ -208,14 +212,5 @@ $(function() {
         </form>
     </div>
 </div>
-
-<style>
-    .field { padding:6px; border:1px solid #ccc; border-radius:5px; }
-    .btn { border:none; padding:6px 10px; border-radius:5px; cursor:pointer; }
-    .btn-positive { background:#4CAF50; color:white; }
-    .btn-primary { background:#2196F3; color:white; }
-    .btn-secondary { background:#999; color:white; text-decoration:none; padding:6px 12px; border-radius:5px; }
-    .btn-danger { background:#e74c3c; color:white; }
-</style>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp" />

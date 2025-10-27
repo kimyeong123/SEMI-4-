@@ -317,7 +317,7 @@ textarea.field {
 
 /* 기본 메뉴 디자인 */
 .menu {
-    background-color: #18dcff;
+    background-color: #bdc3c7;
     display: flex;
 }
 .menu > .divider {

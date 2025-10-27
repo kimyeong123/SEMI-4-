@@ -1,0 +1,15 @@
+.error-image {
+    max-width: 100%;
+    height: auto;
+    width: 400px; /* 여기서 크기를 제어합니다. */
+    display: block;
+    margin: 20px auto; /* 중앙 정렬용 */
+}
+
+/* 2. 전체 레이아웃 정렬 (권장) */
+.error-page-wrap {
+    display: flex;
+    flex-direction: column; /* 세로로 쌓기 */
+    align-items: center;    /* 가운데 정렬 */
+    text-align: center;
+}

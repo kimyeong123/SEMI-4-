@@ -83,10 +83,7 @@ $(function() {
 				<h3>${item.productName}</h3>
 				<p class="price">${item.productPrice}원</p>
 
-				<form action="/cart/add" method="post">
-					<input type="hidden" name="productNo" value="${item.productNo}">
-					<button type="submit" class="btn-cart">장바구니 담기</button>
-				</form>
+				<a href="/product/detail?productNo=${item.productNo}">상품 보기</a>
 
 				<form action="/member/wishlist/delete" method="post">
 					<input type="hidden" name="productNo" value="${item.productNo}">
