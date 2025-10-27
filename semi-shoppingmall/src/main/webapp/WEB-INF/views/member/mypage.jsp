@@ -239,15 +239,15 @@
 		<h2>나의 상품 주문 내역</h2>
 		<table class="w-100 table table-border">
 			<!-- 주문 내역 반복 -->
-			<c:forEach var="order" items="${ordersList}">
+			<c:forEach var="orders" items="${ordersList}">
 				<tr>
-					<td>${order.ordersNo}</td>
-					<td><a href="/order/detail?ordersNo=${order.ordersNo}">${order.productName}</a></td>
-					<td>${order.ordersTotalPrice}원</td>
-					<td><fmt:formatDate value="${order.ordersCreatedAt}"
+					<td>${orders.ordersNo}</td>
+					<td><a href="/orders/detail?ordersNo=${orders.ordersNo}">${orders.productName}</a></td>
+					<td>${orders.ordersTotalPrice}원</td>
+					<td><fmt:formatDate value="${orders.ordersCreatedAt}"
 							pattern="yyyy-MM-dd HH:mm" /></td>
-					<td>${order.ordersStatus}</td>
-					<td><a href="/order/detail?ordersNo=${order.ordersNo}"
+					<td>${orders.ordersStatus}</td>
+					<td><a href="/orders/detail?ordersNo=${orders.ordersNo}"
 						class="btn btn-primary btn-sm">상세보기</a></td>
 				</tr>
 			</c:forEach>
