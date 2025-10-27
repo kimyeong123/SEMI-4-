@@ -81,7 +81,7 @@ $(function() {
 					src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${item.attachmentNo}"
 					alt="${item.productName}">
 				<h3>${item.productName}</h3>
-				<p class="price">${item.productPrice}원</p>
+				<p class="price"><fmt:formatNumber value="${item.productPrice}" pattern="#,##0"/>원</p>
 
 				<a href="/product/detail?productNo=${item.productNo}">상품 보기</a>
 
