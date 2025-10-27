@@ -69,6 +69,13 @@ public class CsBoardController {
 		if(csBoardDto == null) throw new TargetNotfoundException("존재하지 않는 글 번호");
 		model.addAttribute("csBoardDto", csBoardDto);//게시글 정보 첨부
 		
+		if(csBoardDto.getCsBoardDepth() == 0) {
+			int replyCount = csBoardDao.countReplies(csBoardDto.getCsBoardGroup());
+			boolean hasReply = replyCount > 0;
+			//답글 존재여부를 모델에 첨부
+			model.addAttribute("hasReply", hasReply);
+		}
+		
 		if(csBoardDto.getCsBoardWriter() != null) {//작성자가 존재한다면(탈퇴하지 않았다면)
 			MemberDto memberDto = memberDao.selectOne(csBoardDto.getCsBoardWriter()); 
 			model.addAttribute("memberDto", memberDto);//작성자 정보 첨부

@@ -26,7 +26,7 @@
 
 <div class="container w-850 mb-30">
 	<div class="cell center" >
-		<h1>문의계시판</h1>
+		<h1>문의게시판</h1>
 	</div>
 	<div class="cell">
 		타인에 대한 무분별한 비방 또는 욕설은 제제당할 수 있습니다
@@ -48,12 +48,6 @@
 		<h3>계시된 글 개수: ${csBoardList.size()}</h3>
 	</div>
 	
-	<%-- 페이지 네비게이터  PageVO의 내용을 토대로 작성 --%>
-	<jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include>
-		
-
-	
-
 		<table class="table w-100 table-border table-hover table-striped mt-30" >
 			<thead>
 				<tr>
