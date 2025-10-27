@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
 	private int categoryNo;
 	private String categoryName;
-	  private Integer parentCategoryNo; // null 허용
+	 private Integer parentCategoryNo; // null 허용
+	 private int categoryOrder;
 }

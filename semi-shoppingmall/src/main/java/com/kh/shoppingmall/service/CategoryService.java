@@ -1,6 +1,8 @@
 package com.kh.shoppingmall.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +58,7 @@ public class CategoryService {
         }
     }
     
-    // 부모 카테고리만 조회하는 메서드 추가
+    // 부모 카테고리만 조회
     public List<CategoryDto> getParentCategories() {
         return categoryDao.selectParentCategories();
     }
@@ -67,26 +69,26 @@ public class CategoryService {
     }
     
     
-    //카테고리 계층 처리
+    // 카테고리 계층 처리 (메뉴 순서 정렬 로직 추가)
     public List<CategoryTreeVO> getCategoryTree(){
     	
-    	//모든 카테고리 호출
+    	// 모든 카테고리 호출 (DAO의 selectList 쿼리에 ORDER BY가 적용되어 있어야 함)
     	List<CategoryDto> categoryList = categoryDao.selectList();
     	
-    	//계층 구조로 변환
-    	Map<Integer, CategoryTreeVO> menuMap = new HashMap<>(); //번호로 노드를 빠르게 찾기 위한 Map
-    	List<CategoryTreeVO> rootMenu = new ArrayList<>(); //최상위 메뉴만 담는 리스트
+    	// 계층 구조로 변환
+    	Map<Integer, CategoryTreeVO> menuMap = new HashMap<>(); // 번호로 노드를 빠르게 찾기 위한 Map
+    	List<CategoryTreeVO> rootMenu = new ArrayList<>(); // 최상위 메뉴만 담는 리스트
     	
-    	//Dto를 VO로 변환
+    	// Dto를 VO로 변환
     	for(CategoryDto categoryDto : categoryList) {
     		menuMap.put(categoryDto.getCategoryNo(), new CategoryTreeVO(categoryDto));
     	}
     	
-    	//부모-자식 관계 설정
+    	// 부모-자식 관계 설정
     	for(CategoryTreeVO menu : menuMap.values()) {
     		Integer parentNo = menu.getParentCategoryNo();
     		
-    		//부모 번호가 없으면 최상위 메뉴에 추가
+    		// 부모 번호가 없으면 최상위 메뉴에 추가
     		if(parentNo == null || parentNo == 0) {
     			rootMenu.add(menu);
     		}
@@ -98,15 +100,15 @@ public class CategoryService {
     		}
     	}
     	
-    	//최상위 메뉴 반환
+        // 최상위 메뉴를 categoryOrder 기준으로 정렬
+        Collections.sort(rootMenu, new Comparator<CategoryTreeVO>() {
+            @Override
+            public int compare(CategoryTreeVO o1, CategoryTreeVO o2) {
+                return Integer.compare(o1.getCategoryDto().getCategoryOrder(), o2.getCategoryDto().getCategoryOrder());
+            }
+        });
+    	
+    	// 최상위 메뉴 반환
     	return rootMenu;
     }
-    
-    
-    
 }
-
-
-
-
-

@@ -112,7 +112,7 @@ $(function() {
     <br>
 
     <table border="1" width="100%">
-        <tr><th width="25%">번호</th><td>${product.productNo}</td></tr>
+        <tr><th width="25%">상품 번호</th><td>${product.productNo}</td></tr>
         <tr><th>이름</th><td>${product.productName}</td></tr>
         <tr><th>가격</th><td><fmt:formatNumber value="${product.productPrice}" type="number"/>원</td></tr>
         <tr><th>설명</th><td>${product.productContent}</td></tr>
