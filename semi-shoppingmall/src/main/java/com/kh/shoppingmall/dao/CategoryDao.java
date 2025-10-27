@@ -29,7 +29,7 @@ public class CategoryDao {
 
     // R
     public List<CategoryDto> selectList() {
-        String sql = "select * from category";
+        String sql = "select * from category order by parent_category_no asc, category_order asc"; 
         return jdbcTemplate.query(sql, categoryMapper);
     }
 
@@ -43,13 +43,15 @@ public class CategoryDao {
 
     // 부모 카테고리만 조회
     public List<CategoryDto> selectParentCategories() {
-        String sql = "select * from category where parent_category_no is null order by category_no asc";
+        String sql = "SELECT category_no, category_name, parent_category_no, category_order "
+                   + "FROM category WHERE parent_category_no IS NULL ORDER BY category_order ASC";
         return jdbcTemplate.query(sql, categoryMapper);
     }
-
+    
     // 특정 부모 카테고리의 하위 카테고리 조회
     public List<CategoryDto> selectChildren(int parentCategoryNo) {
-        String sql = "select * from category where parent_category_no = ? order by category_no asc";
+        String sql = "SELECT category_no, category_name, parent_category_no, category_order "
+                   + "FROM category WHERE parent_category_no = ? ORDER BY category_order ASC";
         Object[] params = { parentCategoryNo };
         return jdbcTemplate.query(sql, categoryMapper, params);
     }
@@ -78,4 +80,5 @@ public class CategoryDao {
         Object[] params = { categoryNo };
         return jdbcTemplate.update(sql, params) > 0;
     }
+    
 }

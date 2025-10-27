@@ -12,10 +12,14 @@ import com.kh.shoppingmall.dto.CategoryDto;
 public class CategoryMapper implements RowMapper<CategoryDto> {
 	@Override
 	public CategoryDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-		return CategoryDto.builder()
-					.categoryNo(rs.getInt("category_no"))
-					.categoryName(rs.getString("category_name"))
-					.parentCategoryNo(rs.getInt("parent_category_no"))
-				.build();
+        Integer parentCategoryNo = rs.getObject("parent_category_no", Integer.class);
+
+        return CategoryDto.builder()
+                // 모두 소문자 스네이크 케이스로 통일
+                .categoryNo(rs.getInt("category_no")) 
+                .categoryName(rs.getString("category_name"))
+                .parentCategoryNo(parentCategoryNo) 
+                .categoryOrder(rs.getInt("category_order"))
+            .build();
 	}
 }
