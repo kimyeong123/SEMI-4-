@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <style>
 	.btn {
 		border: none;
@@ -65,8 +66,8 @@
 						<i class="fa-solid fa-heart red"></i>
 						<span>${wishlistCounts[p.productNo]}</span>
 					</td>
-					<td>${p.productPrice}</td>
-					<td>${p.productAvgRating}</td>
+					<td><fmt:formatNumber value="${p.productPrice}" pattern="#,##0"/>원</td>
+					<td><fmt:formatNumber value="${p.productAvgRating}" pattern="0.00"/></td>
 					<td>
 						<a href="edit?productNo=${p.productNo}">수정</a> |
 						<form action="${pageContext.request.contextPath}/admin/product/delete"
