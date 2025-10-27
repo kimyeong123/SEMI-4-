@@ -116,7 +116,7 @@ $(function() {
         <tr><th>이름</th><td>${product.productName}</td></tr>
         <tr><th>가격</th><td><fmt:formatNumber value="${product.productPrice}" type="number"/>원</td></tr>
         <tr><th>설명</th><td>${product.productContent}</td></tr>
-        <tr><th>평균 평점</th><td>${product.productAvgRating}</td></tr>
+        <tr><th>평균 평점</th><td><fmt:formatNumber value="${product.productAvgRating}" pattern="0.00"/></td></tr>
     </table>
 
     <hr>

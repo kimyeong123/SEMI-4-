@@ -56,8 +56,8 @@
         // (제공해주신 자바스크립트 코드는 이전에 작성한 그대로입니다)
         window.addEventListener("load", function () {
             var state = {
-                memberContactValid: true,
-                memberAdddressValid: true
+                memberContactValid: false,
+                memberAdddressValid: false
             };
 
             //전화번호
