@@ -13,6 +13,7 @@
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 <style>
+/* ... (기존 style 태그 내용 유지) ... */
 .container {
     width: 90%; 
     max-width: 1280px; 
@@ -163,6 +164,11 @@
 						</a>
 					</c:otherwise>
 				</c:choose>
+                
+                <a href="/csBoard/list"> 
+                    <i class="fa-solid fa-headset"></i> 
+                    <span>고객센터</span>
+                </a>
 			</div>
 		</div>
 
@@ -207,4 +213,3 @@
 				</c:choose>
 
 			</div>
-
