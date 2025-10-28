@@ -6,11 +6,8 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <div class="container">
-	<%-- 전체 컨텐츠 감싸는 div --%>
 	<h2>최근 주문 내역</h2>
 	<p>상품의 출고지가 여러 곳이거나 온라인 물류센터 보관 장소에 따라 분리 배송될 수 있습니다.</p>
-	<%-- (필요하다면 '전체보기' 링크 등 추가) --%>
-
 	<hr>
 
 	<c:if test="${not empty message}">
@@ -35,7 +32,7 @@
 			<c:forEach var="order" items="${orderList}">
 				<div class="order-item"
 					style="border: 1px solid #eee; margin-bottom: 20px; padding: 15px;">
-					<%-- 1. 주문 헤더 --%>
+					<%-- 주문 헤더 --%>
 					<div class="order-header"
 						style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; font-size: 0.9em; color: #555;">
 				 		<div>
@@ -54,7 +51,7 @@
 						</div>
 					</div>
 
-					<%-- 2. 주문 본문 (대표 상품 정보) --%>
+					<%-- 주문 본문 --%>
 					<div class="order-body"
 						style="display: flex; align-items: center; justify-content: space-between;">
 						<%-- 상품 정보 (이미지, 이름, 옵션, 수량, 가격) --%>
@@ -88,8 +85,8 @@
 						</div>
 
 						<%-- 주문 상태 및 버튼 --%>
-						<div style="text-align: right;">
-							<div style="font-weight: bold; margin-bottom: 10px;">${order.ordersStatus}</div>
+						<div class="center">
+							<div style="font-weight: bold;" class="mb-10">${order.ordersStatus}</div>
 
 							<%-- JSP의 주문 취소 버튼 부분 --%>
 							<c:if
@@ -98,7 +95,7 @@
 									onsubmit="return confirm('정말 주문을 취소하시겠습니까?');">
 									<%-- 확인 메시지 추가 --%>
 									<input type="hidden" name="ordersNo" value="${order.ordersNo}">
-									<button type="submit">주문취소</button>
+									<button type="submit" class="btn btn-neutral">주문취소</button>
 								</form>
 							</c:if>
 						</div>

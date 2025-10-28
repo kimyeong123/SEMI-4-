@@ -26,13 +26,14 @@ public class CsBoardDao {
 				+ "cs_board("
 				+ "cs_board_no, cs_board_title, cs_board_writer, "
 				+ "cs_board_wtime, cs_board_content, cs_board_notice, "
-				+ "cs_board_group, cs_board_origin, cs_board_depth "
+				+ "cs_board_group, cs_board_origin, cs_board_depth , "
+				+ "cs_board_secret"
 				+ ") "
-				+ "values(?, ?, ?, systimestamp, ?, ?, ?, ?, ?)"; //기존 방식
+				+ "values(?, ?, ?, systimestamp, ?, ?, ?, ?, ?, ?)"; //기존 방식
 		Object[] params = {
 				csBoardDto.getCsBoardNo() ,csBoardDto.getCsBoardTitle(), csBoardDto.getCsBoardWriter(), 
-				csBoardDto.getCsBoardContent(), csBoardDto.getCsBoardNotice(), 
-				csBoardDto.getCsBoardGroup(), csBoardDto.getCsBoardOrigin(), csBoardDto.getCsBoardDepth()
+				csBoardDto.getCsBoardContent(), csBoardDto.getCsBoardNotice(), csBoardDto.getCsBoardGroup(), 
+				csBoardDto.getCsBoardOrigin(), csBoardDto.getCsBoardDepth(), csBoardDto.getCsBoardSecret()
 		};
 		
 		jdbcTemplate.update(sql, params);
@@ -58,20 +59,22 @@ public class CsBoardDao {
 
 	public boolean update (CsBoardDto csBoardDto) {
 		String sql  = "update cs_board set cs_board_title = ?, cs_board_etime = systimestamp, "
-				+ "cs_board_content = ?, cs_board_notice = ? where cs_board_no = ?";
-		Object[] params = {csBoardDto.getCsBoardTitle(), csBoardDto.getCsBoardContent(), 
-				csBoardDto.getCsBoardNotice(), csBoardDto.getCsBoardNo()};
+				+ "cs_board_content = ?, cs_board_notice = ?, cs_board_secret = ? "
+				+ "where cs_board_no = ?";
+		Object[] params = {csBoardDto.getCsBoardTitle(), 
+				csBoardDto.getCsBoardContent(), csBoardDto.getCsBoardNotice(), 
+				csBoardDto.getCsBoardSecret(), csBoardDto.getCsBoardNo()};
 		
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 
-	
-	public boolean updateReadCount (int csBoardNo) {
-		String sql = "update cs_board set cs_board_read = cs_board_read+1 where cs_board_no = ?";
-		Object[] param = {csBoardNo};
-		
-		return jdbcTemplate.update(sql, param) > 0;
-	}
+	//조회수는 불필요
+//	public boolean updateReadCount (int csBoardNo) {
+//		String sql = "update cs_board set cs_board_read = cs_board_read+1 where cs_board_no = ?";
+//		Object[] param = {csBoardNo};
+//		
+//		return jdbcTemplate.update(sql, param) > 0;
+//	}
 	
 	public int getSeq()
 	{
@@ -124,6 +127,14 @@ public class CsBoardDao {
 		}
 
 	}
+	
+
+	
+	
+	
+	
+	
+	
 	
 	//페이지 네비게이터 구현에 필요한 카운트 구하는 메소드(목록 검색 따로)
 	public int count(PageVO pageVO) {

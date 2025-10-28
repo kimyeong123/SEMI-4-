@@ -19,14 +19,19 @@ public class CsBoardDto {
 	private Timestamp csBoardWtime;
 	private Timestamp csBoardEtime;
 	private String csBoardContent;
-	private int csBoardRead;
-	private int csBoardLike;
-	private int csBoardReply;
+	//필요 없어서 삭제
+//	private int csBoardRead;
+//	private int csBoardLike;
+//	private int csBoardReply;
 	@Builder.Default
 	private String csBoardNotice = "N";
 	private int csBoardGroup;
 	private Integer csBoardOrigin;
 	private int csBoardDepth;
+	
+	// [추가] 비공개 여부 필드
+	@Builder.Default
+    private String csBoardSecret = "N";
 	
 	//EL에서 ${boardDto.boardWriteTime}으로부를 수 있는 메소드
 	public String getBoardWriteTime()
