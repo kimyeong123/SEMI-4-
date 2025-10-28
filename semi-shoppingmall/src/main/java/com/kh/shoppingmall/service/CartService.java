@@ -16,7 +16,7 @@ public class CartService {
     // 1. 장바구니 추가 (핵심 로직)
     public void addItem(CartDto cartDto) {
         // 이미 담긴 상품인지 확인
-        CartDto existingItem = cartDao.findItem(cartDto.getMemberId(), cartDto.getOptionNo());
+        CartDto existingItem = cartDao.findItem(cartDto.getMemberId(), cartDto.getProductNo(),cartDto.getOptionNo());
 
         if (existingItem != null) {
             // 이미 있으면: 수량만 업데이트
@@ -42,6 +42,11 @@ public class CartService {
     // 4. 장바구니 상품 삭제
     public boolean removeItem(CartDto cartDto) {
         return cartDao.delete(cartDto); // member_id와 option_no 기준 또는 cart_no 기준
+    }
+    
+    public boolean removeItemByCartNo(int cartNo, String memberId) {
+        // (보안) CartDto item = cartDao.selectOneByCartNo(cartNo); ... 검증 로직 ...
+        return cartDao.deleteByCartNo(cartNo);
     }
 
     // 5. 장바구니 비우기 (주문 완료 시)

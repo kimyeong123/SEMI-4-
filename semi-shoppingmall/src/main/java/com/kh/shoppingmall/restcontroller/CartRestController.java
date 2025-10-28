@@ -28,7 +28,8 @@ public class CartRestController {
 	// 장바구니 추가
 	@PostMapping("/add")
 	public Map<String, Object> addItem(@RequestParam int productNo, 
-	                                   @RequestParam int cartAmount,
+										@RequestParam int optionNo,
+										@RequestParam(defaultValue = "1") int cartAmount,
 	                                   HttpSession session) {
 	    Object loginIdObj = session.getAttribute("loginId");
 	        
@@ -41,9 +42,7 @@ public class CartRestController {
 	    cartDto.setMemberId(memberId);
 	    cartDto.setProductNo(productNo);
 	    cartDto.setCartAmount(cartAmount);
-	    
-	    Integer defaultOptionNo = 8; // 👈 예시: 기본 옵션 번호 1번 사용
-	    cartDto.setOptionNo(defaultOptionNo);
+	    cartDto.setOptionNo(optionNo);
 	    
 	    try {
 	        System.out.println("CartDto Log: MemberID=" + cartDto.getMemberId() + 
@@ -87,11 +86,7 @@ public class CartRestController {
 			throw new UnauthorizationException("로그인이 필요합니다.");
 		}
 		try {
-			// cartNo가 정말 로그인한 회원의 것인지 확인 필요
-			CartDto cartDto = new CartDto();
-			cartDto.setCartNo(cartNo);
-			cartDto.setMemberId(memberId);
-			boolean result = cartService.removeItem(cartDto); // DTO 방식 사용
+			boolean result = cartService.removeItemByCartNo(cartNo, memberId); // DTO 방식 사용
 
 			if (!result) {
 				throw new TargetNotfoundException("해당 장바구니 항목을 찾을 수 없습니다.");
