@@ -170,7 +170,7 @@
 
 							if (state.ok() == false) { //상태가 모두 true가 아니라면
 								e.preventDefault(); //전송 취소
-								alert("이름과 주소를 모두 입력해야 해요");
+								alert("이름과 주소, 전화번호를 모두 입력해야 해요");
 							}
 							else {
 								if (!confirm("결제 하시겠습니까?")) {
