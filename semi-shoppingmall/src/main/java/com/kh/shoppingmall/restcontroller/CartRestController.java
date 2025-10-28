@@ -29,7 +29,7 @@ public class CartRestController {
 	@PostMapping("/add")
 	public Map<String, Object> addItem(@RequestParam int productNo, 
 	                                   @RequestParam int cartAmount,
-	                                   @RequestParam(required = false) Integer optionNo, // 👈 이 부분을 추가했습니다.
+	                                   @RequestParam(required = false) Integer optionNo, 
 	                                   HttpSession session) {
 	    Object loginIdObj = session.getAttribute("loginId");
 	        
@@ -54,7 +54,7 @@ public class CartRestController {
 	        System.out.println("CartDto Log: MemberID=" + cartDto.getMemberId() + 
 	                           ", ProductNo=" + cartDto.getProductNo() + 
 	                           ", Count=" + cartDto.getCartAmount() +
-	                           ", OptionNo=" + cartDto.getOptionNo()); // 👈 로그에 옵션 번호 추가
+	                           ", OptionNo=" + cartDto.getOptionNo()); 
 	        
 	        cartService.addItem(cartDto); 
 	        return Map.of("result", true);
@@ -87,8 +87,8 @@ public class CartRestController {
 
 	// 장바구니 삭제
 	@PostMapping("/delete")
-	public boolean removeItem(@RequestParam int productNo, // 👈 추가: 클라이언트로부터 productNo를 받음
-	                          @RequestParam int optionNo,  // 👈 추가: 클라이언트로부터 optionNo를 받음
+	public boolean removeItem(@RequestParam int productNo, 
+	                          @RequestParam int optionNo,  
                               HttpSession session) { 
 		
 		String memberId = (String) session.getAttribute("loginId");
