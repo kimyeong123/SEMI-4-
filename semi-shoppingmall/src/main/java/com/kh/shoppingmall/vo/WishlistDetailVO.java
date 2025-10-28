@@ -19,6 +19,7 @@ public class WishlistDetailVO {
     private int productNo;
     private String productName;
     private int productPrice;
+    private Integer optionNo;
     private int attachmentNo;
     private String attachmentName;
 }

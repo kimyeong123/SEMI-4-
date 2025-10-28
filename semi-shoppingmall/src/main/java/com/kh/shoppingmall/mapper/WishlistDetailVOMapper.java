@@ -18,6 +18,7 @@ public class WishlistDetailVOMapper implements RowMapper<WishlistDetailVO> {
                 .memberId(rs.getString("member_id"))
                 .createdAt(rs.getTimestamp("created_at"))
                 .productNo(rs.getInt("product_no"))
+                .optionNo(rs.getInt("option_no"))
                 .productName(rs.getString("product_name"))
                 .productPrice(rs.getInt("product_price"))
                 .attachmentNo(rs.getInt("attachment_no"))

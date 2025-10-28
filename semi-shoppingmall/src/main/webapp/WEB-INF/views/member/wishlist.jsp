@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -33,28 +32,28 @@ h2 {
 .wishlist-container {
 	display: flex; 
 	flex-wrap: wrap; 
-	gap: 20px; /* 카드 사이 간격 */
-	justify-content: flex-start; /* 왼쪽 정렬 */
+	gap: 20px;
+	justify-content: flex-start;
 	margin-bottom: 50px;
 }
 
 .wishlist-card {
 	display: flex;
-	flex-direction: column; /* 세로 배열 */
-	border: 1px solid #ddd; /* 모노크롬 테마에 맞게 조정 */
+	flex-direction: column;
+	border: 1px solid #ddd;
 	padding: 15px;
-	width: 250px; /* 카드 너비 고정 */
-	box-shadow: none; /* 그림자 제거 */
-	border-radius: 0; /* 네모난 형태 유지 */
+	width: 250px;
+	box-shadow: none;
+	border-radius: 0;
 	transition: box-shadow 0.2s;
 }
 
 .wishlist-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* 호버 시 그림자 추가 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .wishlist-card img {
-	width: 100%; /* 카드 너비에 꽉 차게 */
+	width: 100%;
 	height: 250px;
 	object-fit: cover;
 	margin-bottom: 15px; 
@@ -64,7 +63,6 @@ h2 {
 	font-size: 1.1em;
 	color: #333;
 	margin-bottom: 5px;
-    /* 텍스트가 길 경우 생략 처리 */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; 
@@ -93,7 +91,7 @@ h2 {
 /* === 버튼 스타일 (공통) === */
 .btn {
 	padding: 10px 15px;
-	border-radius: 5px; /* 버튼 둥글게 적용 */
+	border-radius: 5px;
 	cursor: pointer;
 	font-weight: normal;	
 	transition: background-color 0.2s, color 0.2s, border-color 0.2s, filter 0.2s;
@@ -125,7 +123,7 @@ h2 {
 	border-color: #a00;	
 	color: #a00;	
 	background-color: transparent;
-    padding: 10px 10px; /* 아이콘만 표시되도록 패딩 조정 */
+    padding: 10px 10px;
 }
 .btn-negative:hover {
     background-color: #fdd;
@@ -166,7 +164,6 @@ $(function() {
                 }
             },
             error: function(xhr) {
-                // 오류 발생 시 경고창만 띄우도록 유지
                 if (xhr.status === 401) {
                     alert("로그인이 필요합니다.");
                 } else {
@@ -176,32 +173,31 @@ $(function() {
         });
     });
     
-    // 장바구니 담기 기능 (AJAX)
+    // 장바구니 담기 기능 (AJAX) - optionNo 추가
     $(".btn-cart-move").on("click", function() {
-        // 상품 번호를 버튼의 data 속성에서 직접 가져옵니다. (HTML 수정으로 안정화)
         var productNo = $(this).data("product-no");
-        // var optionNo = $(this).data("option-no"); // 옵션 정보가 있다면 함께 사용
+        // 💡 data-option-no 값을 가져옵니다.
+        var optionNo = $(this).data("option-no");
 
         if (!productNo) {
             alert("상품 정보를 찾을 수 없습니다.");
             return;
         }
         
-        var quantity = 1; // 위시리스트에서 장바구니로 이동 시 기본 수량 1개
+        var quantity = 1;
 
         $.ajax({
             url: "${pageContext.request.contextPath}/rest/cart/add",
             method: "post",
             data: {
                 productNo: productNo,
-                // optionNo: optionNo, // 옵션이 있다면 이 줄을 활성화
+                optionNo: optionNo, // 💡 전송 데이터에 포함
                 cartAmount: quantity
             },
             success: function(response) {
                 alert("선택하신 상품이 장바구니에 추가되었습니다.");
             },
             error: function(xhr) {
-                // 요청하신 대로 에러페이지 이동 없이 alert만 띄우도록 유지
                 if (xhr.status === 401) {
                     alert("로그인이 필요합니다.");
                 } else {
@@ -241,10 +237,11 @@ $(function() {
 
 					<div class="button-group">
                         <button type="button" class="btn btn-black btn-cart-move" 
-                                data-product-no="${item.productNo}" 
-                                style="flex-grow: 3;">
-                            <i class="fa-solid fa-cart-shopping"></i> 장바구니에 추가
-                        </button>
+        					data-product-no="${item.productNo}" 
+        					data-option-no="${item.optionNo}" 
+       						style="flex-grow: 3;">
+    					<i class="fa-solid fa-cart-shopping"></i> 장바구니에 추가
+					</button>
                         
 						<button type="button" class="btn btn-delete btn-negative" data-product-no="${item.productNo}" style="flex-grow: 1;">
                             <i class="fa-solid fa-trash-can"></i>

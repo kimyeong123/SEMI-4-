@@ -61,9 +61,15 @@ public class WishlistDao {
 	}
 	
 	public List<WishlistDetailVO> selectDetailListByMemberId(String memberId) {
-	    String sql = "SELECT wishlist_no, member_id, created_at, product_no, product_name, product_price, attachment_no, attachment_name " +
-	                 "FROM wishlist_detail WHERE member_id = ?";
-	    return jdbcTemplate.query(sql, wishlistDetailVOMapper, memberId);
+		String sql = "SELECT "
+		           + "    T1.wishlist_no, T1.member_id, T1.created_at, T1.product_no, "
+		           + "    (SELECT MIN(option_no) FROM product_option WHERE product_no = T1.product_no) AS option_no, " 
+		           + "    T1.product_name, T1.product_price, T1.attachment_no, T1.attachment_name "
+		           + "FROM "
+		           + "    wishlist_detail T1 "
+		           + "WHERE "
+		           + "    T1.MEMBER_ID = ?"; 
+		return jdbcTemplate.query(sql, wishlistDetailVOMapper, memberId);
 	}
 
 
