@@ -27,7 +27,7 @@ public class CartController {
 
 		String memberId = (String) session.getAttribute("loginId");
 
-		// 1. 로그인 확인
+		//로그인 확인
         if (memberId == null) return "redirect:/member/login";
 
         try {

@@ -233,7 +233,7 @@
 				<%-- [추가] JSTL 반복문 --%>
 				<c:forEach var="item" items="${cartlist}" varStatus="status">
 					<div class="cell cart-item-row" data-cart-no="${item.cartNo}"
-						data-price="${item.productPrice}">
+						data-price="${item.productPrice}" data-order-date="${order.ordersCreatedAt.time}">
 
 						<div class="flex-box">
 							<div class="w-150" style="height: 150px;">
@@ -279,7 +279,9 @@
 
 						<div class="cell">
 							<div class="cell">무료배송</div>
-							<div class="cell">도착 예정일 : (배송 정보 필드 추가 필요)</div>
+							<div class="cell">
+    							도착 예정일 : ${estimatedDeliveryDate}
+							</div>
 						</div>
 					</div>
 

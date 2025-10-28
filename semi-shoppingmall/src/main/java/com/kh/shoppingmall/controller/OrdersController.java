@@ -1,6 +1,10 @@
 package com.kh.shoppingmall.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -66,6 +70,27 @@ public class OrdersController {
 		}
 		List<CartDetailVO> cartlist = cartService.getCartItems(memberId);
 		model.addAttribute("cartlist", cartlist); // 조회 결과를 모델에 추가
+		
+		//도착 예정일 계산 로직
+		LocalDate today = LocalDate.now(); //오늘 날짜
+	    LocalDate estimatedDate = today.plusDays(4); //4일 더하기
+
+	    DayOfWeek dayOfWeek = estimatedDate.getDayOfWeek(); //요일 구하기
+
+	    // 4. 주말 조정
+	    if (dayOfWeek == DayOfWeek.SATURDAY) { // 토요일이면 +2일
+	        estimatedDate = estimatedDate.plusDays(2);
+	    } else if (dayOfWeek == DayOfWeek.SUNDAY) { // 일요일이면 +1일
+	        estimatedDate = estimatedDate.plusDays(1);
+	    }
+
+	    // 5. 날짜 포맷
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일(E)", Locale.KOREAN);
+	    String formattedDeliveryDate = estimatedDate.format(formatter);
+
+	    // 6. 모델에 추가
+	    model.addAttribute("estimatedDeliveryDate", formattedDeliveryDate);
+	    
 		return "/WEB-INF/views/orders/cart.jsp";
 	}
 
