@@ -23,12 +23,10 @@ public class CartService {
         	);
 
         if (existingItem != null) {
-            // 이미 있으면: 수량만 업데이트
             int newAmount = existingItem.getCartAmount() + cartDto.getCartAmount();
             existingItem.setCartAmount(newAmount);
             cartDao.update(existingItem); // cart_no 기준으로 업데이트하는 DAO 메소드
         } else {
-            // 없으면: 새로 추가
             cartDao.insert(cartDto);
         }
     }
@@ -47,11 +45,6 @@ public class CartService {
     public boolean removeItem(CartDto cartDto) {
         return cartDao.delete(cartDto); // member_id와 option_no 기준 또는 cart_no 기준
     }
-    
-    public boolean removeItemByCartNo(int cartNo, String memberId) {
-        // (보안) CartDto item = cartDao.selectOneByCartNo(cartNo); ... 검증 로직 ...
-        return cartDao.deleteByCartNo(cartNo);
-    }
 
     // 5. 장바구니 비우기 (주문 완료 시)
     public int clearCart(String memberId) {
@@ -59,7 +52,6 @@ public class CartService {
     }
     
     public boolean removeItemByCartNo(int cartNo) {
-        // (CartDao에도 deleteByCartNo(int cartNo) 메소드가 추가되어야 함)
         return cartDao.deleteByCartNo(cartNo); 
     }
 }
