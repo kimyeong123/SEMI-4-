@@ -10,9 +10,45 @@
 <link rel="stylesheet" type="text/css" href="/summernote/custom-summernote.css">
 <script src="/summernote/custom-summernote.js"></script>
 
+<script type="text/javascript">
+// 문서가 로드된 후 실행 (jQuery의 ready 함수)
+$(document).ready(function() {
+    
+    // 폼 제출(submit) 이벤트를 가로챕니다.
+    $('#writeForm').submit(function(e) {
+        
+        // 1. 제목 필드 검증 (required 속성 검사는 브라우저에 맡기고, checkValidity로 확인)
+        var $titleField = $('input[name="csBoardTitle"]');
+        
+        // 브라우저 기본 required 검증을 통과하지 못하면 JS 검증을 건너뜁니다.
+        // checkValidity는 네이티브 DOM 메소드이므로 $titleField[0]를 사용해야 합니다.
+        if (!$titleField[0].checkValidity()) {
+            return; 
+        }
+
+        // 2. Summernote 내용 검증
+        var contentHtml = $('#csBoardContent').val();
+        
+        // HTML 태그를 제거하고 공백을 없앤 순수 텍스트를 확인
+        var pureText = contentHtml.replace(/<[^>]*>/g, '').trim();
+
+        // 내용이 비어있을 경우
+        if (pureText.length === 0) {
+            e.preventDefault(); // 폼 전송 중단
+            alert('게시글 내용을 입력해 주세요.');
+            
+            // Summernote 편집기로 포커스 이동 (이제 jQuery가 로드되었으므로 정상 작동)
+            $('#csBoardContent').summernote('focus');
+        }
+    });
+});
+
+</script>
+
+
 <div class="flex-fill"></div>
 
-<form autocomplete="off" action="write" method="post">
+<form autocomplete="off" action="write" method="post" id = "writeForm">
 <%-- 답글일 경우(csBoardOrigin이 있을 경우) 이것을 전달하는 코드를 작성 --%>
 <c:if test="${param.csBoardOrigin != null}">
 	<input type="hidden" name="csBoardOrigin" value="${param.csBoardOrigin}">
@@ -63,7 +99,7 @@
     </div>
     <div class="cell">
         <label>내용 *</label>
-        <textarea name="csBoardContent" class="summernote-editor"></textarea>
+        <textarea name="csBoardContent" class="summernote-editor" id = "csBoardContent"></textarea>
     </div>
     <div class="cell right">
         <a href="list" class="btn btn-neutral">목록으로</a>

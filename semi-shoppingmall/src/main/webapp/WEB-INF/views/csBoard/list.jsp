@@ -86,21 +86,20 @@
 								
 								<%--비공개 여부에 따라 링크를  조건부 처리 --%>
 								<c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-								<c:set var ="isWriterOrAdmin" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter }" />
-								
+								<c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
 								<c:choose>
-									<c:when test = 	"${ isSecret && !isWriterOrAdmin}">
+									<c:when test = 	"${ isSecret && !canAccessSecret}">
 										<%--비공개 글은 일반 사용자라면 링크 무효 --%>
-										${csBoardListVO.csBoardTitle}
 										<span class="board-secret-title ellipsis">
 											<i class="fa-solid fa-lock"></i> 
 										</span>
+										${csBoardListVO.csBoardTitle}
 									</c:when>
 									<c:otherwise>
 										<%--공개 글 또는 비공개글의 작성자와 관리자의 경우 --%>
 										<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
 											<c:if test="${isSecret }">
-												<i class="fa-solid fa-lock"></i> 
+												<i class="fa-solid fa-lock-open"></i>												
 											</c:if>
 											${csBoardListVO.csBoardTitle}										
 										</a>
@@ -133,8 +132,8 @@
 	<form action="list" method="get">
 		<div class = "center mb-30">
 			<select class="field" name="column">
-				<option value="board_title" ${column == 'cs_board_title' ? 'selected' : ''}>글 제목</option>
-				<option value="board_writer" ${column == 'cs_board_writer' ? 'selected' : '' }>작성자</option>
+				<option value="cs_board_title" ${column == 'cs_board_title' ? 'selected' : ''}>글 제목</option>
+				<option value="cs_board_writer" ${column == 'cs_board_writer' ? 'selected' : '' }>작성자</option>
 			</select>
 			 <input class = "field" type="text" name="keyword"  placeholder = "검색어"  value = "${keyword }"  required>
 			<button class ="btn btn-netural" type ="submit">검색</button>
