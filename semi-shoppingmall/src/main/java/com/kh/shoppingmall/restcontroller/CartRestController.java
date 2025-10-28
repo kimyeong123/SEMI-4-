@@ -27,41 +27,46 @@ public class CartRestController {
 
 	// 장바구니 추가
 	@PostMapping("/add")
-	public Map<String, Object> addItem(@RequestParam int productNo, 
-										@RequestParam int optionNo,
-										@RequestParam(defaultValue = "1") int cartAmount,
-	                                   HttpSession session) {
-	    Object loginIdObj = session.getAttribute("loginId");
-	        
-	    if (loginIdObj == null) {
-	        throw new UnauthorizationException("로그인이 필요합니다."); 
-	    }
-	    String memberId = String.valueOf(loginIdObj);
-	    
-	    CartDto cartDto = new CartDto();
-	    cartDto.setMemberId(memberId);
-	    cartDto.setProductNo(productNo);
-	    cartDto.setCartAmount(cartAmount);
-    
-	    cartDto.setOptionNo(optionNo);
-	    
-	    try {
-	        System.out.println("CartDto Log: MemberID=" + cartDto.getMemberId() + 
-	                           ", ProductNo=" + cartDto.getProductNo() + 
-	                           ", Count=" + cartDto.getCartAmount() +
-	                           ", OptionNo=" + cartDto.getOptionNo()); 
-	        
-	        cartService.addItem(cartDto); 
-	        return Map.of("result", true);
-	    } catch (Exception e) {
-	        e.printStackTrace(); 
-	        return Map.of("result", false, "error", "장바구니 추가 중 내부 서비스 오류");
-	    }
+	public Map<String, Object> addItem(@RequestParam int productNo, 
+	                                   @RequestParam int cartAmount,
+	                                   @RequestParam(required = false) Integer optionNo, 
+	                                   HttpSession session) {
+	    Object loginIdObj = session.getAttribute("loginId");
+	        
+	    if (loginIdObj == null) {
+	        throw new UnauthorizationException("로그인이 필요합니다."); 
+	    }
+	    String memberId = String.valueOf(loginIdObj);
+	    
+	    CartDto cartDto = new CartDto();
+	    cartDto.setMemberId(memberId);
+	    cartDto.setProductNo(productNo);
+	    cartDto.setCartAmount(cartAmount);
+	    
+	    if (optionNo == null || optionNo <= 0) {
+	        cartDto.setOptionNo(null); 
+	    } else {
+	        cartDto.setOptionNo(optionNo);
+	    }
+	    // --- CartDto 설정 끝 ---
+	    
+	    try {
+	        System.out.println("CartDto Log: MemberID=" + cartDto.getMemberId() + 
+	                           ", ProductNo=" + cartDto.getProductNo() + 
+	                           ", Count=" + cartDto.getCartAmount() +
+	                           ", OptionNo=" + cartDto.getOptionNo()); 
+	        
+	        cartService.addItem(cartDto); 
+	        return Map.of("result", true);
+	    } catch (Exception e) {
+	        e.printStackTrace(); 
+	        return Map.of("result", false, "error", "장바구니 추가 중 내부 서비스 오류");
+	    }
 	}
 
 	// 장바구니 수량 변경
 	@PostMapping("/update")
-	public boolean updateAmount(@ModelAttribute CartDto cartDto, HttpSession session) { 
+	public boolean updateAmount(@ModelAttribute CartDto cartDto, HttpSession session) { // cartNo, cartAmount 포함
 		String memberId = (String) session.getAttribute("loginId");
 		if (memberId == null) {
 			throw new UnauthorizationException("로그인이 필요합니다.");
@@ -82,9 +87,9 @@ public class CartRestController {
 
 	// 장바구니 삭제
 	@PostMapping("/delete")
-	public boolean removeItem(@RequestParam int productNo, 
-	                          @RequestParam int optionNo,  
-                              HttpSession session) { 
+	public boolean removeItem(@RequestParam int productNo, 
+	                          @RequestParam int optionNo,  
+                              HttpSession session) { 
 		
 		String memberId = (String) session.getAttribute("loginId");
 		if (memberId == null) {
@@ -92,19 +97,15 @@ public class CartRestController {
 		}
 		
 		try {
-			// DAO의 삭제 조건(member_id, product_no, option_no)에 맞추어 DTO 구성
 			CartDto cartDto = new CartDto();
-			// cartDto.setCartNo(cartNo); // DAO 쿼리가 cartNo를 사용하지 않으므로 제거 (혹은 주석 처리)
 			
 			cartDto.setMemberId(memberId);
-			cartDto.setProductNo(productNo); 
-			cartDto.setOptionNo(optionNo);  
+			cartDto.setProductNo(productNo); 
+			cartDto.setOptionNo(optionNo);   
 			
-			// Service 호출
-			boolean result = cartService.removeItem(cartDto); 
-			
+			boolean result = cartService.removeItem(cartDto); 
+
 			if (!result) {
-				// 삭제할 항목을 찾지 못했을 때 (이미 삭제되었거나 조건 불일치)
 				throw new TargetNotfoundException("해당 장바구니 항목을 찾을 수 없습니다.");
 			}
 			return true;
