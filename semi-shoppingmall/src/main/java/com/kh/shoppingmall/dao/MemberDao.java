@@ -166,11 +166,11 @@ public class MemberDao {
 	
 //	
 	//회원 프로필 기능
-	public void connect(String memberId, int attachmentNo) {
-		String sql = "insert into member_profile(member_id, attachment_no) values(?, ?)";
-		Object[] params = {memberId, attachmentNo};
-		jdbcTemplate.update(sql, params);
-	}
+//	public void connect(String memberId, int attachmentNo) {
+//		String sql = "insert into member_profile(member_id, attachment_no) values(?, ?)";
+//		Object[] params = {memberId, attachmentNo};
+//		jdbcTemplate.update(sql, params);
+//	}
 	
 	//memberService에서 사용하기 위해 재 활성화
 //	public int findAttachment(String memberId) {
@@ -200,7 +200,8 @@ public class MemberDao {
 	    Object[] params = {attachmentNo, memberId};
 	    return jdbcTemplate.update(sql, params) > 0;
 	}
-
+	
+	
 }
 
 

@@ -83,7 +83,6 @@ public class CartDao {
 	            cartDto.getProductNo(), 
 	            cartDto.getOptionNo()
 	    };
-		
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 

@@ -47,6 +47,11 @@ public class CartService {
     public boolean removeItem(CartDto cartDto) {
         return cartDao.delete(cartDto); // member_id와 option_no 기준 또는 cart_no 기준
     }
+    
+    public boolean removeItemByCartNo(int cartNo, String memberId) {
+        // (보안) CartDto item = cartDao.selectOneByCartNo(cartNo); ... 검증 로직 ...
+        return cartDao.deleteByCartNo(cartNo);
+    }
 
     // 5. 장바구니 비우기 (주문 완료 시)
     public int clearCart(String memberId) {

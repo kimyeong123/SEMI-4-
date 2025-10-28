@@ -23,13 +23,14 @@ import com.kh.shoppingmall.dto.CertDto;
 import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.service.AttachmentService;
 import com.kh.shoppingmall.service.EmailService;
-
+import com.kh.shoppingmall.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/rest/member")
 public class MemberRestController {
+
 	@Autowired
 	private MemberDao memberDao;
 	@ Autowired
@@ -38,6 +39,9 @@ public class MemberRestController {
 	private EmailService emailService;
 	@Autowired
 	private CertDao certDao;
+	@Autowired
+	private MemberService memberService;
+	
 
 	//인증 및 이메일은 아직 구현이 안된 관계로 뺌
 	
@@ -73,36 +77,28 @@ public class MemberRestController {
              throw new TargetNotfoundException("프로필 이미지 파일이 없습니다.");
         }
 
-        Integer oldAttachmentNo = null; // 기존 번호 저장용
-        Integer newAttachmentNo = null; // 새 번호 저장용
-
         try {
+        	memberService.updateProfileImage(memberId, attach);
             //기존 프로필 이미지 번호 조회
-            oldAttachmentNo = memberDao.findAttachment(memberId); // 수정된 DAO 메소드 (findProfileImageNo 권장)
-
-            //새 파일 업로드
-            newAttachmentNo = attachmentService.save(attach);
-
-            // 3. Member 테이블 업데이트 (새 번호로)
-            boolean updated = memberDao.updateProfileImage(memberId, newAttachmentNo);
-            if (!updated) {
-                 throw new RuntimeException("회원 정보 업데이트 실패");
-            }
-
-            // 4. 기존 프로필 이미지 삭제 (새 이미지 등록 성공 후, 기존 이미지가 있었을 경우)
-            if (oldAttachmentNo != null && oldAttachmentNo > 0) {
-                 attachmentService.delete(oldAttachmentNo);
-            }
+//            oldAttachmentNo = memberDao.findAttachment(memberId); // 수정된 DAO 메소드 (findProfileImageNo 권장)
+//
+//            //새 파일 업로드
+//            newAttachmentNo = attachmentService.save(attach);
+//
+//            // 3. Member 테이블 업데이트 (새 번호로)
+//            boolean updated = memberDao.updateProfileImage(memberId, newAttachmentNo);
+//            if (!updated) {
+//                 throw new RuntimeException("회원 정보 업데이트 실패");
+//            }
+//
+//            // 4. 기존 프로필 이미지 삭제 (새 이미지 등록 성공 후, 기존 이미지가 있었을 경우)
+//            if (oldAttachmentNo != null && oldAttachmentNo > 0) {
+//                 attachmentService.delete(oldAttachmentNo);
+//            }
 
             return true; // 성공
 
         } catch (Exception e) {
-            if (newAttachmentNo != null) {
-                try {
-                    attachmentService.delete(newAttachmentNo);
-                } catch (Exception deleteEx) {
-                }
-            }
             // 예외 다시 던지기 (ControllerAdvice에서 처리하도록)
             if (e instanceof UnauthorizationException || e instanceof TargetNotfoundException) {
                 throw e;
@@ -119,22 +115,25 @@ public class MemberRestController {
             throw new UnauthorizationException("로그인이 필요합니다.");
         }
 
-        Integer oldAttachmentNo = null;
+//        Integer oldAttachmentNo = null;
         try {
-            //기존 프로필 이미지 번호 조회
-            oldAttachmentNo = memberDao.findAttachment(memberId); // 수정된 DAO 메소드
-
-            //기존 이미지가 있을 경우에만 처리
-            if (oldAttachmentNo != null && oldAttachmentNo > 0) {
-                //Member 테이블 업데이트
-                boolean updated = memberDao.updateProfileImage(memberId, 0);
-                 if (!updated) {
-                     throw new RuntimeException("회원 정보 업데이트 실패 (프로필 null 설정)");
-                 }
-
-                //실제 파일 및 DB 레코드 삭제
-                attachmentService.delete(oldAttachmentNo);
-            }
+        	//기존 프로필 이미지 삭제 기능을 서비스로 옮김
+        	memberService.deleteProfileImage(memberId);
+        	
+        	//기존 프로필 이미지 번호 조회
+//            oldAttachmentNo = memberDao.findAttachment(memberId); // 수정된 DAO 메소드
+//
+//            //기존 이미지가 있을 경우에만 처리
+//            if (oldAttachmentNo != null && oldAttachmentNo > 0) {
+//                //Member 테이블 업데이트
+//                boolean updated = memberDao.updateProfileImage(memberId, 0);
+//                 if (!updated) {
+//                     throw new RuntimeException("회원 정보 업데이트 실패 (프로필 null 설정)");
+//                 }
+//
+//                //실제 파일 및 DB 레코드 삭제
+//                attachmentService.delete(oldAttachmentNo);
+//            }
             // else: 원래 프로필 없었으면 아무것도 안 함
 
             return true; // 성공

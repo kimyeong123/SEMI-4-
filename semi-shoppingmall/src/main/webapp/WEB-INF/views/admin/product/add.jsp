@@ -3,24 +3,36 @@
 
 <jsp:include page="/WEB-INF/views/template/header.jsp" />
 
+<link rel="stylesheet" type="text/css" href="/css/commons.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Summernote -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/lang/summernote-ko-KR.min.js"></script>
+<!-- option 관리용 js -->
+<script src="/js/option.js"></script>
+
+
 <div class="container w-600">
     <h1>상품 등록</h1>
 
     <form action="add" method="post" enctype="multipart/form-data">
+
         <!-- 상품 기본 정보 -->
         <div class="cell">
             <label>상품 이름 *</label>
             <input type="text" name="productName" required class="field w-100">
         </div>
-
+        
         <div class="cell">
             <label>상품 가격 *</label>
             <input type="number" name="productPrice" required min="0" class="field w-100">
         </div>
 
+        <!-- 상품 내용 -->
         <div class="cell">
             <label>상품 내용 *</label>
-            <textarea name="productContent" rows="5" required class="field w-100"></textarea>
+            <textarea name="productContent" rows="5" required class="field w-100 summernote-editor"></textarea>
         </div>
 
         <!-- 카테고리 선택 -->
@@ -44,7 +56,7 @@
             </select>
         </div>
 
-        <!-- ✅ 옵션 등록 -->
+        <!-- 옵션 등록 -->
         <div class="cell mt-40">
             <h3>옵션 등록</h3>
             <div id="option-container">
@@ -53,7 +65,6 @@
                         <label>옵션 이름 *</label>
                         <input type="text" name="optionNameList" placeholder="예: 색상" required class="field w-100">
                     </div>
-
                     <div class="cell">
                         <label>옵션 값 *</label>
                         <div class="option-values" style="display:flex; flex-wrap:wrap; gap:5px;">
@@ -64,125 +75,86 @@
                         </div>
                         <button type="button" class="btn btn-add-value mt-10">+ 값 추가</button>
                     </div>
-
                     <button type="button" class="btn btn-danger btn-remove-set mt-10">옵션 세트 삭제</button>
                     <hr>
                 </div>
             </div>
-
             <button type="button" id="btn-add-set" class="btn btn-positive mt-10">+ 옵션 세트 추가</button>
         </div>
-
-        <!-- 이미지 업로드 -->
         <div class="cell mt-30">
             <label>썸네일 *</label>
             <input type="file" name="thumbnailFile" required class="field w-100">
         </div>
-
-        <div class="cell">
-            <label>상세 이미지</label>
-            <input type="file" name="detailImageList" multiple>
-        </div>
-
-        <!-- 등록 버튼 -->
         <div class="cell mt-30">
             <button class="btn btn-positive w-100">상품 등록</button>
         </div>
     </form>
 </div>
 
-<style>
-    .cell { margin-bottom:15px; }
-    .field { padding:8px; border:1px solid #ccc; border-radius:5px; }
-    .option-set { border:1px solid #ddd; border-radius:10px; padding:15px; margin-bottom:15px; background:#fafafa; }
-    .option-item { display:flex; align-items:center; gap:5px; margin-bottom:5px; }
-    .option-field { width:120px; text-align:center; }
-    .btn { border:none; padding:6px 10px; border-radius:5px; cursor:pointer; }
-    .btn-delete-value { background:#ddd; }
-    .btn-positive { background:#4CAF50; color:#fff; }
-    .btn-danger { background:#e74c3c; color:white; }
-</style>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function() {
 
-    // ✅ 카테고리 하위 목록 불러오기
-    $('select[name="parentCategoryNo"]').change(function() {
+    // Summernote 설정
+    $(".summernote-editor").summernote({
+        height: 250,
+        minHeight: 200,
+        maxHeight: 400,
+        lang: "ko-KR",
+        placeholder: "상품 상세 내용을 입력하세요 (이미지 업로드 가능)",
+        callbacks: {
+            onImageUpload: function(files) {
+                var form = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    form.append("attach", files[i]);
+                }
+
+                $.ajax({
+                    processData: false,
+                    contentType: false,
+                    url: "${pageContext.request.contextPath}/attachment/upload",
+                    method: "post",
+                    data: form,
+                    success: function(response) {
+                        for (var i = 0; i < response.length; i++) {
+                            var img = $("<img>")
+                                .attr("src", "${pageContext.request.contextPath}/attachment/download?attachmentNo=" + response[i])
+                                .addClass("custom-image");
+                            $(".summernote-editor").summernote("insertNode", img[0]);
+                        }
+                    },
+                    error: function() {
+                        alert("이미지 업로드 실패! 서버 로그 확인 필요");
+                    }
+                });
+            }
+        }
+    });
+
+    // 하위 카테고리 불러오기
+    $("select[name='parentCategoryNo']").change(function() {
         var parentNo = $(this).val();
-        var $child = $('select[name="childCategoryNo"]');
+        var $child = $("select[name='childCategoryNo']");
 
         if (!parentNo) {
-            $child.html('<option value="">선택</option>');
+            $child.html("<option value=''>선택</option>");
             return;
         }
 
-        $.getJSON('${pageContext.request.contextPath}/admin/category/children', 
-            { parentCategoryNo: parentNo }, 
-            function(data) {
-                $child.empty().append('<option value="">선택</option>');
-                $.each(data, function(i, c) {
-                    $child.append('<option value="' + c.categoryNo + '">' + c.categoryName + '</option>');
-                });
+        $.ajax({
+            url: "${pageContext.request.contextPath}/admin/category/children",
+            method: "get",
+            data: { parentCategoryNo: parentNo },
+            success: function(data) {
+                $child.empty().append("<option value=''>선택</option>");
+                for (var i = 0; i < data.length; i++) {
+                    var c = data[i];
+                    $child.append("<option value='" + c.categoryNo + "'>" + c.categoryName + "</option>");
+                }
+            },
+            error: function() {
+                alert("하위 카테고리 불러오기 실패");
             }
-        ).fail(function() {
-            alert("하위 카테고리 로드 실패");
         });
-    });
-
-    // ✅ 옵션 세트 추가
-    $('#btn-add-set').click(function(){
-        const newSet = `
-        <div class="option-set">
-            <div class="cell">
-                <label>옵션 이름 *</label>
-                <input type="text" name="optionNameList" placeholder="예: 사이즈" required class="field w-100">
-            </div>
-
-            <div class="cell">
-                <label>옵션 값 *</label>
-                <div class="option-values" style="display:flex; flex-wrap:wrap; gap:5px;">
-                    <div class="option-item">
-                        <input type="text" name="optionValueList" placeholder="예: S" class="field option-field">
-                        <button type="button" class="btn btn-delete-value">−</button>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-add-value mt-10">+ 값 추가</button>
-            </div>
-
-            <button type="button" class="btn btn-danger btn-remove-set mt-10">옵션 세트 삭제</button>
-            <hr>
-        </div>`;
-        $('#option-container').append(newSet);
-    });
-
-    // ✅ 옵션 세트 삭제
-    $(document).on('click', '.btn-remove-set', function(){
-        if ($('.option-set').length > 1) {
-            $(this).closest('.option-set').remove();
-        } else {
-            alert('최소 한 개의 옵션 세트는 필요합니다.');
-        }
-    });
-
-    // ✅ 옵션 값 추가
-    $(document).on('click', '.btn-add-value', function(){
-        const newValue = `
-            <div class="option-item">
-                <input type="text" name="optionValueList" placeholder="값 입력" class="field option-field">
-                <button type="button" class="btn btn-delete-value">−</button>
-            </div>`;
-        $(this).siblings('.option-values').append(newValue);
-    });
-
-    // ✅ 옵션 값 삭제
-    $(document).on('click', '.btn-delete-value', function(){
-        const $values = $(this).closest('.option-values').find('.option-item');
-        if ($values.length > 1) {
-            $(this).closest('.option-item').remove();
-        } else {
-            alert('옵션 값은 최소 하나 이상 필요합니다.');
-        }
     });
 });
 </script>
