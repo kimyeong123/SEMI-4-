@@ -6,11 +6,12 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <div class="container">
-    <h2>주문 상세 내역</h2>
-
+	<div class="cell center">
+    	<h2>주문 상세 내역</h2>
+	</div>
     <c:if test="${not empty orderSummaryList}">
-        <%-- 주문 요약 정보 (리스트의 첫 번째 항목 사용) --%>
-        <c:set var="orderInfo" value="${orderSummaryList[0]}" /> <%-- 편의상 변수 설정 --%>
+        <%-- 주문 요약 정보 --%>
+        <c:set var="orderInfo" value="${orderSummaryList[0]}" />
 
         <div class="order-summary" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee;">
             <h3>주문 정보</h3>
@@ -39,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <%-- 주문 상품 목록 반복 (orderSummaryList 전체 사용) --%>
+                    <%-- 주문 상품 목록 반복 --%>
                     <c:forEach var="item" items="${orderSummaryList}">
                         <tr style="border-bottom: 1px solid #eee;">
                             <td style="padding: 10px; width: 80px;">
@@ -63,8 +64,8 @@
 
     </c:if>
 
-    <div style="margin-top: 20px; text-align: center;">
-        <a href="/orders/list">목록으로 돌아가기</a>
+    <div class="mt-20 mb-50 center">
+    	<button type="button" class="btn btn-neutral" onclick="location.href='/orders/list'">목록으로 돌아가기</button>
     </div>
 
 </div>
