@@ -9,6 +9,7 @@
 <script src = "/multipage/multipage.js"></script>
 <script src = "/js/member-join.js"></script>
 
+<div class="flex-fill"></div>
     <form action="join" method="post" enctype="multipart/form-data" autocomplete="off" class="check-form">
         <div class="container w-600">
             
@@ -271,6 +272,6 @@
 
         </div>
     </form>
-
+<div class="flex-fill"></div>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>	
