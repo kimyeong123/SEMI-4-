@@ -212,7 +212,7 @@ public class ProductService {
         } else {
             // 3. 검색이 아닐 경우 (전체 목록)에도 정렬 기준(기본값)과 방향을 DAO로 전달
             // 이 때, column은 정렬 기준으로 사용되므로 "product_no" 같은 기본값을 명시적으로 전달하는 것이 좋습니다.
-            return productDao.selectList(null, null, order);
+        	return productDao.selectList(column, null, order);
             
             // 참고: 만약 DAO의 selectList(column, keyword) 메서드를 유지하고 싶다면,
             // 해당 메서드가 DAO 내부에서 selectList(column, keyword, order)를 호출하도록 이미 수정했으므로,

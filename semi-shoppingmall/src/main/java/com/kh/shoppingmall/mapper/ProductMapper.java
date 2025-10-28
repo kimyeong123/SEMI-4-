@@ -18,6 +18,7 @@ public class ProductMapper implements RowMapper<ProductDto>{
 				.productName(rs.getString("product_name"))
 				.productPrice(rs.getInt("product_price"))
 				.productContent(rs.getString("product_content"))
+				.productAvgRating(rs.getDouble("product_avg_rating"))
 				.productThumbnailNo(rs.getInt("product_thumbnail_no"))
 			.build();
 	}

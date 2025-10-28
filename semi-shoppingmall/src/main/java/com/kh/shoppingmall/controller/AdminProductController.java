@@ -35,7 +35,7 @@ public class AdminProductController {
                        @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
                        @RequestParam(value = "order", required = false, defaultValue = "desc") String order,
                        HttpSession session, Model model) throws SQLException {
-
+    	
         // Service에서 이미 평점 계산을 포함한 정렬된 리스트를 가져옴
         List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, order);
         
@@ -47,6 +47,7 @@ public class AdminProductController {
         model.addAttribute("column", column);
         model.addAttribute("keyword", keyword);
         model.addAttribute("order", order); 
+        model.addAttribute("categoryNo", categoryNo);
         model.addAttribute("wishlistCounts", productService.getWishlistCounts());
         model.addAttribute("categoryTree", categoryService.getCategoryTree());
         return "/WEB-INF/views/admin/product/list.jsp";

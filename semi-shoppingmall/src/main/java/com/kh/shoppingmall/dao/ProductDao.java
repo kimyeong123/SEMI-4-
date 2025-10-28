@@ -52,45 +52,41 @@ public class ProductDao {
 
 	// 1. 핵심 메서드: 검색, 정렬을 모두 처리 (3개 인자)
 	public List<ProductDto> selectList(String column, String keyword, String order) {
-	    // 1. 정렬 가능한 컬럼 화이트리스트 (DB 컬럼명과 정확히 일치해야 함)
-	    // Controller에서 넘어오는 값과 이 Set의 값이 일치하는지 다시 확인해주세요.
+	    
+		// 1. 정렬 가능한 컬럼 화이트리스트
 	    Set<String> sortableColumns = Set.of("product_name", "product_price", "product_avg_rating", "product_no");
 	    
 	    // 2. 정렬 기준 컬럼 설정: 유효한 값이 아니면 product_no를 기본값으로 사용
 	    String sortColumn = (column != null && sortableColumns.contains(column)) ? column : "product_no";
-	    
-	    // 정렬 방향 설정
 	    String sortOrder = ("asc".equalsIgnoreCase(order)) ? "asc" : "desc";
-
+	    
 	    StringBuilder sql = new StringBuilder();
 	    List<Object> params = new ArrayList<>();
 	    
 	    sql.append("select p.*, ");
-	    sql.append("(select avg(review_rating) from review where product_no = p.product_no) as product_avg_rating ");
+	    sql.append("coalesce((select avg(review_rating) from review where product_no = p.product_no), 0) as product_avg_rating ");
 	    sql.append("from product p ");
 	    
 	    // 3. 검색어 조건 처리
 	    if (keyword != null && !keyword.isEmpty()) {
-	        // 검색은 항상 'product_name'으로 하거나,
-	        // 'column'이 검색 가능한 컬럼인 경우에만 검색하도록 단순화해야 합니다.
-	        
-	        // ⭐ 수정된 검색 로직: 'column'을 '검색 기준'으로 사용하지 않고, 
-	        //    'keyword'만 있으면 'product_name'으로 검색하도록 단순화합니다.
-	        //    (혹은 컨트롤러에서 넘어오는 searchColumn을 따로 처리해야 합니다.)
-	        
 	        String searchColumn = "product_name"; // 기본 검색 컬럼
 	        
-	        // 만약 'column'이 검색 컬럼이었으면, 다음과 같이 로직을 설정할 수 있습니다.
-	        if (Set.of("product_content").contains(column)) { 
+	        if ("product_content".equals(column)) { 
 	            searchColumn = "product_content"; // 'column'이 검색 컬럼으로 사용된 경우
 	        } 
 	        
-	        sql.append("where instr(lower(" + searchColumn + "), lower(?)) > 0 ");
+	        sql.append("where instr(lower(p.").append(searchColumn).append("), lower(?)) > 0 ");
 	        params.add(keyword);
 	    }
 	    
 	    // 4. 동적 정렬 조건 처리 (여기서는 sortColumn이 화이트리스트를 통과했으므로 문제 없음)
-	    sql.append("order by ").append(sortColumn).append(" ").append(sortOrder);
+	    sql.append("order by ");
+	    
+	    if ("product_avg_rating".equals(sortColumn)) {
+	        sql.append(sortColumn).append(" ").append(sortOrder);
+	    } else {
+	        sql.append("p.").append(sortColumn).append(" ").append(sortOrder);
+	    }
 
 	    return jdbcTemplate.query(sql.toString(), params.toArray(), productMapper);
 	}
@@ -110,7 +106,9 @@ public class ProductDao {
 	
 	// 단일 조회
 	public ProductDto selectOne(int productNo) {
-		String sql = "select * from product where product_no=?";
+		String sql = "select p.*, "
+	               + "(select avg(review_rating) from review where product_no = p.product_no) as product_avg_rating "
+	               + "from product p where p.product_no=?";
 		List<ProductDto> list = jdbcTemplate.query(sql, productMapper, productNo);
 		return list.isEmpty() ? null : list.get(0);
 	}
@@ -181,25 +179,27 @@ public class ProductDao {
 	                                     
 	    // 3. SQL 쿼리 빌드
 	    StringBuilder sql = new StringBuilder();
-	    sql.append("select distinct p.* from product p ");
-	    sql.append("join product_category_map pcm on p.product_no = pcm.product_no ");
-	    sql.append("where pcm.category_no in (" + placeholders + ") "); 
 	    
-	    // 4. 정렬 조건 처리 (order by) 
-	    if (column != null && !column.isEmpty()) {
-	        // p.을 붙여 테이블 별칭을 명시하고, column으로 정렬합니다. 
-	        // Controller에서 넘어오는 column 값이 DB 컬럼명과 일치해야 합니다.
-	        sql.append("order by p.").append(column); 
-	        
-	        // 정렬 방향 결정 (소문자 SQL 구문 적용)
-	        if ("asc".equalsIgnoreCase(order)) {
-	            sql.append(" asc");
-	        } else {
-	            sql.append(" desc"); 
-	        }
+	    sql.append("select distinct p.*, "); 
+	    sql.append("coalesce((select avg(review_rating) from review where product_no = p.product_no), 0) as product_avg_rating ");
+	    sql.append("from product p "); 
+	    
+	    sql.append("join product_category_map pcm on p.product_no = pcm.product_no ");
+	    sql.append("where pcm.category_no in (" + placeholders + ") ");
+	    
+	    // 4. ⭐ 정렬 조건 처리 (order by) 수정 ⭐
+	    // 정렬 기준 컬럼과 방향을 명확히 설정 (selectList와 동일하게 화이트리스트 검사)
+	    Set<String> sortableColumns = Set.of("product_name", "product_price", "product_avg_rating", "product_no");
+	    String sortColumn = (column != null && sortableColumns.contains(column)) ? column : "product_no";
+	    String sortOrder = ("asc".equalsIgnoreCase(order)) ? "asc" : "desc";
+	    sql.append("order by ");
+	    
+	    if ("product_avg_rating".equals(sortColumn)) {
+	        // 평점은 별칭이므로 p.을 붙이지 않습니다.
+	        sql.append(sortColumn).append(" ").append(sortOrder);
 	    } else {
-	        // 정렬 기준이 없을 경우 기본 정렬 (상품 번호 오름차순)
-	        sql.append("order by p.product_no asc");
+	        // 나머지 컬럼(DB 컬럼)은 p.을 붙입니다.
+	        sql.append("p.").append(sortColumn).append(" ").append(sortOrder);
 	    }
 
 	    // 5. 파라미터 설정 및 쿼리 실행
