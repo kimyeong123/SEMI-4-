@@ -2,6 +2,8 @@ package com.kh.shoppingmall.controller;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -9,9 +11,8 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dao.AttachmentDao;
 import com.kh.shoppingmall.dto.AttachmentDto;
@@ -27,7 +28,20 @@ public class AttachmentController {
     @Autowired
     private AttachmentDao attachmentDao;
 
-    // 다운로드용
+    // ✅ [추가] 업로드 처리 (summernote 포함)
+    @PostMapping("/upload")
+    @ResponseBody
+    public List<Integer> upload(@RequestParam("attach") List<MultipartFile> attachList) throws IOException {
+        List<Integer> attachmentNoList = new ArrayList<>();
+        for (MultipartFile file : attachList) {
+            if (file.isEmpty()) continue;
+            int attachmentNo = attachmentService.save(file); // ← AttachmentService에서 파일 저장
+            attachmentNoList.add(attachmentNo);
+        }
+        return attachmentNoList; // AJAX 응답용 (JSON 배열)
+    }
+
+    // ✅ 다운로드용
     @GetMapping("/download")
     public ResponseEntity<ByteArrayResource> download(@RequestParam int attachmentNo) throws IOException {
         AttachmentDto attachmentDto = attachmentDao.selectOne(attachmentNo);
@@ -48,7 +62,7 @@ public class AttachmentController {
                 .body(resource);
     }
 
-    // 브라우저 표시용
+    // ✅ 브라우저 표시용
     @GetMapping("/view")
     public ResponseEntity<ByteArrayResource> view(@RequestParam int attachmentNo) throws IOException {
         AttachmentDto attachmentDto = attachmentDao.selectOne(attachmentNo);
@@ -62,7 +76,7 @@ public class AttachmentController {
                 .contentLength(attachmentDto.getAttachmentSize())
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition
-                                .inline()  // 브라우저 화면에 표시
+                                .inline() // 브라우저에 바로 표시
                                 .filename(attachmentDto.getAttachmentName(), StandardCharsets.UTF_8)
                                 .build().toString()
                 )
