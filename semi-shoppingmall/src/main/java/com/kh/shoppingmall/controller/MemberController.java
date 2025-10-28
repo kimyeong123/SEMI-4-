@@ -74,7 +74,9 @@ public class MemberController {
 		memberDao.insert(memberDto);
 		if(attach.isEmpty() == false) {
 			int attachmentNo = attachmentService.save(attach);
-			memberDao.connect(memberDto.getMemberId(), attachmentNo);
+//			memberDao.connect(memberDto.getMemberId(), attachmentNo);
+			
+			memberDao.updateProfileImage(memberDto.getMemberId(), attachmentNo);
 		}
 	
 		//가입환영메시지
@@ -206,7 +208,8 @@ public class MemberController {
 		return "/WEB-INF/views/member/edit.jsp";
 	}
 	@PostMapping("/edit")
-	public String edit(@ModelAttribute MemberDto memberDto, HttpSession session) {
+	public String edit(@ModelAttribute MemberDto memberDto, 
+			@RequestParam(required = false) MultipartFile attach, HttpSession session) throws IllegalStateException, IOException {
 		String loginId = (String) session.getAttribute("loginId");//다운캐스팅
 		MemberDto findDto = memberDao.selectOne(loginId);//정보조회
 		boolean isValid = memberDto.getMemberPw().equals(findDto.getMemberPw());//비밀번호 검사
@@ -216,7 +219,8 @@ public class MemberController {
 		
 		//memberDto 사용 시 (아이디 추가)
 		memberDto.setMemberId(loginId);//아이디를 추가 설정해야함
-		memberDao.updateMember(memberDto);
+//		memberDao.updateMember(memberDto);
+		memberService.updateProfile(memberDto, attach);
 		
 		//findDto 사용 시 (변경항목을 교체) - 관리자랑 사용자를 통합해서 만들 경우 좋음
 		//findDto.setMemberNickname(memberDto.getMemberNickname());

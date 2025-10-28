@@ -50,11 +50,11 @@
 		 
 		
 	</form>
+	<%-- error라는 파라미터가 존재한다면 오류메시지 출력  --%>
+	<c:if test = "${param.error != null}">
+		<h2 class="center" style = "color:red ">입력하신 정보가 일치하지 않습니다</h2>
+	</c:if>
 </div>
 
 
-<%-- error라는 파라미터가 존재한다면 오류메시지 출력  --%>
-<c:if test = "${param.error != null}">
-	<h2 class="center" style = "color:red ">입력하신 정보가 일치하지 않습니다</h2>
-</c:if>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

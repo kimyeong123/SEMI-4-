@@ -310,7 +310,7 @@
 
 	<div class="cell center" style="margin-top: 20px;" id = "member-delete-area">
 		<c:if test="${memberDto.memberId ne sessionScope.loginId}">
-			<button id="btn-member-delete" class="btn btn-danger">회원 삭제</button>
+			<button id="btn-member-delete" class="btn btn-negative">회원 삭제</button>
 		</c:if>
 		<c:if test="${memberDto.memberId eq sessionScope.loginId}">
 			<p class="red">본인 계정은 여기서 삭제할 수 없습니다. 회원 탈퇴 기능을 이용하세요.</p>
