@@ -33,10 +33,6 @@
 	<!-- 작성일 및 조회수 -->
 	<div class="cell">
 		<fmt:formatDate value="${csBoardDto.csBoardWtime}" pattern="yyyy-MM-dd HH:mm"/>
-		 
-		<span class="blue ms-40">
-			<i class="fa-solid fa-eye"></i> ${csBoardDto.csBoardRead}
-		</span>
 	</div>
 	<hr/>
 	

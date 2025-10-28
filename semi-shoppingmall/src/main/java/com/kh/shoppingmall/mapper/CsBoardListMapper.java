@@ -19,14 +19,16 @@ public class CsBoardListMapper implements RowMapper<CsBoardListVO>{
 				.csBoardWtime(rs.getTimestamp("cs_board_wtime"))
 				.csBoardEtime(rs.getTimestamp("cs_board_etime"))
 				//컨텐츠 삭제
-				.csBoardRead(rs.getInt("cs_board_read"))
-				.csBoardLike(rs.getInt("cs_board_like"))
-				.csBoardReply(rs.getInt("cs_board_reply"))
+//				.csBoardRead(rs.getInt("cs_board_read"))
+//				.csBoardLike(rs.getInt("cs_board_like"))
+//				.csBoardReply(rs.getInt("cs_board_reply"))
 				.csBoardNotice(rs.getString("cs_board_notice"))
 				
 				.csBoardGroup(rs.getInt("cs_board_group"))
 				.csBoardOrigin(rs.getObject("cs_board_origin", Integer.class))
 				.csBoardDepth(rs.getInt("cs_board_depth"))
+				
+				.csBoardSecret(rs.getString("cs_board_secret"))
 			.build();
 	}
 }
