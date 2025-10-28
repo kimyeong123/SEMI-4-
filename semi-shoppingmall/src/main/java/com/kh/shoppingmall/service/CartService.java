@@ -16,7 +16,11 @@ public class CartService {
     // 1. 장바구니 추가 (핵심 로직)
     public void addItem(CartDto cartDto) {
         // 이미 담긴 상품인지 확인
-        CartDto existingItem = cartDao.findItem(cartDto.getMemberId(), cartDto.getOptionNo());
+        CartDto existingItem = cartDao.findItem(
+        		cartDto.getMemberId(), 
+        		cartDto.getProductNo(), 
+        		cartDto.getOptionNo()
+        	);
 
         if (existingItem != null) {
             // 이미 있으면: 수량만 업데이트

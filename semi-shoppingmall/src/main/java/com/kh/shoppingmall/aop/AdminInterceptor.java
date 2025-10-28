@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.kh.shoppingmall.error.NeedPermissionException;
+import com.kh.shoppingmall.error.UnauthorizationException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,10 +19,10 @@ public class AdminInterceptor implements HandlerInterceptor{
 		
 		HttpSession session = request.getSession();
 		
-		//String loginId = (String)session.getAttribute("loginId");
+		String loginId = (String)session.getAttribute("loginId");
 		String loginLevel = (String)session.getAttribute("loginLevel");
 		
-		//if(loginId == null) throw new UnAuthorizationException("로그인이 필요합니다");
+		if(loginId == null) throw new UnauthorizationException("로그인이 필요합니다");
 		
 		if(!loginLevel.equals("관리자")) throw new NeedPermissionException("권한이 부족합니다");
 		

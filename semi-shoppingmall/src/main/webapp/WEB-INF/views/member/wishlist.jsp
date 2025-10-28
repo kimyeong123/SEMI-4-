@@ -5,64 +5,208 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>위시리스트</title>
-<link rel="stylesheet" href="/css/commons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
+
 <style>
+/* === 공통 레이아웃 === */
+.container {
+	width: 90%;
+	max-width: 1100px;
+	margin: 40px auto;
+}
+h2 { 
+    font-size: 2em; 
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    text-align: center !important;
+}
+/* === 위시리스트 컨테이너 및 카드 === */
 .wishlist-container {
-	display: flex; /* 가로로 나열 */
-	flex-wrap: wrap; /* 화면 크기 넘으면 다음 줄로 */
+	display: flex; 
+	flex-wrap: wrap; 
 	gap: 20px; /* 카드 사이 간격 */
 	justify-content: flex-start; /* 왼쪽 정렬 */
+	margin-bottom: 50px;
 }
 
 .wishlist-card {
 	display: flex;
-	flex-direction: row; /* 이미지와 텍스트를 가로로 */
-	align-items: center;
-	border: 1px solid #ccc;
-	padding: 10px;
-	width: 300px; /* 카드 너비 */
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
+	flex-direction: column; /* 세로 배열 */
+	border: 1px solid #ddd; /* 모노크롬 테마에 맞게 조정 */
+	padding: 15px;
+	width: 250px; /* 카드 너비 고정 */
+	box-shadow: none; /* 그림자 제거 */
+	border-radius: 0; /* 네모난 형태 유지 */
+	transition: box-shadow 0.2s;
+}
+
+.wishlist-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* 호버 시 그림자 추가 */
 }
 
 .wishlist-card img {
-	width: 120px;
-	height: 120px;
+	width: 100%; /* 카드 너비에 꽉 차게 */
+	height: 250px;
 	object-fit: cover;
-	margin-right: 15px; /* 이미지와 텍스트 사이 간격 */
+	margin-bottom: 15px; 
 }
 
-.wishlist-card .text-container {
-	display: flex;
-	flex-direction: column;
+.wishlist-card h3 {
+	font-size: 1.1em;
+	color: #333;
+	margin-bottom: 5px;
+    /* 텍스트가 길 경우 생략 처리 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.wishlist-card .price {
+	font-size: 1.2em;
+	font-weight: bold;
+	color: #000;
+	margin-bottom: 15px;
+}
+
+.wishlist-card .button-group {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+.empty-message {
+    width: 100%;
+    text-align: center;
+    padding: 50px;
+    font-size: 1.1em;
+    color: #666;
+}
+
+/* === 버튼 스타일 (공통) === */
+.btn {
+	padding: 10px 15px;
+	border-radius: 5px; /* 버튼 둥글게 적용 */
+	cursor: pointer;
+	font-weight: normal;	
+	transition: background-color 0.2s, color 0.2s, border-color 0.2s, filter 0.2s;
+	text-decoration: none;
+	display: inline-block;
+	text-align: center;
+	border: 1px solid;
+	font-size: 0.95em;
+}
+
+/* 호버 효과 (모든 버튼에 적용) */
+.btn:hover {
+    filter: brightness(0.9);
+}
+
+
+/* Black/Primary Action (장바구니) - btn-black 스타일 추가 */
+.btn-black {	
+	border-color: #333;	
+	color: white;	
+	background-color: #333;	
+}	
+.btn-black:hover {	
+	/* filter: brightness(0.9)가 적용되므로 별도 background-color 변경은 생략 */
+}
+
+/* Negative Action (삭제) */
+.btn-negative {
+	border-color: #a00;	
+	color: #a00;	
+	background-color: transparent;
+    padding: 10px 10px; /* 아이콘만 표시되도록 패딩 조정 */
+}
+.btn-negative:hover {
+    background-color: #fdd;
+	border-color: #a00;
+	color: #a00;
 }
 </style>
+
 <script type="text/javascript">
 $(function() {
+    // 상품 상세 보기로 이동
+    $(".product-link").on("click", function(e) {
+        e.preventDefault();
+        var productNo = $(this).data("product-no");
+        location.href = "${pageContext.request.contextPath}/product/detail?productNo=" + productNo;
+    });
+
+    // 위시리스트 삭제 (AJAX)
     $(".btn-delete").on("click", function() {
         var productNo = $(this).data("product-no");
-        if(!confirm("정말 삭제하시겠습니까?")) return;
+        if(!confirm("정말 위시리스트에서 삭제하시겠습니까?")) return;
 
         $.ajax({
-            url: "${pageContext.request.contextPath}/rest/wishlist/delete",
+            url: "${pageContext.request.contextPath}/rest/wishlist/toggle",
             method: "post",
             data: { productNo: productNo },
             success: function(response) {
-                if(response) {
+                if(!response.wishlisted || response === false) { 
                     alert("삭제되었습니다.");
-                    location.reload(); // 원하면 삭제 후 페이지 새로고침
+                    // 삭제된 카드만 제거
+                    $("#card-" + productNo).remove(); 
+                    if ($(".wishlist-card").length === 0) {
+                        // 모든 카드가 삭제되면 목록 없음 메시지를 보여줌
+                        $(".wishlist-container").html('<p class="empty-message">위시리스트에 등록된 상품이 없습니다. 💔</p>');
+                    }
                 } else {
-                    alert("삭제 실패");
+                    alert("처리 실패: 상품이 위시리스트에 남아있습니다.");
                 }
             },
-            error: function() {
-                alert("오류가 발생했습니다.");
+            error: function(xhr) {
+                // 오류 발생 시 경고창만 띄우도록 유지
+                if (xhr.status === 401) {
+                    alert("로그인이 필요합니다.");
+                } else {
+                    alert("위시리스트 삭제 중 오류가 발생했습니다.");
+                }
+            }
+        });
+    });
+    
+    // 장바구니 담기 기능 (AJAX)
+    $(".btn-cart-move").on("click", function() {
+        // 상품 번호를 버튼의 data 속성에서 직접 가져옵니다. (HTML 수정으로 안정화)
+        var productNo = $(this).data("product-no");
+        // var optionNo = $(this).data("option-no"); // 옵션 정보가 있다면 함께 사용
+
+        if (!productNo) {
+            alert("상품 정보를 찾을 수 없습니다.");
+            return;
+        }
+        
+        var quantity = 1; // 위시리스트에서 장바구니로 이동 시 기본 수량 1개
+
+        $.ajax({
+            url: "${pageContext.request.contextPath}/rest/cart/add",
+            method: "post",
+            data: {
+                productNo: productNo,
+                // optionNo: optionNo, // 옵션이 있다면 이 줄을 활성화
+                cartAmount: quantity
+            },
+            success: function(response) {
+                alert("선택하신 상품이 장바구니에 추가되었습니다.");
+            },
+            error: function(xhr) {
+                // 요청하신 대로 에러페이지 이동 없이 alert만 띄우도록 유지
+                if (xhr.status === 401) {
+                    alert("로그인이 필요합니다.");
+                } else {
+                    alert("장바구니 추가 중 오류 발생");
+                }
             }
         });
     });
@@ -70,28 +214,49 @@ $(function() {
 </script>
 </head>
 <body>
-	<h2 style="text-align: center;">내 위시리스트</h2>
+<div class="container">
+	<h2>내 위시리스트</h2>
 	<div class="wishlist-container">
-		<c:if test="${wishlist == null}">
-			<p style="text-align: center; color: gray;">위시리스트에 등록된 상품이 없습니다.</p>
+		<c:if test="${empty wishlist}">
+			<p class="empty-message">위시리스트에 등록된 상품이 없습니다.</p>
 		</c:if>
 		<c:forEach var="item" items="${wishlist}">
-			<div class="wishlist-card">
-				<img
-					src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${item.attachmentNo}"
-					alt="${item.productName}">
-				<h3>${item.productName}</h3>
-				<p class="price"><fmt:formatNumber value="${item.productPrice}" pattern="#,##0"/>원</p>
+			<div class="wishlist-card" id="card-${item.productNo}">
+				<div class="image-box">
+					<img
+						src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${item.attachmentNo}"
+						alt="${item.productName}">
+				</div>
+				
+				<div class="text-container">
+					<h3>
+                        <a href="#" class="product-link" data-product-no="${item.productNo}" style="text-decoration:none; color:inherit;">
+                            ${item.productName}
+                        </a>
+                    </h3>
+					
+					<p class="price">
+                        <fmt:formatNumber value="${item.productPrice}" pattern="#,##0"/>원
+                    </p>
 
-				<a href="/product/detail?productNo=${item.productNo}">상품 보기</a>
-
-				<form action="/member/wishlist/delete" method="post">
-					<input type="hidden" name="productNo" value="${item.productNo}">
-					<button type="button" class="btn-delete" data-product-no="${item.productNo}">삭제</button>
-				</form>
+					<div class="button-group">
+                        <button type="button" class="btn btn-black btn-cart-move" 
+                                data-product-no="${item.productNo}" 
+                                style="flex-grow: 3;">
+                            <i class="fa-solid fa-cart-shopping"></i> 장바구니에 추가
+                        </button>
+                        
+						<button type="button" class="btn btn-delete btn-negative" data-product-no="${item.productNo}" style="flex-grow: 1;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+					</div>
+                    
+                    <a href="${pageContext.request.contextPath}/product/detail?productNo=${item.productNo}" style="display:none;">상품 보기</a>
+				</div>
 			</div>
 		</c:forEach>
 	</div>
+</div>
 </body>
 </html>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
