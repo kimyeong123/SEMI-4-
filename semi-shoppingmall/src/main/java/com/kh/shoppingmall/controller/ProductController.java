@@ -1,9 +1,13 @@
 package com.kh.shoppingmall.controller;
 
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,47 +52,45 @@ public class ProductController {
 	// 상품 목록
 	@GetMapping("/list")
 	public String list(@RequestParam(value = "column", required = false) String column,
-	                   @RequestParam(value = "keyword", required = false) String keyword,
-	                   @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
-	                   @RequestParam(required = false) String order,
-	                   HttpSession session,
-	                   Model model) throws SQLException {
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+			@RequestParam(required = false) String order, HttpSession session, Model model) throws SQLException {
 
-	    // 1. 필터링된 상품 조회
-	    List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, keyword);
+		// 1. 필터링된 상품 조회
+		List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, keyword);
 
-	    // 2. 리뷰 평균 계산
-	    list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));
+		// 2. 리뷰 평균 계산
+		list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));
 
-	    // 3. 모델에 기본 정보 추가
-	    model.addAttribute("productList", list);
-	    model.addAttribute("column", column);
-	    model.addAttribute("keyword", keyword);
+		// 3. 모델에 기본 정보 추가
+		model.addAttribute("productList", list);
+		model.addAttribute("column", column);
+		model.addAttribute("keyword", keyword);
 
-	    // 4. 로그인 아이디 확인
-	    String loginId = (String) session.getAttribute("loginId");
+		// 4. 로그인 아이디 확인
+		String loginId = (String) session.getAttribute("loginId");
 
-	    // 5. 위시리스트 상태 & 카운트
-	    Map<Integer, Boolean> wishlistStatus = new HashMap<>();
-	    model.addAttribute("wishlistStatus", wishlistStatus);
-	    
-	    Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
-	    model.addAttribute("wishlistCounts", wishlistCounts);
+		// 5. 위시리스트 상태 & 카운트
+		Map<Integer, Boolean> wishlistStatus = new HashMap<>();
+		model.addAttribute("wishlistStatus", wishlistStatus);
 
-	    for (ProductDto p : list) {
-	        boolean inWishlist = false;
-	        if (loginId != null) {
-	            // 로그인 되어 있으면 위시리스트 확인
-	            inWishlist = wishlistService.checkItem(loginId, p.getProductNo());
-	        }
-	        // Map에 상품번호와 상태 저장
-	        wishlistStatus.put(p.getProductNo(), inWishlist);
-	    }
+		Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
+		model.addAttribute("wishlistCounts", wishlistCounts);
 
-	    // 6. 카테고리 트리 추가
-	    model.addAttribute("categoryTree", categoryService.getCategoryTree());
+		for (ProductDto p : list) {
+			boolean inWishlist = false;
+			if (loginId != null) {
+				// 로그인 되어 있으면 위시리스트 확인
+				inWishlist = wishlistService.checkItem(loginId, p.getProductNo());
+			}
+			// Map에 상품번호와 상태 저장
+			wishlistStatus.put(p.getProductNo(), inWishlist);
+		}
 
-	    return "/WEB-INF/views/product/list.jsp";
+		// 6. 카테고리 트리 추가
+		model.addAttribute("categoryTree", categoryService.getCategoryTree());
+
+		return "/WEB-INF/views/product/list.jsp";
 	}
 
 	// 상품 등록 페이지
@@ -129,42 +131,59 @@ public class ProductController {
 	}
 
 	// 상품 상세
-	    @GetMapping("/detail")
-	    public String detail(
-	        @RequestParam(required = false) Integer productNo, 
-	        Model model, 
-	        HttpSession session) {
+	@GetMapping("/detail")
+	public String detail(@RequestParam(required = false) Integer productNo, Model model, HttpSession session) {
 
-	        // 1. productNo 누락 시 처리: 일반 목록으로 리다이렉트
-	        if (productNo == null) {
-	            return "redirect:/product/list"; 
-	        }
-	        
-	        // 2. 상품 조회 및 예외 처리
-	        ProductDto product = productService.getProduct(productNo);
-	        if (product == null) {
-	            throw new TargetNotfoundException("존재하지 않는 상품 번호");
-	        }
-	        
-	        // 상품 옵션 목록 조회
-	        List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo); // productService 사용 권장
+		// 1. productNo 누락 시 처리: 일반 목록으로 리다이렉트
+		if (productNo == null) {
+			return "redirect:/product/list";
+		}
 
-	        // 위시리스트 정보 조회
-	        String loginId = (String) session.getAttribute("loginId");
-	        boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
+		// 2. 상품 조회 및 예외 처리
+		ProductDto product = productService.getProduct(productNo);
+		if (product == null) {
+			throw new TargetNotfoundException("존재하지 않는 상품 번호");
+		}
 
-	        // 리뷰 평점 평균 계산
-	        double avg = reviewService.getAverageRating(productNo);
-	        product.setProductAvgRating(avg);
-	        
-	        model.addAttribute("product", product);
-	        model.addAttribute("optionList", optionList);
-	        model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
-	        model.addAttribute("wishlisted", wishlisted);
-	        model.addAttribute("wishlistCount", wishlistService.count(productNo));
-	        model.addAttribute("avgRating", avg); // 평균 평점 다시 추가
+		// 상품 옵션 목록 조회
+		List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo); // productService 사용 권장
 
-	        return "/WEB-INF/views/product/detail.jsp";
+		// 위시리스트 정보 조회
+		String loginId = (String) session.getAttribute("loginId");
+		boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
+
+		// 리뷰 평점 평균 계산
+		double avg = reviewService.getAverageRating(productNo);
+		product.setProductAvgRating(avg);
+
+		model.addAttribute("product", product);
+		model.addAttribute("optionList", optionList);
+		model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
+		model.addAttribute("wishlisted", wishlisted);
+		model.addAttribute("wishlistCount", wishlistService.count(productNo));
+		model.addAttribute("avgRating", avg); // 평균 평점 다시 추가
+
+		// 도착 예정일 계산 로직
+		LocalDate today = LocalDate.now(); // 오늘 날짜
+		LocalDate estimatedDate = today.plusDays(4); // 4일 더하기
+
+		DayOfWeek dayOfWeek = estimatedDate.getDayOfWeek(); // 요일 구하기
+
+		// 4. 주말 조정
+		if (dayOfWeek == DayOfWeek.SATURDAY) { // 토요일이면 +2일
+			estimatedDate = estimatedDate.plusDays(2);
+		} else if (dayOfWeek == DayOfWeek.SUNDAY) { // 일요일이면 +1일
+			estimatedDate = estimatedDate.plusDays(1);
+		}
+
+		// 5. 날짜 포맷
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일(E)", Locale.KOREAN);
+		String formattedDeliveryDate = estimatedDate.format(formatter);
+
+		// 6. 모델에 추가
+		model.addAttribute("estimatedDeliveryDate", formattedDeliveryDate);
+
+		return "/WEB-INF/views/product/detail.jsp";
 	}
 
 	// 상품 수정 페이지

@@ -298,9 +298,14 @@
                 (<span id="review-count">${reviewList.size()}</span>개 리뷰)
             </p>
             
+            <div>
+        		<span class="gray">예상 도착일:</span>
+        		<strong class="blue">${estimatedDeliveryDate}</strong>
+    		</div>
+            
             <p id="wishlist-heart">
                 위시리스트: 
-                <i class="fa-heart fa-2x ${wishlisted ? 'fa-solid' : 'fa-regular'}" style="color: ${wishlisted ? 'red' : 'gray'}; cursor: pointer;"></i>
+                <i class="fa-heart ${wishlisted ? 'fa-solid' : 'fa-regular'}" style="color: ${wishlisted ? 'red' : 'gray'}; cursor: pointer;"></i>
                 (<span id="wishlist-count">${wishlistCount}</span>명)
             </p>
 
