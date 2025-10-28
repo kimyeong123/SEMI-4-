@@ -29,6 +29,8 @@ public class CsBoardListMapper implements RowMapper<CsBoardListVO>{
 				.csBoardDepth(rs.getInt("cs_board_depth"))
 				
 				.csBoardSecret(rs.getString("cs_board_secret"))
+				
+				.csBoardOriginWriter(rs.getString("cs_board_origin_writer"))
 			.build();
 	}
 }

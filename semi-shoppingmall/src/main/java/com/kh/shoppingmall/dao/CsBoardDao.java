@@ -199,20 +199,20 @@ public class CsBoardDao {
 		return jdbcTemplate.queryForObject(sql, Integer.class, param);
 	}
 	
+	
+	public String getWriterByBoardNo(int boardNo) {
+	    String sql = "SELECT cs_board_writer FROM cs_board WHERE cs_board_no = ?";
+	    Object[] param = {boardNo};
+	    try {
+	        // queryForObject를 사용하여 String 타입의 결과를 바로 가져옴
+	        return jdbcTemplate.queryForObject(sql, String.class, param);
+	    } catch (Exception e) {
+	        // 해당 번호의 글이 없거나, 다른 문제가 있을 경우 null 반환
+	        return null; 
+	    }
+	}
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

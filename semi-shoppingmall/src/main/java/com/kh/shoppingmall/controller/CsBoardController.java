@@ -77,8 +77,19 @@ public class CsBoardController {
 		if("Y".equals(csBoardDto.getCsBoardSecret())) {
 			boolean isWriter = csBoardDto.getCsBoardWriter() != null && csBoardDto.getCsBoardWriter().equals(loginId);
 			boolean isAdmin = "관리자".equals(loginLevel);
+			//원글 작성자인지 확인하는 로직
+			boolean isOriginWriter = false;
+			//현재 글이 답글인 경우만 원글작성자 조회
+			if(csBoardDto.getCsBoardDepth() > 0) {
+				//csBoardGroup은 원글 번호와 동일(depth는 언제나 1 따라서 최상단 글적은사람이 원글 작성자)
+				String originWriterId = csBoardDao.getWriterByBoardNo(csBoardDto.getCsBoardGroup());
+				
+				if(originWriterId != null && originWriterId.equals(loginId)) {
+					isOriginWriter = true;
+				}
+			}
 			
-			if(!isWriter && !isAdmin) {
+			if(!isWriter && !isAdmin && !isOriginWriter) {
 				throw new NeedPermissionException("접근 권한이 없습니다");
 			}
 		}
