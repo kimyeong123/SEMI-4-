@@ -124,11 +124,11 @@
 					<%-- 일반/우수회원 (로그인 상태) --%>
 					<c:when
 						test="${sessionScope.loginId != null && (sessionScope.loginLevel == '일반회원' || sessionScope.loginLevel == '우수회원')}">
-						<a href="/"> <i class="fa-solid fa-house"></i>
+						<a href="/member/wishlist"> <i class="fa-regular fa-heart"></i>
 						</a>
 						<a href="/orders/cart"> <i class="fa-solid fa-cart-shopping"></i>
 						</a>
-						<a href="/member/wishlist"> <i class="fa-regular fa-heart"></i>
+						<a href="/orders/list"><i class="fa-solid fa-receipt"></i>
 						</a>
 						<a href="/member/mypage"> <i class="fa-solid fa-user"></i> <span>내정보</span>
 						</a>

@@ -47,6 +47,7 @@ public class ProductController {
 	// 인터셉터 구현후에 관리자 기능 삭제
 	// 상품 목록
 	@GetMapping("/list")
+	
 	public String list(@RequestParam(value = "column", required = false) String column,
 	                   @RequestParam(value = "keyword", required = false) String keyword,
 	                   @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
@@ -55,7 +56,7 @@ public class ProductController {
 	                   Model model) throws SQLException {
 
 	    // 1. 필터링된 상품 조회
-	    List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, keyword);
+	    List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, order);
 
 	    // 2. 리뷰 평균 계산
 	    list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));
@@ -64,7 +65,9 @@ public class ProductController {
 	    model.addAttribute("productList", list);
 	    model.addAttribute("column", column);
 	    model.addAttribute("keyword", keyword);
-
+	    model.addAttribute("categoryNo", categoryNo);
+	    model.addAttribute("order", order);
+	    
 	    // 4. 로그인 아이디 확인
 	    String loginId = (String) session.getAttribute("loginId");
 

@@ -42,7 +42,7 @@
     text-align: center; 
 }
 
-/* ⭐ 작업 링크/버튼 일관화 스타일 추가 ⭐ */
+/*  작업 링크/버튼 일관화 스타일 추가  */
 .action-group {
     display: flex;
     justify-content: center; /* 작업 그룹 중앙 정렬 */
@@ -170,8 +170,9 @@
 			<tr>
 				<th>이미지</th> 
 				
+				<%-- 상품 번호 정렬 --%>
 				<th>
-					<a href="list?column=product_no&order=${column == 'product_no' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}">
+					<a href="list?column=product_no&order=${column == 'product_no' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&categoryNo=${categoryNo}">
 						상품 번호
 						<c:if test="${column == 'product_no'}">
 							${order == 'asc' ? '▲' : '▼'}
@@ -179,17 +180,11 @@
 					</a>
 				</th>
 				
-				<th>
-					<a href="list?column=product_name&order=${column == 'product_name' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}">
-						상품명
-						<c:if test="${column == 'product_name'}">
-							${order == 'asc' ? '▲' : '▼'}
-						</c:if>
-					</a>
-				</th>
+				<th>상품명</th>
 				
+				<%-- 가격 정렬 --%>
 				<th>
-					<a href="list?column=product_price&order=${column == 'product_price' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}">
+					<a href="list?column=product_price&order=${column == 'product_price' && order == 'asc' ? 'desc' : 'asc'}&keyword=${keyword}&categoryNo=${categoryNo}">
 						가격
 						<c:if test="${column == 'product_price'}">
 							${order == 'asc' ? '▲' : '▼'}
@@ -197,8 +192,9 @@
 					</a>
 				</th>
 				
+				<%-- 평균 평점 정렬 --%>
 				<th>
-					<a href="list?column=product_avg_rating&order=${column == 'product_avg_rating' && order == 'desc' ? 'asc' : 'desc'}&keyword=${keyword}">
+					<a href="list?column=product_avg_rating&order=${column == 'product_avg_rating' && order == 'desc' ? 'asc' : 'desc'}&keyword=${keyword}&categoryNo=${categoryNo}">
 						평균 평점
 						<c:if test="${column == 'product_avg_rating'}">
 							${order == 'asc' ? '▲' : '▼'}
