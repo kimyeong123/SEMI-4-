@@ -21,6 +21,15 @@
  		color: #d63031;
 		transform: scale(1.01);
 	}
+	
+	.board-secret-title 
+	{
+		color: #4a4a4a;
+		font-weight: bold;
+		cursor: default;
+		padding-left: 5px;	
+	}
+	
 </style>
 
 
@@ -51,13 +60,11 @@
 		<table class="table w-100 table-border table-hover table-striped mt-30" >
 			<thead>
 				<tr>
-					<th>번호</th>
+					<th width="10%">번호</th>
 					<th width="40%">제목</th>
 					<th width = "10%">작성자</th>
 					<th width = "10%">작성일</th>
 					<th width = "10%">수정일</th>
-					<th>조회 수</th>
-					<th>댓글 수</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -77,7 +84,29 @@
 									<span class="badge">공지</span>
 								</c:if>
 								
-								<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">${csBoardListVO.csBoardTitle}</a>
+								<%--비공개 여부에 따라 링크를  조건부 처리 --%>
+								<c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
+								<c:set var ="isWriterOrAdmin" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter }" />
+								
+								<c:choose>
+									<c:when test = 	"${ isSecret && !isWriterOrAdmin}">
+										<%--비공개 글은 일반 사용자라면 링크 무효 --%>
+										${csBoardListVO.csBoardTitle}
+										<span class="board-secret-title ellipsis">
+											<i class="fa-solid fa-lock"></i> 
+										</span>
+									</c:when>
+									<c:otherwise>
+										<%--공개 글 또는 비공개글의 작성자와 관리자의 경우 --%>
+										<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
+											<c:if test="${isSecret }">
+												<i class="fa-solid fa-lock"></i> 
+											</c:if>
+											${csBoardListVO.csBoardTitle}										
+										</a>
+									</c:otherwise>
+								</c:choose>
+								
 							</div>
 						</td>
 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td>
@@ -85,8 +114,6 @@
 									${csBoardListVO.csBoardWtime }
 						</td>
 						<td>${csBoardListVO.csBoardEtime }</td>
-						<td>${csBoardListVO.csBoardRead}</td>
-						<td>${csBoardListVO.csBoardReply}</td>
 					</tr>
 				</c:forEach>
 			</tbody>

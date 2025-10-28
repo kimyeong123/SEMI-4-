@@ -46,6 +46,7 @@ public class CsBoardController {
 	
 	@RequestMapping("/list")
 	public String list(Model model, @ModelAttribute PageVO pageVO) {
+		
 		List<CsBoardListVO> csBoardNoticeList = csBoardDao.selectListNotice(pageVO);//공지글
 		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달(배경색 칠하기용)
 		List<CsBoardListVO> csBoardList = csBoardDao.selectListWithPaging(pageVO);//전체글
@@ -64,10 +65,23 @@ public class CsBoardController {
 	
 //	상세
 	@RequestMapping("/detail")
-	public String detail(Model model, @RequestParam int csBoardNo) {
+	public String detail(Model model, @RequestParam int csBoardNo, HttpSession session) {
+		
 		CsBoardDto csBoardDto = csBoardDao.selectOne(csBoardNo);
 		if(csBoardDto == null) throw new TargetNotfoundException("존재하지 않는 글 번호");
 		model.addAttribute("csBoardDto", csBoardDto);//게시글 정보 첨부
+
+		String loginId = (String) session.getAttribute("loginId");
+		String loginLevel = (String) session.getAttribute("loginLevel");
+		
+		if("Y".equals(csBoardDto.getCsBoardSecret())) {
+			boolean isWriter = csBoardDto.getCsBoardWriter() != null && csBoardDto.getCsBoardWriter().equals(loginId);
+			boolean isAdmin = "관리자".equals(loginLevel);
+			
+			if(!isWriter && !isAdmin) {
+				throw new NeedPermissionException("접근 권한이 없습니다");
+			}
+		}
 		
 		if(csBoardDto.getCsBoardDepth() == 0) {
 			int replyCount = csBoardDao.countReplies(csBoardDto.getCsBoardGroup());
@@ -86,7 +100,17 @@ public class CsBoardController {
 	
 //	등록
 	@GetMapping("/write")
-	public String write() {
+	public String write(Model model, @RequestParam(required = false) Integer csBoardOrigin) {
+		//원글 비밀글 상태 저장 변수
+		String parentSecret = "N";
+		
+		if(csBoardOrigin != null) {
+			CsBoardDto parentDto = csBoardDao.selectOne(csBoardOrigin);
+			if(parentDto != null) {
+				parentSecret = parentDto.getCsBoardSecret();
+			}
+		}
+		model.addAttribute("parentSecret", parentSecret);
 		return "/WEB-INF/views/csBoard/write.jsp";
 	}
 	//새글과 답글을 구분하여 값을 계산한 뒤 등록
@@ -102,7 +126,8 @@ public class CsBoardController {
 		//세션에 있는 등급을 검사해서 관리자가 아닌데 공지사항을 작성하려고 하면 차단 
 		//-> 인터셉터를 만들어서 해도 됨
 		String loginLevel = (String) session.getAttribute("loginLevel");
-		if(loginLevel.equals("관리자") == false && csBoardDto.getCsBoardNotice().equals("Y"))
+//		if(loginLevel.equals("관리자") == false && csBoardDto.getCsBoardNotice().equals("Y"))
+		if(!"관리자".equals(loginLevel) && csBoardDto.getCsBoardNotice().equals("Y"))
 			throw new NeedPermissionException("공지글을 작성할 권한이 없습니다");
 		
 		//기존 : 번호를 알아서 만들어서 등록

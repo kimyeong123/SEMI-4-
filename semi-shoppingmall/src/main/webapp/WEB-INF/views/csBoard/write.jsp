@@ -34,6 +34,29 @@
     </div>
     </c:if>
     
+	<%-- [수정] 관리자용 설정 (체크박스 숨김, 강제 값 설정) --%>
+	<c:choose>
+		<c:when test="${sessionScope.loginLevel == '관리자'}">
+			<%-- 관리자일 경우: 체크박스를 보여주지 않고, hidden 필드로 값을 전달 --%>
+			<%-- 부모 글의 비밀글 상태(parentSecret)를 따라 hidden 필드의 value를 설정 --%>
+			<input type="hidden" name="csBoardSecret" value="${parentSecret}">
+<%-- 			<c:if test="${parentSecret == 'Y'}"> --%>
+<!-- 				<span class="text-positive">[답글: 원글에 따라 자동 비공개]</span> -->
+<%-- 			</c:if> --%>
+<%-- 			<c:if test="${parentSecret == 'N' && param.csBoardOrigin != null}"> --%>
+<!-- 				<span class="text-positive">[답글: 원글에 따라 공개]</span> -->
+<%-- 			</c:if> --%>
+		</c:when>
+            
+		<c:otherwise>
+			 <%-- 일반 사용자일 경우: 체크박스 표시 --%>
+			<input type="checkbox" name="csBoardSecret" value="Y" 
+				<c:if test="${parentSecret == 'Y'}">checked="checked"</c:if> >
+			<span class="text-positive">비공개로 작성</span>
+		</c:otherwise>
+	</c:choose>
+    
+    
     <div class="cell">
         <label>제목 *</label>
         <input type="text" name="csBoardTitle" required class="field w-100">
