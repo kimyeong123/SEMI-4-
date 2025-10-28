@@ -4,10 +4,15 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/summernote/custom-summernote.css">
+<script src="/summernote/custom-summernote.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <style>
 /* === 공통 스타일 === */
@@ -53,21 +58,27 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 	border: 1px solid;
 	font-size: 1em;
 }
-
-/* 1. Primary Action (btn-black) - 가장 진한 배경 */
-.btn-black {	
-	border-color: #333;	
-	color: white;	
-	background-color: #333;	
+.btn-edit, .btn-success {	
+	padding: 5px 10px;	
+	font-size: 0.85em;	
+	border-color: #888;	
+	color: #555;	
+	background-color: transparent;	
 }	
-.btn-black:hover {	
-	background-color: #555;	
-	border-color: #555;	
-}
-/* 기존 btn-positive 대체 */
-.btn-positive { border-color: #333; color: white; background-color: #333; }
-.btn-positive:hover { background-color: #555; border-color: #555; }
+.btn-edit:hover, .btn-success:hover { background-color: #f0f0f0; color: #333; }
 
+.btn-review-delete {	
+	padding: 5px 10px;	
+	font-size: 0.85em;	
+	border: 1px solid #c00; 
+	color: white;	
+	background-color: #d9534f; /* 밝은 빨강 */
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, filter 0.2s;
+}	
+.btn-review-delete:hover { 
+    background-color: #c9302c; /* 호버 시 진한 빨강 */
+    filter: none; /* filter: brightness(0.9)가 적용되지 않도록 함 */
+}
 
 /* 2. Secondary Action (장바구니) - 중간 톤 */
 .btn-cart { border-color: #666; color: #333; background-color: #ddd; font-size: 1.1em; flex-grow: 1; }	
@@ -152,7 +163,56 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 	var productNo = ${product.productNo};
 
 	$(function() {
-		
+        
+        // ===================================================
+        // 0. Summernote 에디터 초기화 및 이미지 업로드 (게시판 코드 병합)
+        // ===================================================
+        $(".summernote-editor").summernote({
+            height: 250,
+            minHeight: 200,
+            maxHeight: 400,
+
+            placeholder: "상품에 대한 솔직한 리뷰를 입력해주세요. (타인에 대한 무분별한 비방 시 예고 없이 삭제될 수 있습니다)",
+
+            toolbar: [
+                ["font", ["style", "fontname", "fontsize", "forecolor", "backcolor"]],
+                ["style", ["bold", "italic", "underline", "strikethrough"]],
+                ["attach", ["picture"]],
+                ["tool", ["ol", "ul", "table", "hr", "fullscreen"]]
+            ],
+            
+            callbacks : {
+                onImageUpload : function(files) {
+                    console.log("리뷰 이미지 파일 업로드 시도중...");
+                    
+                    var form = new FormData();
+                    for(var i=0; i < files.length; i++) {
+                        form.append("attach", files[i]);
+                    }
+                    
+                    $.ajax({
+                        processData:false,
+                        contentType:false,
+                        url:"/rest/csBoard/temps", // ★ 리뷰 이미지 저장 REST URL로 변경 권장 ★
+                        method:"post",
+                        data:form,
+                        success:function(response){ // response == List<Integer>
+                            for(var i=0; i < response.length; i++) {
+                                var img = $("<img>").attr("src", "${pageContext.request.contextPath}/attachment/view?attachmentNo="+response[i])
+                                                    .attr("data-pk", response[i])
+                                                    .addClass("custom-image");
+                                $(".summernote-editor").summernote("insertNode", img[0]);
+                            }
+                        },
+                        error: function() {
+                             alert("이미지 업로드에 실패했습니다. (URL 확인 필요)");
+                        }
+                    });
+                }
+            }
+        });
+        // ===================================================
+
 		// 1. 위시리스트 토글 기능
 		$("#wishlist-heart").on("click", function() {
 			$.ajax({
@@ -270,12 +330,19 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			});
 		});
 
-		// 5. 리뷰 등록
+		// 5. 리뷰 등록 (Summernote 내용을 FormData에 담아 전송하도록 수정)
 		$("#submitReviewBtn").click(function() {
-			var formData = new FormData($("#reviewForm")[0]);
-			formData.append("productNo", productNo);
+            
+            // Summernote 에디터의 HTML 내용을 가져와 <textarea>에 업데이트
+            var reviewContent = $('.summernote-editor').summernote('code').trim();
+            // 폼 데이터에 최종적으로 포함될 수 있도록 <textarea>의 값을 갱신
+            $("#reviewForm").find("textarea[name='reviewContent']").val(reviewContent);
 
-			if (formData.get("reviewContent").trim() === "") {
+			var formData = new FormData($("#reviewForm")[0]);
+			formData.append("productNo", productNo); // productNo는 이미 폼에 hidden으로 있지만, 혹시 몰라 한 번 더 추가
+            
+            // Summernote 공백/태그만 있는 경우 체크
+			if (reviewContent === "" || reviewContent === "<p><br></p>" || reviewContent.replace(/<[^>]*>/g, '').trim() === "") {
 				alert("리뷰 내용을 입력해주세요.");
 				return;
 			}
@@ -287,17 +354,17 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			// 옵션 미선택 시 경고
 			var optionNo = $("#option-selector").val();
 			if (!optionNo) {
-				alert("구매한 옵션을 선택해주세요."); // 옵션 선택을 요구
+				alert("구매한 옵션을 선택해주세요.");
 				return;
 			}
-			formData.append("optionNo", optionNo);
+			formData.append("optionNo", optionNo); // 폼에 optionNo 추가
 
 			$.ajax({
 				url : "${pageContext.request.contextPath}/rest/review/add",
 				type : "post",
 				data : formData,
-				processData : false,
-				contentType : false,
+				processData : false, // FormData 사용 시 필수
+				contentType : false, // FormData 사용 시 필수
 				success : function(result) {
 					if (result) {
 						alert("리뷰가 등록되었습니다!");
@@ -490,7 +557,6 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 
 			<div id="purchase-buttons" style="display:flex; gap: 10px; margin-top: 25px;">
 				<button id="addToCartBtn" class="btn btn-cart" disabled>장바구니 담기</button>
-				<button class="btn btn-black" style="flex-grow: 1;">바로 구매</button>
 			</div>
 			
 		</div>
@@ -517,8 +583,7 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			<i class="fa-regular fa-star star-input" data-rating="4" style="color:#ccc;"></i>
 			<i class="fa-regular fa-star star-input" data-rating="5" style="color:#ccc;"></i>
 		</div>
-		
-		<textarea name="reviewContent" class="form-control" rows="4" placeholder="상품에 대한 솔직한 리뷰를 입력해주세요. (옵션을 선택해야 등록 가능)" style="width: 100%; margin-bottom: 10px;"></textarea>
+		<textarea name="reviewContent" class="form-control summernote-editor" rows="4" placeholder="상품에 대한 솔직한 리뷰를 입력해주세요. (옵션을 선택해야 등록 가능)" style="width: 100%; margin-bottom: 10px;"></textarea>
 		<button type="button" id="submitReviewBtn" class="btn btn-black">리뷰 등록</button>
 	</form>
 
@@ -536,31 +601,35 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="review" items="${reviewList}">
-				<tr id="review-${review.reviewNo}">
-					<td>${review.memberNickname}</td>
-					<td>
-						<c:forEach begin="1" end="${review.reviewRating}">
-							<i class="fa-solid fa-star" style="color: gold;"></i>
-						</c:forEach>
-						<c:forEach begin="${review.reviewRating + 1}" end="5">
-							<i class="fa-regular fa-star" style="color: #ccc;"></i>
-						</c:forEach>
-					</td>
-					<td class="review-content">${review.reviewContent}</td>
-					<td><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd" /></td>
-					<td>
-						<c:if test="${sessionScope.loginId eq review.memberId}">	
-							<button class="btn btn-edit" data-review-no="${review.reviewNo}">수정</button>
-							<button class="btn btn-delete" data-review-no="${review.reviewNo}">삭제</button>
-						</c:if>
-					</td>
-				</tr>
-			</c:forEach>
-			<c:if test="${empty reviewList}">
-				<tr><td colspan="5" style="text-align:center; color:#999; padding: 30px;">아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</td></tr>
-			</c:if>
-		</tbody>
+    <c:forEach var="review" items="${reviewList}">
+        <tr id="review-${review.reviewNo}">
+            <td style="text-align: center;">${review.memberNickname}</td> 
+            
+            <td style="text-align: center;"> 
+                <c:forEach begin="1" end="${review.reviewRating}">
+                    <i class="fa-solid fa-star" style="color: gold;"></i>
+                </c:forEach>
+                <c:forEach begin="${review.reviewRating + 1}" end="5">
+                    <i class="fa-regular fa-star" style="color: #ccc;"></i>
+                </c:forEach>
+            </td>
+            
+            <td class="review-content">${review.reviewContent}</td> 
+            
+            <td style="text-align: center;"><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd" /></td>
+            
+            <td>
+				<c:if test="${sessionScope.loginId eq review.memberId}">	
+					<button class="btn btn-edit" data-review-no="${review.reviewNo}">수정</button>
+					<button class="btn btn-review-delete" data-review-no="${review.reviewNo}">삭제</button>
+				</c:if>
+			</td>
+        </tr>
+    </c:forEach>
+    <c:if test="${empty reviewList}">
+        <tr><td colspan="5" style="text-align:center; color:#999; padding: 30px;">아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</td></tr>
+    </c:if>
+</tbody>
 	</table>
 
 	<div style="margin-top: 30px; text-align: right;">

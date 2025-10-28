@@ -162,6 +162,15 @@ textarea.field {
     border-color: #636e72;
     color: white;
 }
+.btn.btn-black {	
+	border-color: #333;	
+	color: white;	
+	background-color: #333;	
+}	
+.btn.btn-black:hover {	
+	background-color: #555;	
+	border-color: #555;	
+}
 
 /*
     글자 색상 클래스

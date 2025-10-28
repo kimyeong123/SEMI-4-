@@ -55,9 +55,9 @@ public class CartDao {
 	
 	// 장바구니에 이미 담긴 상품인지 확인하는 메소드
 	public CartDto findItem(String memberId, int productNo, Integer optionNo) {
-	    String sql = "select * from cart where member_id = ? and product_no = ? and option_no = ?";
-	    Object[] params = {memberId, productNo, optionNo};
-	    List<CartDto> list = jdbcTemplate.query(sql, cartMapper, params);
+		String sql = "select * from cart where member_id = ? and product_no = ? and option_no = ?";
+		Object[] params = {memberId, productNo, optionNo};
+		List<CartDto> list = jdbcTemplate.query(sql, cartMapper, params);
 	    return list.isEmpty() ? null : list.get(0);
 	}
 	
@@ -78,12 +78,11 @@ public class CartDao {
 	//D
 	public boolean delete(CartDto cartDto) {
 		String sql = "delete from cart where member_id = ? and product_no = ? and option_no = ?";
-		Object[] params = {
-				cartDto.getMemberId(),
-				cartDto.getProductNo(),
-				cartDto.getOptionNo()
-		};
-		
+	    Object[] params = {
+	            cartDto.getMemberId(),
+	            cartDto.getProductNo(), 
+	            cartDto.getOptionNo()
+	    };
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 
