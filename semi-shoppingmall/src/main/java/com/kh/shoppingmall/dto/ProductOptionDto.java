@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,5 +13,8 @@ public class ProductOptionDto {
 	private int productNo;
 	private String optionName;
 	private String optionValue;
+	private Integer optionParentNo;
 	private int optionStock;
+	private List<String> optionValueList;
 }
+

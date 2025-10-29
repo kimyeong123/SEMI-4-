@@ -29,7 +29,6 @@ import com.kh.shoppingmall.service.CategoryService;
 import com.kh.shoppingmall.service.ProductService;
 import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.service.WishlistService;
-import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -37,205 +36,184 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/product")
 public class ProductController {
 
-	@Autowired
-	private ProductService productService;
-	@Autowired
-	private CategoryService categoryService;
-	@Autowired
-	private WishlistService wishlistService;
-	@Autowired
-	private ReviewService reviewService;
-	@Autowired
-	private ProductOptionDao productOptionDao;
+    @Autowired private ProductService productService;
+    @Autowired private CategoryService categoryService;
+    @Autowired private WishlistService wishlistService;
+    @Autowired private ReviewService reviewService;
+    @Autowired private ProductOptionDao productOptionDao;
 
-	// 인터셉터 구현후에 관리자 기능 삭제
-	// 상품 목록
-	@GetMapping("/list")
-	
-	public String list(@RequestParam(value = "column", required = false) String column,
-	                       @RequestParam(value = "keyword", required = false) String keyword,
-	                       @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
-	                       @RequestParam(required = false) String order,
-	                       HttpSession session,
-	                       Model model) throws SQLException {
+    // ================= 상품 목록 =================
+    @GetMapping("/list")
+    public String list(@RequestParam(value = "column", required = false) String column,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @RequestParam(value = "categoryNo", required = false) Integer categoryNo,
+                       @RequestParam(required = false) String order,
+                       HttpSession session,
+                       Model model) throws SQLException {
 
-		// 1. 필터링된 상품 조회
-		List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, order); // 수정 완료
+        List<ProductDto> list = productService.getFilteredProducts(column, keyword, categoryNo, order);
+        list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));
 
-		// 2. 리뷰 평균 계산
-		list.forEach(p -> p.setProductAvgRating(reviewService.getAverageRating(p.getProductNo())));
+        model.addAttribute("productList", list);
+        model.addAttribute("column", column);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("categoryNo", categoryNo);
+        model.addAttribute("order", order);
 
-		// 3. 모델에 기본 정보 추가
-		model.addAttribute("productList", list);
-		model.addAttribute("column", column);
-		model.addAttribute("keyword", keyword);
-		model.addAttribute("categoryNo", categoryNo);
-		model.addAttribute("order", order); // 정렬 기준 추가
-		
-		// 4. 로그인 아이디 확인
-		String loginId = (String) session.getAttribute("loginId");
+        String loginId = (String) session.getAttribute("loginId");
 
-		// 5. 위시리스트 상태 & 카운트
-		Map<Integer, Boolean> wishlistStatus = new HashMap<>(); // 수정 완료
-		model.addAttribute("wishlistStatus", wishlistStatus);
+        Map<Integer, Boolean> wishlistStatus = new HashMap<>();
+        Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts();
 
-		Map<Integer, Integer> wishlistCounts = productService.getWishlistCounts(); // 수정: productservice -> productService
-		model.addAttribute("wishlistCounts", wishlistCounts);
+        for (ProductDto p : list) {
+            boolean inWishlist = false;
+            if (loginId != null) {
+                inWishlist = wishlistService.checkItem(loginId, p.getProductNo());
+            }
+            wishlistStatus.put(p.getProductNo(), inWishlist);
+        }
 
-		for (ProductDto p : list) {
-			boolean inWishlist = false;
-			if (loginId != null) {
-				// 로그인 되어 있으면 위시리스트 확인
-				inWishlist = wishlistService.checkItem(loginId, p.getProductNo());
-			}
-			// Map에 상품번호와 상태 저장
-			wishlistStatus.put(p.getProductNo(), inWishlist);
-		}
+        model.addAttribute("wishlistStatus", wishlistStatus);
+        model.addAttribute("wishlistCounts", wishlistCounts);
+        model.addAttribute("categoryTree", categoryService.getCategoryTree());
 
-		// 6. 카테고리 트리 추가
-		model.addAttribute("categoryTree", categoryService.getCategoryTree());
+        return "/WEB-INF/views/product/list.jsp";
+    }
 
-		return "/WEB-INF/views/product/list.jsp";
-	}
+    // ================= 상품 등록 페이지 =================
+    @GetMapping("/add")
+    public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
+        model.addAttribute("parentCategoryList", categoryService.getParentCategories());
+        List<CategoryDto> childCategoryList = (parentCategoryNo != null)
+                ? categoryService.getChildrenByParent(parentCategoryNo)
+                : new ArrayList<>();
+        model.addAttribute("childCategoryList", childCategoryList);
+        model.addAttribute("selectedParentNo", parentCategoryNo);
+        return "/WEB-INF/views/product/add.jsp";
+    }
 
-	// 상품 등록 페이지
-	@GetMapping("/add")
-	public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
-		List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
-		model.addAttribute("parentCategoryList", parentCategoryList);
+    // ================= 상품 등록 처리 (옵션 포함) =================
+    @PostMapping("/add")
+    public String add(@ModelAttribute ProductDto productDto,
+                      @RequestParam(required = false) List<Integer> categoryNoList,
+                      @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+                      @RequestParam("optionNameList") List<String> optionNameList,
+                      @RequestParam("optionValueList") List<String> optionValueList) throws Exception {
 
-		List<CategoryDto> childCategoryList = new ArrayList<>();
-		if (parentCategoryNo != null) {
-			childCategoryList = categoryService.getChildrenByParent(parentCategoryNo);
-		}
-		model.addAttribute("childCategoryList", childCategoryList);
-		model.addAttribute("selectedParentNo", parentCategoryNo);
+        if (categoryNoList == null) categoryNoList = new ArrayList<>();
 
-		return "/WEB-INF/views/product/add.jsp";
-	}
+        int productNo = productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile);
 
-	// 상품 등록 처리
-	@PostMapping("/add")
-	public String add(@ModelAttribute ProductDto productDto,
-			@RequestParam(required = false) List<Integer> categoryNoList, @RequestParam MultipartFile thumbnailFile,
-			@RequestParam(required = false) List<MultipartFile> detailImageList) throws Exception {
+        if (optionNameList != null && optionValueList != null) {
+            for (int i = 0; i < optionNameList.size(); i++) {
+                String name = optionNameList.get(i);
+                String value = optionValueList.get(i);
+                if (name != null && !name.isBlank() && value != null && !value.isBlank()) {
+                    ProductOptionDto option = ProductOptionDto.builder()
+                            .productNo(productNo)
+                            .optionName(name)
+                            .optionValue(value)
+                            .build();
+                    productOptionDao.insert(option);
+                }
+            }
+        }
+        return "redirect:addFinish";
+    }
 
-		if (categoryNoList == null)
-			categoryNoList = new ArrayList<>();
-		if (detailImageList == null)
-			detailImageList = new ArrayList<>();
+    // 상품 등록 완료
+    @GetMapping("/addFinish")
+    public String addFinish() {
+        return "/WEB-INF/views/product/addFinish.jsp";
+    }
 
-		productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList);
-		return "redirect:addFinish";
-	}
+    // ================= 상품 상세 =================
+    @GetMapping("/detail")
+    public String detail(@RequestParam(required = false) Integer productNo,
+                         Model model,
+                         HttpSession session) {
 
-	// 상품 등록 완료
-	@GetMapping("/addFinish")
-	public String addFinish() {
-		return "/WEB-INF/views/product/addFinish.jsp";
-	}
+        if (productNo == null) return "redirect:/product/list";
 
-	// 상품 상세
-	@GetMapping("/detail")
-	public String detail(@RequestParam(required = false) Integer productNo, Model model, HttpSession session) {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-		// 1. productNo 누락 시 처리: 일반 목록으로 리다이렉트
-		if (productNo == null) {
-			return "redirect:/product/list";
-		}
+        List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo);
 
-		// 2. 상품 조회 및 예외 처리
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null) {
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
-		}
+        // ✅ 옵션 분리: 색상 / 사이즈
+        List<String> colorList = new ArrayList<>();
+        List<String> sizeList = new ArrayList<>();
 
-		// 상품 옵션 목록 조회
-		List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo); // 수정: productService 사용 권장
+        for (ProductOptionDto opt : optionList) {
+            if ("색상".equals(opt.getOptionName()) && !colorList.contains(opt.getOptionValue())) {
+                colorList.add(opt.getOptionValue());
+            } else if ("사이즈".equals(opt.getOptionName()) && !sizeList.contains(opt.getOptionValue())) {
+                sizeList.add(opt.getOptionValue());
+            }
+        }
 
-		// 위시리스트 정보 조회
-		String loginId = (String) session.getAttribute("loginId");
-		boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
+        String loginId = (String) session.getAttribute("loginId");
+        boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 
-		// 리뷰 평점 평균 계산
-		double avg = reviewService.getAverageRating(productNo);
-		product.setProductAvgRating(avg);
+        double avg = reviewService.getAverageRating(productNo);
+        product.setProductAvgRating(avg);
 
-		model.addAttribute("product", product);
-		model.addAttribute("optionList", optionList);
-		model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
-		model.addAttribute("wishlisted", wishlisted);
-		model.addAttribute("wishlistCount", wishlistService.count(productNo));
-		model.addAttribute("avgRating", avg); // 평균 평점 다시 추가
+        model.addAttribute("product", product);
+        model.addAttribute("colorList", colorList);
+        model.addAttribute("sizeList", sizeList);
+        model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
+        model.addAttribute("wishlisted", wishlisted);
+        model.addAttribute("wishlistCount", wishlistService.count(productNo));
+        model.addAttribute("avgRating", avg);
 
-		// 도착 예정일 계산 로직
-		LocalDate today = LocalDate.now(); // 오늘 날짜
-		LocalDate estimatedDate = today.plusDays(4); // 4일 더하기
+        // 예상 도착일 계산
+        LocalDate today = LocalDate.now();
+        LocalDate estimatedDate = today.plusDays(4);
+        DayOfWeek dayOfWeek = estimatedDate.getDayOfWeek();
+        if (dayOfWeek == DayOfWeek.SATURDAY) estimatedDate = estimatedDate.plusDays(2);
+        else if (dayOfWeek == DayOfWeek.SUNDAY) estimatedDate = estimatedDate.plusDays(1);
 
-		DayOfWeek dayOfWeek = estimatedDate.getDayOfWeek(); // 요일 구하기
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일(E)", Locale.KOREAN);
+        model.addAttribute("estimatedDeliveryDate", estimatedDate.format(formatter));
 
-		// 4. 주말 조정
-		if (dayOfWeek == DayOfWeek.SATURDAY) { // 토요일이면 +2일
-			estimatedDate = estimatedDate.plusDays(2);
-		} else if (dayOfWeek == DayOfWeek.SUNDAY) { // 일요일이면 +1일
-			estimatedDate = estimatedDate.plusDays(1);
-		}
+        return "/WEB-INF/views/product/detail.jsp";
+    }
 
-		// 5. 날짜 포맷
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일(E)", Locale.KOREAN);
-		String formattedDeliveryDate = estimatedDate.format(formatter);
+    // ================= 상품 수정 페이지 =================
+    @GetMapping("/edit")
+    public String editPage(@RequestParam int productNo, Model model) {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
 
-		// 6. 모델에 추가
-		model.addAttribute("estimatedDeliveryDate", formattedDeliveryDate);
+        model.addAttribute("product", product);
+        model.addAttribute("parentCategoryList", categoryService.getParentCategories());
 
-		return "/WEB-INF/views/product/detail.jsp";
-	}
+        List<CategoryDto> childCategoryList = (product.getParentCategoryNo() != null)
+                ? categoryService.getChildrenByParent(product.getParentCategoryNo())
+                : new ArrayList<>();
+        model.addAttribute("childCategoryList", childCategoryList);
 
-	// 상품 수정 페이지
-	@GetMapping("/edit")
-	public String editPage(@RequestParam int productNo, Model model) {
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null)
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        return "/WEB-INF/views/product/edit.jsp";
+    }
 
-		List<CategoryDto> parentCategoryList = categoryService.getParentCategories();
-		List<CategoryDto> childCategoryList = new ArrayList<>();
-		if (product.getParentCategoryNo() != null) {
-			childCategoryList = categoryService.getChildrenByParent(product.getParentCategoryNo());
-		}
+    // ================= 상품 수정 처리 =================
+    @PostMapping("/edit")
+    public String edit(@ModelAttribute ProductDto productDto,
+                       @RequestParam(required = false) List<Integer> categoryNoList,
+                       @RequestParam(required = false) MultipartFile thumbnailFile,
+                       @RequestParam(required = false) List<Integer> deleteAttachmentNoList) throws Exception {
 
-		model.addAttribute("product", product);
-		model.addAttribute("parentCategoryList", parentCategoryList);
-		model.addAttribute("childCategoryList", childCategoryList);
+        if (categoryNoList == null) categoryNoList = new ArrayList<>();
+        productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, deleteAttachmentNoList);
+        return "redirect:detail?productNo=" + productDto.getProductNo();
+    }
 
-		return "/WEB-INF/views/product/edit.jsp";
-	}
-
-	// 상품 수정 처리
-	@PostMapping("/edit")
-	public String edit(@ModelAttribute ProductDto productDto,
-			@RequestParam(required = false) List<Integer> categoryNoList,
-			@RequestParam(required = false) MultipartFile thumbnailFile,
-			@RequestParam(required = false) List<MultipartFile> detailImageList,
-			@RequestParam(required = false) List<Integer> deleteAttachmentNoList) throws Exception {
-
-		if (categoryNoList == null)
-			categoryNoList = new ArrayList<>();
-		if (detailImageList == null)
-			detailImageList = new ArrayList<>();
-
-		productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, detailImageList,
-				deleteAttachmentNoList);
-		return "redirect:detail?productNo=" + productDto.getProductNo();
-	}
-
-	// 상품 삭제
-	@PostMapping("/delete")
-	public String delete(@RequestParam int productNo) throws Exception {
-		ProductDto product = productService.getProduct(productNo);
-		if (product == null)
-			throw new TargetNotfoundException("존재하지 않는 상품 번호");
-		productService.delete(productNo);
-		return "redirect:list";
-	}
+    // ================= 상품 삭제 =================
+    @PostMapping("/delete")
+    public String delete(@RequestParam int productNo) throws Exception {
+        ProductDto product = productService.getProduct(productNo);
+        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품 번호");
+        productService.delete(productNo);
+        return "redirect:list";
+    }
 }

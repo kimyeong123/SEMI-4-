@@ -132,7 +132,7 @@ $(function() {
 
     // ✅ 옵션 세트 추가
     $('#btn-add-set').click(function(){
-        const newSet = `
+    	var newSet = `
         <div class="option-set">
             <div class="cell">
                 <label>옵션 이름 *</label>
@@ -167,7 +167,7 @@ $(function() {
 
     // ✅ 옵션 값 추가
     $(document).on('click', '.btn-add-value', function(){
-        const newValue = `
+    	var newValue = `
             <div class="option-item">
                 <input type="text" name="optionValueList" placeholder="값 입력" class="field option-field">
                 <button type="button" class="btn btn-delete-value">−</button>
@@ -177,7 +177,7 @@ $(function() {
 
     // ✅ 옵션 값 삭제
     $(document).on('click', '.btn-delete-value', function(){
-        const $values = $(this).closest('.option-values').find('.option-item');
+    	var $values = $(this).closest('.option-values').find('.option-item');
         if ($values.length > 1) {
             $(this).closest('.option-item').remove();
         } else {
