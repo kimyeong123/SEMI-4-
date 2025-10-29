@@ -14,13 +14,6 @@
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
 <style>
-/* --- 기본 레이아웃 및 컨테이너 --- */
-.container {
-    width: 90%; 
-    max-width: 1400px; 
-    margin-left: auto;
-    margin-right: auto;
-}
 .image-profile {
 	border-radius: 50%;
 	box-shadow: 0 0 3px 1px #636e72;
