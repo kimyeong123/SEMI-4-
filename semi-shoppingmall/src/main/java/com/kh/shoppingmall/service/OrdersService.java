@@ -14,6 +14,7 @@ import com.kh.shoppingmall.dao.OrderListDao;
 import com.kh.shoppingmall.dao.OrdersDao;
 import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
+import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.dto.OrderDetailDto;
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.dto.ProductDto;
@@ -40,6 +41,9 @@ public class OrdersService {
 	
 	@Autowired
 	private OrderListDao orderListDao;
+	
+	@Autowired
+	private MemberService memberService;
 
 	// 장바구니에 담은 제품의 가격이 변동될 경우 다시 조회하는 경우 사용
 	@Autowired
@@ -131,6 +135,27 @@ public class OrdersService {
 
 		// 4. 장바구니 비우기
 		cartDao.deleteByMemberId(ordersId);
+		
+		if (ordersDto.isSaveAddressAsDefault()) { // 체크박스가 체크되었다면
+	        try {
+	            // MemberDto 업데이트
+	            MemberDto memberDto = new MemberDto();
+	            memberDto.setMemberId(ordersId); // 업데이트 대상 ID 설정
+	          
+	            memberDto.setMemberName(ordersDto.getOrdersRecipient());
+	            memberDto.setMemberContact(ordersDto.getOrdersRecipientContact());
+	            memberDto.setMemberPost(ordersDto.getOrdersShippingPost());
+	            memberDto.setMemberAddress1(ordersDto.getOrdersShippingAddress1());
+	            memberDto.setMemberAddress2(ordersDto.getOrdersShippingAddress2());
+
+	            memberService.updateMemberAddress(memberDto);
+	            
+	            System.out.println("기본 배송지 정보 업데이트 완료: " + ordersId);
+
+	        } catch (Exception e) {
+	            System.err.println("기본 배송지 업데이트 중 오류 발생: " + ordersId + ", Error: " + e.getMessage());
+	        }
+	    }
 
 		// 생성된 주문 번호 반환
 		return ordersNo; 

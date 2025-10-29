@@ -127,4 +127,10 @@ public class MemberService {
 	    return true; 
 	}
 	
+	//기본배송지 설정시 업데이트
+	public boolean updateMemberAddress(MemberDto memberDto) {
+	    // DAO 메소드를 호출하여 DB 업데이트 수행
+	    return memberDao.updateMemberAddress(memberDto);
+	}
+	
 }
