@@ -452,8 +452,8 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 		
 		// 8. 옵션 선택에 따른 수량/재고 제한 및 버튼 활성화
 		$("#option-selector").on("change", function() {
-			const selectedOption = $(this).find('option:selected');
-			const stock = selectedOption.data('stock');
+			var selectedOption = $(this).find('option:selected');
+			var stock = selectedOption.data('stock');
 			
 			if (stock === undefined || selectedOption.val() === "") { // "옵션을 선택하세요"를 선택한 경우
 				$("#cartQuantity").val(1).attr("max", 999);

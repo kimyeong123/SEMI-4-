@@ -74,7 +74,7 @@ $(function() {
     // ✅ 옵션 등록
     $("#option-add-form").submit(function(e) {
         e.preventDefault();
-        const formData = $(this).serialize();
+        var formData = $(this).serialize();
         $.ajax({
             url: "${pageContext.request.contextPath}/admin/product/option/add",
             type: "post",
@@ -91,7 +91,7 @@ $(function() {
 
     // ✅ 옵션 삭제
     $(document).on("click", ".btn-option-delete", function() {
-        const optionNo = $(this).data("option-no");
+    	var optionNo = $(this).data("option-no");
         if (!confirm("정말 삭제하시겠습니까?")) return;
         $.ajax({
             url: "${pageContext.request.contextPath}/admin/product/option/delete",
@@ -109,10 +109,10 @@ $(function() {
 
     // ✅ 옵션 수정
     $(document).on("click", ".btn-option-edit", function() {
-        const tr = $(this).closest("tr");
-        const name = tr.find(".opt-name").text().trim();
-        const value = tr.find(".opt-value").text().trim();
-        const stock = tr.find(".opt-stock").text().trim();
+    	var tr = $(this).closest("tr");
+    	var name = tr.find(".opt-name").text().trim();
+    	var value = tr.find(".opt-value").text().trim();
+    	var stock = tr.find(".opt-stock").text().trim();
 
         tr.find(".opt-name").html(`<input type="text" class="field edit-name" value="${name}">`);
         tr.find(".opt-value").html(`<input type="text" class="field edit-value" value="${value}">`);
@@ -124,11 +124,11 @@ $(function() {
 
     // ✅ 옵션 수정 완료
     $(document).on("click", ".btn-option-update", function() {
-        const tr = $(this).closest("tr");
-        const optionNo = $(this).data("option-no");
-        const name = tr.find(".edit-name").val();
-        const value = tr.find(".edit-value").val();
-        const stock = tr.find(".edit-stock").val();
+    	var tr = $(this).closest("tr");
+    	var optionNo = $(this).data("option-no");
+    	var name = tr.find(".edit-name").val();
+    	var value = tr.find(".edit-value").val();
+    	var stock = tr.find(".edit-stock").val();
 
         if (!name || !value || stock === undefined) {
             alert("모든 필드를 채워주세요.");
