@@ -324,23 +324,23 @@ textarea.field {
     align-items: center;
 }
 
-/* 기본 메뉴 디자인 */
-.menu {
-    background-color: #bdc3c7;
-    display: flex;
-}
-.menu > .divider {
-    margin-left: auto;
-    margin-right: auto;
-}
-.menu > a {
-    text-decoration: none;
-    color: #333333;
-    display: inline-block;
-    width: 130px;
-    text-align: center;
-    font-size: 20px;
-    padding: 0.5em;
+/* /* 기본 메뉴 디자인 */ */
+/* .menu { */
+/*     background-color: #bdc3c7; */
+/*     display: flex; */
+/* } */
+/* .menu > .divider { */
+/*     margin-left: auto; */
+/*     margin-right: auto; */
+/* } */
+/* .menu > a { */
+/*     text-decoration: none; */
+/*     color: #333333; */
+/*     display: inline-block; */
+/*     width: 130px; */
+/*     text-align: center; */
+/*     font-size: 20px; */
+/*     padding: 0.5em; */
 
     /* 
         혹시라도 넘어가면 말줄임표 처리 

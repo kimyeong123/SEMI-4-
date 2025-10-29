@@ -176,7 +176,6 @@ $(function() {
     // 장바구니 담기 기능 (AJAX) - optionNo 추가
     $(".btn-cart-move").on("click", function() {
         var productNo = $(this).data("product-no");
-        // 💡 data-option-no 값을 가져옵니다.
         var optionNo = $(this).data("option-no");
 
         if (!productNo) {
@@ -191,7 +190,7 @@ $(function() {
             method: "post",
             data: {
                 productNo: productNo,
-                optionNo: optionNo, // 💡 전송 데이터에 포함
+                optionNo: optionNo, 
                 cartAmount: quantity
             },
             success: function(response) {

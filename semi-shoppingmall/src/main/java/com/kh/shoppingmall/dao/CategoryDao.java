@@ -18,11 +18,15 @@ public class CategoryDao {
 
     // C
     public void insert(CategoryDto categoryDto) {
-        String sql = "insert into category (category_no, category_name, parent_category_no) "
-                   + "values (category_seq.nextval, ?, ?)";
+    	String sql = "insert into category ("
+                + "category_no, category_name, parent_category_no, category_order" 
+                + ") values ("
+                + "category_seq.nextval, ?, ?, ?" 
+                + ")";
         Object[] params = {
             categoryDto.getCategoryName(),
-            categoryDto.getParentCategoryNo()
+            categoryDto.getParentCategoryNo(),
+            categoryDto.getCategoryOrder()
         };
         jdbcTemplate.update(sql, params);
     }
@@ -50,8 +54,8 @@ public class CategoryDao {
     
     // 특정 부모 카테고리의 하위 카테고리 조회
     public List<CategoryDto> selectChildren(int parentCategoryNo) {
-        String sql = "SELECT category_no, category_name, parent_category_no, category_order "
-                   + "FROM category WHERE parent_category_no = ? ORDER BY category_order ASC";
+        String sql = "select category_no, category_name, parent_category_no, category_order "
+                   + "from category where parent_category_no = ? order by category_order ASC";
         Object[] params = { parentCategoryNo };
         return jdbcTemplate.query(sql, categoryMapper, params);
     }
@@ -61,6 +65,12 @@ public class CategoryDao {
         String sql = "select count(*) from category where parent_category_no = ?";
         Object[] params = { categoryNo };
         return jdbcTemplate.queryForObject(sql, int.class, params);
+    }
+    
+    // 부모 카테고리중 가장 큰 category_order를 조회
+    public int selectMaxCategoryOrder() {
+        String sql = "SELECT NVL(MAX(category_order), 0) FROM category WHERE parent_category_no IS NULL";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     // U
