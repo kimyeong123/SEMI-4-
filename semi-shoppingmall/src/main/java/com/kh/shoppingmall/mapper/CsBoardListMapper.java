@@ -32,6 +32,9 @@ public class CsBoardListMapper implements RowMapper<CsBoardListVO>{
 				
 				.csBoardOriginWriter(rs.getString("cs_board_origin_writer"))
 				.csBoardMemberNickname(rs.getString("member_nickname"))
+				//플래그 값(db에서 저장 안하고 컨트롤러에서 연산 후 값 수정)
+				.wtimeRecent(false)
+				.etimeRecent(false)
 			.build();
 	}
 }

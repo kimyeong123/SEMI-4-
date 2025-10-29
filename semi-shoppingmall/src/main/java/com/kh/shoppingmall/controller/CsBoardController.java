@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.controller;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,11 +48,30 @@ public class CsBoardController {
 	
 	@RequestMapping("/list")
 	public String list(Model model, @ModelAttribute PageVO pageVO) {
+		LocalDateTime now = LocalDateTime.now();
 		
+		
+//		boolean isWtimeRecent = ;
 		List<CsBoardListVO> csBoardNoticeList = csBoardDao.selectListNotice(pageVO);//공지글
 		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달(배경색 칠하기용)
 		List<CsBoardListVO> csBoardList = csBoardDao.selectListWithPaging(pageVO);//전체글
 		List<CsBoardListVO> result = new ArrayList<>();//합성(공지+전체)
+		
+		//현재 시간 비교해 플래그 값 설정
+		for(CsBoardListVO vo: csBoardList) {
+			LocalDateTime wTime = vo.getCsBoardWtime().toLocalDateTime();
+			vo.setWtimeRecent(ChronoUnit.HOURS.between(wTime, now) < 24);
+			
+			if(vo.getCsBoardEtime() != null) {
+				LocalDateTime eTime = vo.getCsBoardEtime().toLocalDateTime();
+				vo.setEtimeRecent(ChronoUnit.HOURS.between(eTime, now) < 24);
+			}
+			else {
+				vo.setEtimeRecent(false);
+			}
+		}
+			
+			
 		result.addAll(csBoardNoticeList);
 		result.addAll(csBoardList);
 		model.addAttribute("csBoardList", result);//검색이든 목록이든 한번에 처리
