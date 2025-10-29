@@ -27,6 +27,7 @@
             flex-direction: column;
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: #fff;
+            cursor: pointer;
         }
 
         .card:hover {
@@ -39,9 +40,10 @@
             width: 100%;
             height: 200px;
             object-fit: contain;
-            background-color: #f8f9fa; /* 여백 배경색 */
-    		display: block;
-    		margin: 0 auto;
+            background-color: #f8f9fa;
+            /* 여백 배경색 */
+            display: block;
+            margin: 0 auto;
         }
 
         /* 카드 내용 */
@@ -136,8 +138,19 @@
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
+            // 카드 클릭시 이동
+            document.querySelectorAll(".card").forEach(function(card) {
+                card.addEventListener("click", function(e) {
+                    if (e.target.classList.contains("wishlistIcon")) return; // 하트 클릭 시 이동 방지
+                    var productNo = card.dataset.productNo;
+                    window.location.href = "detail?productNo=" + productNo;
+                });
+            });
+
+            // wishlist 클릭
             document.querySelectorAll(".wishlistIcon").forEach(function(icon) {
-                icon.addEventListener("click", function() {
+                icon.addEventListener("click", function(e) {
+                    e.stopPropagation(); // 카드 클릭 이벤트 방지
                     var productNo = this.dataset.productNo;
                     var xhr = new XMLHttpRequest();
                     var iconEl = this;
@@ -146,8 +159,6 @@
                     xhr.onload = function() {
                         if (xhr.status === 200) {
                             var response = JSON.parse(xhr.responseText);
-
-                            // 하트 상태 토글
                             if (response.wishlisted) {
                                 iconEl.classList.remove("fa-regular");
                                 iconEl.classList.add("fa-solid");
@@ -155,16 +166,8 @@
                                 iconEl.classList.remove("fa-solid");
                                 iconEl.classList.add("fa-regular");
                             }
-
-                            // 숫자 표시
                             var countSpan = iconEl.nextElementSibling;
-                            if (response.count > 0) {
-                                countSpan.textContent = response.count;
-                                countSpan.style.display = "inline";
-                            } else {
-                                countSpan.textContent = "0";
-                                countSpan.style.display = "inline"; // 0은 표시 가능
-                            }
+                            countSpan.textContent = response.count;
                         } else {
                             alert("로그인이 필요합니다.");
                         }
@@ -202,7 +205,7 @@
 
     <div class="card-container">
         <c:forEach var="p" items="${productList}">
-            <div class="card">
+            <div class="card" data-product-no="${p.productNo}">
                 <c:choose>
                     <c:when test="${p.productThumbnailNo != null}">
                         <img src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${p.productThumbnailNo}" alt="${p.productName} 썸네일">
@@ -225,7 +228,8 @@
                     </h5>
 
                     <p class="card-price">
-                        <fmt:formatNumber value="${p.productPrice}" pattern="#,##0" />원</p>
+                        <fmt:formatNumber value="${p.productPrice}" pattern="#,##0" />원
+                    </p>
 
                     <div class="card-rating">
                         <small>평균 평점:</small>
