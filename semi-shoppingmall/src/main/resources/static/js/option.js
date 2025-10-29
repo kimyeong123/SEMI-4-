@@ -1,29 +1,34 @@
 $(function() {
-    // 옵션 세트 추가
+    let optionIndex = 0; // 옵션 세트 인덱스 관리용
+
+    // ✅ 옵션 세트 추가
     $("#btn-add-set").click(function() {
-        var html = "";
-        html += "<div class='option-set'>";
-        html += "  <div class='cell'>";
-        html += "    <label>옵션 이름 *</label>";
-        html += "    <input type='text' name='optionNameList' placeholder='예: 사이즈' required class='field w-100'>";
-        html += "  </div>";
-        html += "  <div class='cell'>";
-        html += "    <label>옵션 값 *</label>";
-        html += "    <div class='option-values' style='display:flex; flex-wrap:wrap; gap:5px;'>";
-        html += "      <div class='option-item'>";
-        html += "        <input type='text' name='optionValueList' placeholder='예: S' class='field option-field'>";
-        html += "        <button type='button' class='btn btn-delete-value'>−</button>";
-        html += "      </div>";
-        html += "    </div>";
-        html += "    <button type='button' class='btn btn-add-value mt-10'>+ 값 추가</button>";
-        html += "  </div>";
-        html += "  <button type='button' class='btn btn-danger btn-remove-set mt-10'>옵션 세트 삭제</button>";
-        html += "  <hr>";
-        html += "</div>";
+        const html = `
+        <div class='option-set' data-index='${optionIndex}'>
+            <div class='cell'>
+                <label>옵션 이름 *</label>
+                <input type='text' name='optionList[${optionIndex}].optionName' placeholder='예: 색상' required class='field w-100'>
+            </div>
+
+            <div class='cell'>
+                <label>옵션 값 *</label>
+                <div class='option-values' style='display:flex; flex-wrap:wrap; gap:5px;'>
+                    <div class='option-item'>
+                        <input type='text' name='optionList[${optionIndex}].optionValueList[0]' placeholder='예: 빨강' class='field option-field'>
+                        <button type='button' class='btn btn-delete-value'>−</button>
+                    </div>
+                </div>
+                <button type='button' class='btn btn-add-value mt-10' data-index='${optionIndex}'>+ 값 추가</button>
+            </div>
+
+            <button type='button' class='btn btn-danger btn-remove-set mt-10'>옵션 세트 삭제</button>
+            <hr>
+        </div>`;
         $("#option-container").append(html);
+        optionIndex++;
     });
 
-    // 옵션 세트 삭제
+    // ✅ 옵션 세트 삭제
     $(document).on("click", ".btn-remove-set", function() {
         if ($(".option-set").length > 1) {
             $(this).closest(".option-set").remove();
@@ -32,19 +37,21 @@ $(function() {
         }
     });
 
-    // 옵션 값 추가
+    // ✅ 옵션 값 추가
     $(document).on("click", ".btn-add-value", function() {
-        var html = "";
-        html += "<div class='option-item'>";
-        html += "  <input type='text' name='optionValueList' placeholder='값 입력' class='field option-field'>";
-        html += "  <button type='button' class='btn btn-delete-value'>−</button>";
-        html += "</div>";
+        const idx = $(this).data("index");
+        const valueCount = $(this).siblings(".option-values").find(".option-item").length;
+        const html = `
+        <div class='option-item'>
+            <input type='text' name='optionList[${idx}].optionValueList[${valueCount}]' placeholder='값 입력' class='field option-field'>
+            <button type='button' class='btn btn-delete-value'>−</button>
+        </div>`;
         $(this).siblings(".option-values").append(html);
     });
 
-    // 옵션 값 삭제
+    // ✅ 옵션 값 삭제
     $(document).on("click", ".btn-delete-value", function() {
-        var $values = $(this).closest(".option-values").find(".option-item");
+        const $values = $(this).closest(".option-values").find(".option-item");
         if ($values.length > 1) {
             $(this).closest(".option-item").remove();
         } else {

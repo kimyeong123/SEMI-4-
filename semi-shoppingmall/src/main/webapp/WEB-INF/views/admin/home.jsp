@@ -27,6 +27,7 @@
     <h2><a href="/admin/category/list">카테고리 관리</a></h2>
     <h2><a href="/admin/banner/list">배너 관리</a></h2>
     <h2><a href="/admin/stat/all">데이터 현황</a></h2>
+    <h2><a href="/admin/orders/list">주문 관리</a></h2>
 	</div>
 </div>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

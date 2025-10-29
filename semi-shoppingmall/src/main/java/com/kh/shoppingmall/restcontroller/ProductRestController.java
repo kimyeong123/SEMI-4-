@@ -41,8 +41,7 @@ public class ProductRestController {
                           @RequestParam String productContent,
                           @RequestParam List<Integer> categoryNoList,
                           @RequestParam List<ProductOptionDto> optionList,
-                          @RequestParam MultipartFile thumbnailFile,
-                          @RequestParam(required = false) List<MultipartFile> detailImageList) {//detailImage는 상품 상세 에 들갈 때 나오는 이미지 여러장
+                          @RequestParam MultipartFile thumbnailFile) {
 
         ProductDto productDto = new ProductDto();
         productDto.setProductName(productName);
@@ -50,9 +49,8 @@ public class ProductRestController {
         productDto.setProductContent(productContent);
 
         try {
-            productService.register(productDto, optionList, categoryNoList, thumbnailFile, detailImageList);
+            productService.register(productDto, optionList, categoryNoList, thumbnailFile);
         } catch (Exception e) {
-            // checked exception을 RuntimeException으로 변환
             throw new NeedPermissionException("상품 등록 중 오류 발생: " + e.getMessage());
         }
 
@@ -68,7 +66,6 @@ public class ProductRestController {
                            @RequestParam List<Integer> categoryNoList,
                            @RequestParam List<ProductOptionDto> newOptionList,
                            @RequestParam(required = false) MultipartFile newThumbnailFile,
-                           @RequestParam(required = false) List<MultipartFile> newDetailImageList,
                            @RequestParam(required = false) List<Integer> deleteAttachmentNoList) {
 
         ProductDto productDto = productService.getProduct(productNo);
@@ -79,7 +76,7 @@ public class ProductRestController {
         productDto.setProductContent(productContent);
 
         try {
-            productService.update(productDto, newOptionList, categoryNoList, newThumbnailFile, newDetailImageList, deleteAttachmentNoList);
+            productService.update(productDto, newOptionList, categoryNoList, newThumbnailFile, deleteAttachmentNoList);
         } catch (Exception e) {
             throw new NeedPermissionException("상품 수정 중 오류 발생: " + e.getMessage());
         }
