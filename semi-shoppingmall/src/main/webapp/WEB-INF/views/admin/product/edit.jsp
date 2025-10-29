@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
+
+<!-- ✅ Summernote CSS & JS 추가 -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
 <form action="edit" method="post" enctype="multipart/form-data">
     <input type="hidden" name="productNo" value="${product.productNo}">
@@ -25,10 +30,12 @@
 
         <div class="cell">
             <label>상품 설명</label>
-            <textarea name="productContent" class="field w-100">${product.productContent}</textarea>
+            <!-- ✅ Summernote 적용 대상 -->
+            <textarea id="productContent" name="productContent" class="field w-100">
+                ${product.productContent}
+            </textarea>
         </div>
 
-        <%-- (중요) input[type=file]에는 value를 절대 줄 수 없음 --%>
         <div class="cell">
             <label>썸네일 이미지</label>
             <input type="file" name="thumbnailFile" class="field w-100">
@@ -46,5 +53,24 @@
         </div>
     </div>
 </form>
+
+<!-- ✅ Summernote 초기화 스크립트 -->
+<script>
+$(document).ready(function() {
+    $('#productContent').summernote({
+        placeholder: '상품 설명을 입력하세요',
+        tabsize: 2,
+        height: 300,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['fontsize', 'color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+});
+</script>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

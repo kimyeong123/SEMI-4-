@@ -158,7 +158,7 @@ public class ProductOptionDao {
         return jdbcTemplate.update(sql, optionNo) > 0;
     }
 
-    // ✅ 특정 상품의 모든 옵션 삭제
+    // 특정 상품의 모든 옵션 삭제
     public int deleteByProduct(int productNo) {
         String sql = "DELETE FROM product_option WHERE product_no = ?";
         return jdbcTemplate.update(sql, productNo);
