@@ -32,6 +32,8 @@ public class CsBoardListVO {
 	private String csBoardSecret = "N";
 	//원 글 작성자 표시하는 곳(답글 확인할때 필요)
 	private String csBoardOriginWriter;
+	//글 작성자의 닉네임 표기용
+	private String csBoardMemberNickname;
 	
 	//EL에서 ${boardDto.boardWriteTime}으로부를 수 있는 메소드
 	public String getBoardWriteTime()

@@ -31,6 +31,7 @@ public class CsBoardListMapper implements RowMapper<CsBoardListVO>{
 				.csBoardSecret(rs.getString("cs_board_secret"))
 				
 				.csBoardOriginWriter(rs.getString("cs_board_origin_writer"))
+				.csBoardMemberNickname(rs.getString("member_nickname"))
 			.build();
 	}
 }
