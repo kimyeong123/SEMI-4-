@@ -22,10 +22,15 @@
 		<c:choose>
 			<c:when test="${memberDto == null}">탈퇴한사용자</c:when>
 			<c:otherwise>
-				<a href="/member/detail?memberId=${memberDto.memberId}">
-					${memberDto.memberNickname}
-				</a>  
-				(${memberDto.memberLevel})
+				<c:if test="${sessionScope.loginLevel == '관리자'}">
+					<a href="/admin/member/detail?memberId=${memberDto.memberId}">
+						${memberDto.memberNickname}
+					</a>
+					<span>(${memberDto.memberLevel}) 관리자 계정은 확인 불가</span>
+				</c:if>
+				<c:if test="${sessionScope.loginLevel != '관리자'}">
+					<span>${memberDto.memberNickname}</span>
+				</c:if>
 			</c:otherwise>
 		</c:choose>
 	</div>

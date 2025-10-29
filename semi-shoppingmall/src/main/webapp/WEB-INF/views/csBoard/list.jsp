@@ -108,7 +108,8 @@
 								
 							</div>
 						</td>
-						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td>
+<%-- 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td> --%>
+						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
 						<td>
 									${csBoardListVO.csBoardWtime }
 						</td>
