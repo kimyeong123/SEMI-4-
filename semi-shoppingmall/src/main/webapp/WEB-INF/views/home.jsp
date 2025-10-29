@@ -11,11 +11,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <style>
+	.main-content {
+    min-height: 80vh; /* 화면 높이의 80% 이상 확보 */
+    padding: 40px 20px; /* 위아래 여백 넉넉하게 */
+    box-sizing: border-box;
+	}
    .swiper {
     width: 100%;
     max-width: 900px;
+    min-height: 400px; /* 최소 높이 지정 */
+    margin: 60px auto; /* 위아래 여백 확대 */
     aspect-ratio: 16 / 9; /* 자동 비율 유지 */
-    margin: 40px auto;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,0.15);
@@ -66,7 +72,7 @@
 <div class="container w-1000 center">
     <div class="swiper">
         <div class="swiper-wrapper">
-            <!-- ✅ DB에서 배너 이미지 불러오기 -->
+            <!--  DB에서 배너 이미지 불러오기 -->
             <c:forEach var="banner" items="${bannerList}">
                 <c:if test="${not empty banner.bannerAttachmentNo}">
                     <div class="swiper-slide">
