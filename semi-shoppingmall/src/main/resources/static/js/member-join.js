@@ -6,13 +6,14 @@ $(function(){
         memberPwValid : false,
         memberPwCheckValid : false,
         memberNicknameValid : false,
+		memberNameValid : false,
         memberEmailValid : false,
         memberContactValid : true,
         memberBirthValid : true,
         memberAddressValid : true,
         ok: function(){
             return this.memberIdValid && this.memberPwValid && this.memberPwCheckValid
-                        && this.memberNicknameValid && this.memberEmailValid;
+                        && this.memberNicknameValid && this.memberNameValid && this.memberEmailValid;
         }
     };
     
@@ -106,6 +107,22 @@ $(function(){
             }
         });
     });
+	
+	//이름 관련
+	$("[name=memberName]").on("blur", function(){
+	        var regex = /^[가-힣]{2,7}$/;
+	        var valid = regex.test($(this).val());
+	        if(valid == false) {//형식 검사가 틀린 경우(fail)
+	            $(this).removeClass("success fail").addClass("fail");
+	            state.memberNameValid = false;
+	            return;
+	        }
+			else {
+				$(this).removeClass("success fail").addClass("success");
+				state.memberNameValid = true;
+			}
+			
+		});
 
     //이메일 관련  //인증 관련내용 때문에 재 작성
     //인증번호 보내기 or 인증번호 재발송

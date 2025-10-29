@@ -22,4 +22,5 @@ public class MemberDto {
 	private String memberPost, memberAddress1, memberAddress2;
 	private Timestamp memberJoin, memberLogin, memberChange;
 	private long member_profile_no;
+	private String memberName;
 }

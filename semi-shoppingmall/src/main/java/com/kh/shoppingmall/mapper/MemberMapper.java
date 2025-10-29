@@ -28,6 +28,7 @@ public class MemberMapper implements RowMapper<MemberDto> {
 					.memberLogin(rs.getTimestamp("member_login"))
 					.memberChange(rs.getTimestamp("member_change"))
 					.member_profile_no(rs.getLong("member_profile_no"))
+					.memberName(rs.getString("member_name"))
 				.build();
 	}
 }

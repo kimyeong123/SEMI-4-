@@ -113,6 +113,13 @@
                     <div class="fail-feedback">한글 또는 숫자 2~10글자로 작성하세요</div>
                     <div class="fail2-feedback">닉네임이 이미 사용중입니다</div>
                 </div>
+                <!-- 이름 -->
+                <div class="cell">
+                    <label>이름 <i class="fa-solid fa-asterisk red"></i></label>
+                    <input type="text" name="memberName" class="field w-100">
+                    <div class="success-feedback"></div>
+                    <div class="fail-feedback">이름은 필수 입력 항목입니다</div>
+                </div>
             </div>
 
             <!-- 이메일+이메일 인증 -->
