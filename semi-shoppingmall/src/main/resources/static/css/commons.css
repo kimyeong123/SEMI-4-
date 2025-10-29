@@ -24,7 +24,10 @@ div {
     - 셀(cell) : 컨테이너 안에 배치되는 하나의 공간 (다른 셀과의 간격)
 */
 .container {
-    margin:0 auto;
+    width: 90%; 
+    max-width: 1400px; 
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .w-25 { width:25% !important; }

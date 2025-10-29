@@ -59,7 +59,7 @@ $(document).on("click", ".wishlistIcon", function() {
 	}
 </style>
 </head>
-<div class="container mt-4">
+<div class="container">
 	<h1>상품 목록</h1>
 
 	<h2>상품 수 : ${productList.size()}</h2>

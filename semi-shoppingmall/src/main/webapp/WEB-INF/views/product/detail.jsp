@@ -15,12 +15,6 @@
 
 
 <style>
-/* === 공통 스타일 === */
-.container {
-	width: 90%;
-	max-width: 1100px; /* w-1100 대신 최대 너비 설정 */
-	margin: 40px auto;
-}
 h1 {
 	font-size: 1.8em;
 	padding-bottom: 10px;
@@ -45,7 +39,6 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 .blue { color: #3498db; }
 
 
-/* === 버튼 스타일 (네모난 흑백/모노크롬 테마) === */
 .btn {
 	padding: 10px 20px;
 	border-radius: 0; /* 네모난 형태로 변경 */
@@ -125,12 +118,12 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 	margin-top: 10px;
 }
 .review-table-fixed th, .review-table-fixed td {
-	border: 1px solid #ccc; /* 테두리를 모노크롬 테마에 맞게 조정 */
+	border: 1px solid #ccc; 
 	padding: 12px 10px;
 	vertical-align: middle;
 }
 .review-table-fixed th {
-	background-color: #f8f8f8; /* 헤더 배경 연한 회색 */
+	background-color: #f8f8f8; 
 	text-align: center;
 	color: #495057;
 }
@@ -298,7 +291,7 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 		});
 
 		// 4. 리뷰 삭제
-		$(document).on("click", ".btn-delete", function() {
+		$(document).on("click", ".btn-review-delete", function() {
 			var btn = $(this);
 			var reviewNo = btn.data("review-no");
 			if (!confirm("정말 삭제하시겠습니까?")) return;
@@ -603,8 +596,9 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 		<tbody>
     <c:forEach var="review" items="${reviewList}">
         <tr id="review-${review.reviewNo}">
-            <td style="text-align: center;">${review.memberNickname}</td> 
-            
+            <td style="text-align: center;">
+            	${review.memberNickname}
+            </td> 
             <td style="text-align: center;"> 
                 <c:forEach begin="1" end="${review.reviewRating}">
                     <i class="fa-solid fa-star" style="color: gold;"></i>
@@ -613,11 +607,8 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
                     <i class="fa-regular fa-star" style="color: #ccc;"></i>
                 </c:forEach>
             </td>
-            
             <td class="review-content">${review.reviewContent}</td> 
-            
             <td style="text-align: center;"><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd" /></td>
-            
             <td>
 				<c:if test="${sessionScope.loginId eq review.memberId}">	
 					<button class="btn btn-edit" data-review-no="${review.reviewNo}">수정</button>

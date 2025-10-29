@@ -15,11 +15,6 @@
 
 <style>
 /* === 공통 레이아웃 === */
-.container {
-	width: 90%;
-	max-width: 1100px;
-	margin: 40px auto;
-}
 h2 { 
     font-size: 2em; 
     padding-bottom: 10px;
