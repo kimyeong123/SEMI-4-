@@ -35,6 +35,10 @@ public class CsBoardListVO {
 	//글 작성자의 닉네임 표기용
 	private String csBoardMemberNickname;
 	
+	// View(JSP) 처리를 위해 추가하는 플래그
+    private boolean wtimeRecent; // 작성일이 24시간 이내인지 여부
+    private boolean etimeRecent; // 수정일이 24시간 이내인지 여부
+	
 	//EL에서 ${boardDto.boardWriteTime}으로부를 수 있는 메소드
 	public String getBoardWriteTime()
 	{

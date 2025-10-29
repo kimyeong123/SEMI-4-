@@ -111,9 +111,25 @@
 <%-- 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td> --%>
 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
 						<td>
-									${csBoardListVO.csBoardWtime }
+							<c:choose>
+								<c:when test="${csBoardListVO.wtimeRecent}">
+									<fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="HH:mm"/>
+								</c:when>
+								<c:otherwise>
+									<fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="yy.MM.dd"/>
+								</c:otherwise>
+							</c:choose>
 						</td>
-						<td>${csBoardListVO.csBoardEtime }</td>
+						<td>
+							<c:choose>
+								<c:when test="${csBoardListVO.etimeRecent}">								
+									<fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="HH:mm"/>
+								</c:when>
+								<c:otherwise>									
+									<fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="yy.MM.dd"/>
+								</c:otherwise>
+							</c:choose>
+						</td>
 					</tr>
 				</c:forEach>
 			</tbody>
