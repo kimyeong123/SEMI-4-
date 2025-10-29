@@ -12,59 +12,65 @@ public class ProductOptionDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     @Autowired
     private ProductOptionMapper productOptionMapper;
 
-    // 시퀀스 생성
+    // ================= 시퀀스 발급 =================
     public int sequence() {
-        String sql = "select option_seq.nextval from dual";
+        String sql = "SELECT option_seq.NEXTVAL FROM dual";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-    // 특정 상품의 옵션 목록 조회
-    public List<ProductOptionDto> selectListByProduct(int productNo) {
-        String sql = "select * from product_option where product_no = ? order by option_no";
-        return jdbcTemplate.query(sql, productOptionMapper, productNo);
-    }
-
-    // 옵션 등록
-    public void insert(ProductOptionDto productOptionDto) {
-        String sql = "insert into product_option(option_no, product_no, option_name, option_value, option_stock) "
-                   + "values (?, ?, ?, ?, ?)";
+    // ================= 옵션 등록 =================
+    public void insert(ProductOptionDto dto) {
+        String sql = "INSERT INTO product_option "
+                   + "(option_no, product_no, option_name, option_value, option_stock) "
+                   + "VALUES (?, ?, ?, ?, ?)";
         Object[] params = {
-            productOptionDto.getOptionNo(),
-            productOptionDto.getProductNo(),
-            productOptionDto.getOptionName(),
-            productOptionDto.getOptionValue(),
-            productOptionDto.getOptionStock()
+            dto.getOptionNo(),
+            dto.getProductNo(),
+            dto.getOptionName(),
+            dto.getOptionValue(),
+            dto.getOptionStock()
         };
         jdbcTemplate.update(sql, params);
     }
 
-    // 옵션 수정
-    public boolean update(ProductOptionDto productOptionDto) {
-        String sql = "update product_option "
-                   + "set option_name = ?, option_value = ?, option_stock = ? "
-                   + "where option_no = ?";
+    // ================= 특정 상품의 옵션 목록 조회 =================
+    public List<ProductOptionDto> selectListByProduct(int productNo) {
+        String sql = "SELECT * FROM product_option "
+                   + "WHERE product_no = ? "
+                   + "ORDER BY option_name ASC, option_no ASC";
+        return jdbcTemplate.query(sql, productOptionMapper, productNo);
+    }
+
+    // ================= 옵션 수정 =================
+    public boolean update(ProductOptionDto dto) {
+        String sql = "UPDATE product_option "
+                   + "SET option_name = ?, option_value = ?, option_stock = ? "
+                   + "WHERE option_no = ?";
         Object[] params = {
-            productOptionDto.getOptionName(),
-            productOptionDto.getOptionValue(),
-            productOptionDto.getOptionStock(),
-            productOptionDto.getOptionNo()
+            dto.getOptionName(),
+            dto.getOptionValue(),
+            dto.getOptionStock(),
+            dto.getOptionNo()
         };
         return jdbcTemplate.update(sql, params) > 0;
     }
 
-    // 재고만 수정
+    // ================= 재고만 수정 =================
     public boolean updateStock(int optionNo, int amount) {
-        String sql = "update product_option set option_stock = option_stock + ? where option_no = ?";
+        String sql = "UPDATE product_option "
+                   + "SET option_stock = option_stock + ? "
+                   + "WHERE option_no = ?";
         Object[] params = { amount, optionNo };
         return jdbcTemplate.update(sql, params) > 0;
     }
 
-    // 옵션 삭제
+    // ================= 옵션 삭제 =================
     public boolean delete(int optionNo) {
-        String sql = "delete from product_option where option_no = ?";
+        String sql = "DELETE FROM product_option WHERE option_no = ?";
         return jdbcTemplate.update(sql, optionNo) > 0;
     }
 }
