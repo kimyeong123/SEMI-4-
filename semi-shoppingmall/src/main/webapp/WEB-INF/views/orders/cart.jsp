@@ -43,23 +43,20 @@
             color: #000;
         }
 
-        /* 💡 [수정] 휴지통 아이콘 색상 설정 */
         .btn-delete-item {
             font-size: 18px;
             color: #777; 
         }
 
-        /* 💡 [수정] 수량 글씨 색상 검은색으로 변경 */
         .quantity-display {
             font-size: 18px;
             font-weight: bold;
-            color: #333; /* 검은색 계열로 변경 */
+            color: #333; 
             padding: 0 8px;
             min-width: 20px;
             text-align: center;
         }
 
-        /* 주문 요약 CSS */
         .order-summary-box {
             background-color: #f4f6fA;
             border-radius: 12px;
