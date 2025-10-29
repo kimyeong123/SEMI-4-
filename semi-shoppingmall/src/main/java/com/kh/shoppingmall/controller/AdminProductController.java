@@ -3,7 +3,6 @@ package com.kh.shoppingmall.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +34,7 @@ public class AdminProductController {
     @Autowired private WishlistService wishlistService;
     @Autowired private ReviewService reviewService;
 
-    // ✅ 상품 목록
+    // 상품 목록
     @GetMapping("/list")
     public String list(@RequestParam(value = "column", required = false) String column,
                        @RequestParam(value = "keyword", required = false) String keyword,
@@ -55,7 +54,7 @@ public class AdminProductController {
         return "/WEB-INF/views/admin/product/list.jsp";
     }
 
-    // ✅ 상품 등록 페이지
+    // 상품 등록 페이지
     @GetMapping("/add")
     public String addPage(@RequestParam(required = false) Integer parentCategoryNo, Model model) {
         model.addAttribute("parentCategoryList", categoryService.getParentCategories());
@@ -75,21 +74,19 @@ public class AdminProductController {
         @RequestParam("thumbnailFile") MultipartFile thumbnailFile
     ) throws Exception {
 
-        // ✅ 카테고리 구성
+        // 카테고리 구성
         List<Integer> categoryNoList = new ArrayList<>();
         if (parentCategoryNo != null) categoryNoList.add(parentCategoryNo);
         if (childCategoryNo != null) categoryNoList.add(childCategoryNo);
 
-        // ✅ 옵션은 나중에 따로 등록할 거라서 null 전달
+        // 옵션은 나중에 따로 등록할 거라서 null 전달
         int productNo = productService.register(productDto, null, categoryNoList, thumbnailFile);
 
-        System.out.println("✅ [Product 등록 완료] productNo = " + productNo);
-
-        // ✅ 등록 후 → 옵션 관리 페이지로 이동
+        // 등록 후 → 옵션 관리 페이지로 이동
         return "redirect:/admin/product/option/manage?productNo=" + productNo;
     }
 
-    // ✅ 상품 상세
+    // 상품 상세
     @GetMapping("/detail")
     public String adminDetail(@RequestParam(required = false) Integer productNo,
                               Model model, HttpSession session) {
@@ -118,7 +115,7 @@ public class AdminProductController {
         return "/WEB-INF/views/admin/product/detail.jsp";
     }
 
-    // ✅ 상품 수정 페이지
+    // 상품 수정 페이지
     @GetMapping("/edit")
     public String editPage(@RequestParam int productNo, Model model) {
         ProductDto product = productService.getProduct(productNo);
@@ -134,7 +131,7 @@ public class AdminProductController {
         return "/WEB-INF/views/admin/product/edit.jsp";
     }
 
-    // ✅ 상품 수정 처리
+    // 상품 수정 처리
     @PostMapping("/edit")
     public String edit(@ModelAttribute ProductDto productDto,
                        @RequestParam(required = false) List<Integer> categoryNoList,
@@ -148,7 +145,7 @@ public class AdminProductController {
         return "redirect:detail?productNo=" + productDto.getProductNo();
     }
 
-    // ✅ 상품 삭제
+    // 상품 삭제
     @PostMapping("/delete")
     public String delete(@RequestParam int productNo) throws Exception {
         ProductDto product = productService.getProduct(productNo);
@@ -159,7 +156,7 @@ public class AdminProductController {
         return "redirect:list";
     }
 
-    // ✅ 하위 카테고리 불러오기 (상품등록 AJAX용)
+    // 하위 카테고리 불러오기 (상품등록 AJAX용)
     @GetMapping("/category/children")
     public String getChildren(@RequestParam int parentCategoryNo, Model model) {
         List<CategoryDto> childCategoryList = categoryService.getChildrenByParent(parentCategoryNo);
