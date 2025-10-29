@@ -38,7 +38,7 @@
 			</label>
 			<input class="field w-100" type="password" name="memberPw" required autocomplete="off">
 		</div>
-		<button class="feild w-100 btn btn-positive mt-20 mb-30">로그인</button>
+		<button class="feild w-100 btn btn-positive mt-20 mb-30" type="submit">로그인</button>
 		
 		<%--아이디 및 비번 찾기 --%>
 		<div class="cell center mt-30">

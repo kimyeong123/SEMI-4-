@@ -629,8 +629,8 @@ h2 {
                             <td><fmt:formatDate value="${review.reviewCreatedAt}"
                                     pattern="yyyy-MM-dd" /></td>
                             <td>
-                                <button class="btn-edit" data-review-no="${review.reviewNo}">수정</button>
-                                <button class="btn-delete" data-review-no="${review.reviewNo}">삭제</button>
+                                <button type="button" class="btn-edit" data-review-no="${review.reviewNo}">수정</button>
+                                <button type="button" class="btn-delete" data-review-no="${review.reviewNo}">삭제</button>
                             </td>
                         </tr>
                     </c:forEach>

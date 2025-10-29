@@ -48,7 +48,8 @@ $(document).ready(function() {
 
 <div class="flex-fill"></div>
 
-<form autocomplete="off" action="write" method="post" id = "writeForm">
+<form autocomplete="off" action="edit" method="post" id = "writeForm">
+<input type="hidden" name="csBoardNo" value="${csBoardDto.csBoardNo}">
 <%-- 답글일 경우(csBoardOrigin이 있을 경우) 이것을 전달하는 코드를 작성 --%>
 <c:if test="${param.csBoardOrigin != null}">
 	<input type="hidden" name="csBoardOrigin" value="${param.csBoardOrigin}">
@@ -65,7 +66,8 @@ $(document).ready(function() {
     
     <c:if test="${sessionScope.loginLevel == '관리자' && hasParent == 'N'}">
     <div class="cell right">
-        <input type="checkbox" name="csBoardNotice" value="Y">
+        <input type="checkbox" name="csBoardNotice" value="Y"
+			<c:if test="${csBoardDto.csBoardNotice == 'Y'}">checked="checked"</c:if>>        
         <span>공지사항으로 등록</span>
     </div>
     </c:if>
@@ -75,7 +77,7 @@ $(document).ready(function() {
 		<c:when test="${sessionScope.loginLevel == '관리자'}">
 			<%-- 관리자일 경우: 체크박스를 보여주지 않고, hidden 필드로 값을 전달 --%>
 			<%-- 부모 글의 비밀글 상태(parentSecret)를 따라 hidden 필드의 value를 설정 --%>
-			<input type="hidden" name="csBoardSecret" value="${parentSecret}">
+			<input type="hidden" name="csBoardSecret" value="${csBoardDto.csBoardSecret}">
 <%-- 			<c:if test="${parentSecret == 'Y'}"> --%>
 <!-- 				<span class="text-positive">[답글: 원글에 따라 자동 비공개]</span> -->
 <%-- 			</c:if> --%>
@@ -87,7 +89,7 @@ $(document).ready(function() {
 		<c:otherwise>
 			 <%-- 일반 사용자일 경우: 체크박스 표시 --%>
 			<input type="checkbox" name="csBoardSecret" value="Y" 
-				<c:if test="${parentSecret == 'Y'}">checked="checked"</c:if> >
+				<c:if test="${csBoardDto.csBoardSecret == 'Y'}">checked="checked"</c:if> >
 			<span class="text-positive">비공개로 작성</span>
 		</c:otherwise>
 	</c:choose>
@@ -95,15 +97,15 @@ $(document).ready(function() {
     
     <div class="cell">
         <label>제목 *</label>
-        <input type="text" name="csBoardTitle" required class="field w-100">
+        <input type="text" name="csBoardTitle" value="${csBoardDto.csBoardTitle}" required class="field w-100">
     </div>
     <div class="cell">
         <label>내용 *</label>
-        <textarea name="csBoardContent" class="summernote-editor" id = "csBoardContent"></textarea>
+        <textarea name="csBoardContent" class="summernote-editor" id = "csBoardContent">${csBoardDto.csBoardContent }</textarea>
     </div>
     <div class="cell right">
         <a href="list" class="btn btn-neutral">목록으로</a>
-        <button class="btn btn-positive" type="submit">등록하기</button>
+        <button type="submit" class="btn btn-positive" >수정하기</button>
     </div>
 </div>
 </form>
