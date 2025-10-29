@@ -22,8 +22,9 @@ public class ProductRestController {
     // ---------------- 전체 목록 조회 ----------------
     @GetMapping("/list")
     public List<ProductDto> list(@RequestParam(required = false) String column,
-                                 @RequestParam(required = false) String keyword) {
-        return productService.getProductList(column, keyword);
+                                 @RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) String order) {
+        return productService.getProductList(column, keyword, order);
     }
 
     // ---------------- 특정 상품 조회 ----------------
