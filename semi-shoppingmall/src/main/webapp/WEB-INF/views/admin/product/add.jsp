@@ -55,32 +55,7 @@
                 </c:forEach>
             </select>
         </div>
-
-        <!-- 옵션 등록 -->
-        <div class="cell mt-40">
-            <h3>옵션 등록</h3>
-            <div id="option-container">
-                <div class="option-set">
-                    <div class="cell">
-                        <label>옵션 이름 *</label>
-                        <input type="text" name="optionNameList" placeholder="예: 색상" required class="field w-100">
-                    </div>
-                    <div class="cell">
-                        <label>옵션 값 *</label>
-                        <div class="option-values" style="display:flex; flex-wrap:wrap; gap:5px;">
-                            <div class="option-item">
-                                <input type="text" name="optionValueList" placeholder="예: 빨강" class="field option-field">
-                                <button type="button" class="btn btn-delete-value">−</button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-add-value mt-10">+ 값 추가</button>
-                    </div>
-                    <button type="button" class="btn btn-danger btn-remove-set mt-10">옵션 세트 삭제</button>
-                    <hr>
-                </div>
-            </div>
-            <button type="button" id="btn-add-set" class="btn btn-positive mt-10">+ 옵션 세트 추가</button>
-        </div>
+        
         <div class="cell mt-30">
             <label>썸네일 *</label>
             <input type="file" name="thumbnailFile" required class="field w-100">
