@@ -23,86 +23,91 @@ public class CartDao {
 	@Autowired
 	private CartDetailMapper cartDetailMapper;
 	
-	//C
-//	public int sequence() {
-//		String sql = "select cart_seq.nextval from dual";
-//		return  jdbcTemplate.queryForObject(sql, int.class);
-//	}
 	
+	// ==========================
+	// C (등록)
+	// ==========================
 	public void insert(CartDto cartDto) {
-		String sql = "insert into cart "
+		String sql = "INSERT INTO cart "
 				+ "(cart_no, member_id, product_no, option_no, cart_amount) "
-				+ "values "
-				+ "(cart_seq.nextval, ?, ?, ?, ?) ";
+				+ "VALUES (cart_seq.nextval, ?, ?, ?, ?)";
 		
 		Object[] params = {
-			cartDto.getMemberId(),cartDto.getProductNo(),
-			cartDto.getOptionNo(),cartDto.getCartAmount()
-			
+			cartDto.getMemberId(),
+			cartDto.getProductNo(),
+			cartDto.getOptionNo(),
+			cartDto.getCartAmount()
 		};
 		
 		jdbcTemplate.update(sql, params);
 	}
 	
-	//R
-	public List<CartDetailVO> selectList(String memberId){
-		String sql = "select * from cart_detail where member_id=?";
-		
+	
+	// ==========================
+	// R (조회)
+	// ==========================
+	public List<CartDetailVO> selectList(String memberId) {
+		String sql = "SELECT * FROM cart_detail WHERE member_id = ?";
 		Object[] params = { memberId };
-		
 		return jdbcTemplate.query(sql, cartDetailMapper, params);
 	}
 	
-	// 장바구니에 이미 담긴 상품인지 확인하는 메소드
+	// 장바구니에 이미 담긴 상품인지 확인
 	public CartDto findItem(String memberId, int productNo, Integer optionNo) {
-		String sql = "select * from cart where member_id = ? and product_no = ? and option_no = ?";
-		Object[] params = {memberId, productNo, optionNo};
+		String sql = "SELECT * FROM cart WHERE member_id = ? AND product_no = ? AND option_no = ?";
+		Object[] params = { memberId, productNo, optionNo };
 		List<CartDto> list = jdbcTemplate.query(sql, cartMapper, params);
 	    return list.isEmpty() ? null : list.get(0);
 	}
 	
-	//U
+	
+	// ==========================
+	// U (수정)
+	// ==========================
 	public boolean update(CartDto cartDto) {
-		String sql ="update cart set "
-				+ "cart_amount = ? "
-				+ "where cart_no = ?";
-		
+		String sql = "UPDATE cart SET cart_amount = ? WHERE cart_no = ?";
 		Object[] params = {
 			cartDto.getCartAmount(),
 			cartDto.getCartNo()
 		};
-		
 		return jdbcTemplate.update(sql, params) > 0;
 	}	
 	
-	//D
+	
+	// ==========================
+	// D (삭제)
+	// ==========================
 	public boolean delete(CartDto cartDto) {
-		String sql = "delete from cart where member_id = ? and product_no = ? and option_no = ?";
+		String sql = "DELETE FROM cart WHERE member_id = ? AND product_no = ? AND option_no = ?";
 	    Object[] params = {
-	            cartDto.getMemberId(),
-	            cartDto.getProductNo(), 
-	            cartDto.getOptionNo()
+	        cartDto.getMemberId(),
+	        cartDto.getProductNo(), 
+	        cartDto.getOptionNo()
 	    };
-		
 		return jdbcTemplate.update(sql, params) > 0;
 	}
 
 	public int deleteByMemberId(String ordersId) {
-		String sql = "delete from cart where member_id=?";
-		
+		String sql = "DELETE FROM cart WHERE member_id = ?";
 		Object[] params = { ordersId };
-		
-		//삭제된 행 수를 반환
 		return jdbcTemplate.update(sql, params);
 	}
 	
 	public boolean deleteByCartNo(int cartNo) {
-	    String sql = "delete from cart where cart_no = ?";
+	    String sql = "DELETE FROM cart WHERE cart_no = ?";
 	    Object[] params = { cartNo };
 	    return jdbcTemplate.update(sql, params) > 0;
 	}
+	
+	
+	// ✅ ✅ ✅ 추가된 부분 (상품 삭제 시 장바구니 관련 레코드 제거)
+	public int deleteByProductNo(int productNo) {
+	    String sql = """
+	        DELETE FROM cart
+	        WHERE option_no IN (
+	            SELECT option_no FROM product_option WHERE product_no = ?
+	        )
+	    """;
+	    return jdbcTemplate.update(sql, productNo);
+	}
 }
-
-
-
-

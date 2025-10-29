@@ -15,6 +15,7 @@ import com.kh.shoppingmall.dao.ProductCategoryMapDao;
 import com.kh.shoppingmall.dao.ProductDao;
 import com.kh.shoppingmall.dao.ProductOptionDao;
 import com.kh.shoppingmall.dao.WishlistDao;
+import com.kh.shoppingmall.dao.CartDao; // ✅ 새로 추가 (cart 삭제용)
 import com.kh.shoppingmall.dto.CategoryDto;
 import com.kh.shoppingmall.dto.ProductDto;
 import com.kh.shoppingmall.dto.ProductOptionDto;
@@ -30,6 +31,7 @@ public class ProductService {
     @Autowired private WishlistDao wishlistDao;
     @Autowired private AttachmentService attachmentService;
     @Autowired private ReviewService reviewService;
+    @Autowired private CartDao cartDao; // ✅ 추가
 
     // ---------------- 상품 등록 ----------------
     @Transactional
@@ -145,16 +147,23 @@ public class ProductService {
     // ---------------- 상품 삭제 ----------------
     @Transactional
     public void delete(int productNo) {
-        // 1️⃣ 옵션 먼저 삭제 (외래키 제약 조건 방지)
-        productOptionDao.deleteByProduct(productNo);
+        System.out.println("🚨 상품 삭제 시작: productNo = " + productNo);
 
-        // 2️⃣ 카테고리 매핑 삭제
+        // 1️⃣ 장바구니(cart_option) → product_option 외래키 FK_CART_OPTION 방지
+        int deletedCart = cartDao.deleteByProductNo(productNo);
+        System.out.println("🗑 장바구니 관련 데이터 삭제 완료 (" + deletedCart + "건)");
+
+        // 2️⃣ 옵션 삭제
+        int deletedOption = productOptionDao.deleteByProduct(productNo);
+        System.out.println("🗑 옵션 삭제 완료 (" + deletedOption + "건)");
+
+        // 3️⃣ 카테고리 매핑 삭제
         productCategoryMapDao.deleteAllByProductNo(productNo);
 
-        // 3️⃣ 상품 삭제
+        // 4️⃣ 상품 삭제
         productDao.delete(productNo);
 
-        System.out.println("✅ 상품 및 관련 데이터 삭제 완료: productNo = " + productNo);
+        System.out.println("✅ 상품 및 관련 데이터 삭제 전체 완료: productNo = " + productNo);
     }
 
     // ---------------- 위시리스트 카운트 ----------------
