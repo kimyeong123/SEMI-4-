@@ -180,4 +180,5 @@ public class ProductService {
         else
             return productDao.selectList(column, null, order);
     }
+
 }
