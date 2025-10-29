@@ -7,15 +7,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
     /* === 기본 스타일 초기화 및 레이아웃 === */
-    .container {
-        width: 90%; /* 화면 중앙에 넓게 배치 */
-        max-width: 1200px;
-        margin: 40px auto;
-        background-color: #f7f9fc; /* 연한 배경색 */
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 은은한 그림자 */
-    }
     h1 {
         border-bottom: 2px solid #ddd;
         padding-bottom: 15px;
