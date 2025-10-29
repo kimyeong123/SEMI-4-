@@ -26,7 +26,7 @@ public class PageVO {
 	public String getSearchParams() //목록 or 검색 여부에 따라 추가되는 파라미터 변환
 	{
 		if(isSearch())
-			return "size"+size+"&column="+column+"&keyword="+keyword;
+			return "size="+size+"&column="+column+"&keyword="+keyword;
 		else
 		{
 			return "size="+size;
@@ -37,9 +37,19 @@ public class PageVO {
 	{
 		return (page-1) / blockSize * blockSize + 1;
 	}
-	public int getBlockFinish() //블록의 종료 번호
+//	public int getBlockFinish() //블록의 종료 번호
+//	{
+//		return (page-1) / blockSize * blockSize + blockSize;
+//	}
+	
+	public int getBlockFinish()
 	{
-		return (page-1) / blockSize * blockSize + blockSize;
+		int finish = (page-1) / blockSize * blockSize + blockSize;
+		if(finish > getTotalPage()) 
+		{
+			finish = getTotalPage();
+		}
+		return finish;
 	}
 	
 	public int getTotalPage()
