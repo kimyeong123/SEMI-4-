@@ -199,7 +199,7 @@
 			<div class="cell w-600">
 				<div class="cell w-100">
 					<span>이름</span> <input type="text" class="field w-100"
-						name="ordersRecipient" value="${memberDto.memberNickname}">
+						name="ordersRecipient" value="${memberDto.memberName}">
 						<div class="fail-feedback">이름은 반드시 입력해야 해요</div>
 				</div>
 				<div class="cell">주소</div>
