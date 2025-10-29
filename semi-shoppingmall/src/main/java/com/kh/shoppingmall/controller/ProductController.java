@@ -102,10 +102,8 @@ public class ProductController {
 
         if (categoryNoList == null) categoryNoList = new ArrayList<>();
 
-        // 1️⃣ 상품 등록
         int productNo = productService.register(productDto, new ArrayList<>(), categoryNoList, thumbnailFile);
 
-        // 2️⃣ 옵션 등록
         if (optionNameList != null && optionValueList != null) {
             for (int i = 0; i < optionNameList.size(); i++) {
                 String name = optionNameList.get(i);
@@ -120,7 +118,6 @@ public class ProductController {
                 }
             }
         }
-
         return "redirect:addFinish";
     }
 
@@ -143,6 +140,18 @@ public class ProductController {
 
         List<ProductOptionDto> optionList = productService.getOptionsByProduct(productNo);
 
+        // ✅ 옵션 분리: 색상 / 사이즈
+        List<String> colorList = new ArrayList<>();
+        List<String> sizeList = new ArrayList<>();
+
+        for (ProductOptionDto opt : optionList) {
+            if ("색상".equals(opt.getOptionName()) && !colorList.contains(opt.getOptionValue())) {
+                colorList.add(opt.getOptionValue());
+            } else if ("사이즈".equals(opt.getOptionName()) && !sizeList.contains(opt.getOptionValue())) {
+                sizeList.add(opt.getOptionValue());
+            }
+        }
+
         String loginId = (String) session.getAttribute("loginId");
         boolean wishlisted = loginId != null && wishlistService.checkItem(loginId, productNo);
 
@@ -150,7 +159,8 @@ public class ProductController {
         product.setProductAvgRating(avg);
 
         model.addAttribute("product", product);
-        model.addAttribute("optionList", optionList);
+        model.addAttribute("colorList", colorList);
+        model.addAttribute("sizeList", sizeList);
         model.addAttribute("reviewList", reviewService.getReviewsDetailByProduct(productNo));
         model.addAttribute("wishlisted", wishlisted);
         model.addAttribute("wishlistCount", wishlistService.count(productNo));
@@ -160,16 +170,11 @@ public class ProductController {
         LocalDate today = LocalDate.now();
         LocalDate estimatedDate = today.plusDays(4);
         DayOfWeek dayOfWeek = estimatedDate.getDayOfWeek();
-
-        if (dayOfWeek == DayOfWeek.SATURDAY) {
-            estimatedDate = estimatedDate.plusDays(2);
-        } else if (dayOfWeek == DayOfWeek.SUNDAY) {
-            estimatedDate = estimatedDate.plusDays(1);
-        }
+        if (dayOfWeek == DayOfWeek.SATURDAY) estimatedDate = estimatedDate.plusDays(2);
+        else if (dayOfWeek == DayOfWeek.SUNDAY) estimatedDate = estimatedDate.plusDays(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일(E)", Locale.KOREAN);
-        String formattedDeliveryDate = estimatedDate.format(formatter);
-        model.addAttribute("estimatedDeliveryDate", formattedDeliveryDate);
+        model.addAttribute("estimatedDeliveryDate", estimatedDate.format(formatter));
 
         return "/WEB-INF/views/product/detail.jsp";
     }
@@ -199,7 +204,6 @@ public class ProductController {
                        @RequestParam(required = false) List<Integer> deleteAttachmentNoList) throws Exception {
 
         if (categoryNoList == null) categoryNoList = new ArrayList<>();
-
         productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, deleteAttachmentNoList);
         return "redirect:detail?productNo=" + productDto.getProductNo();
     }

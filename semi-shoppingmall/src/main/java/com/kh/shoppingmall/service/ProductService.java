@@ -145,8 +145,16 @@ public class ProductService {
     // ---------------- 상품 삭제 ----------------
     @Transactional
     public void delete(int productNo) {
+        // 1️⃣ 옵션 먼저 삭제 (외래키 제약 조건 방지)
+        productOptionDao.deleteByProduct(productNo);
+
+        // 2️⃣ 카테고리 매핑 삭제
         productCategoryMapDao.deleteAllByProductNo(productNo);
+
+        // 3️⃣ 상품 삭제
         productDao.delete(productNo);
+
+        System.out.println("✅ 상품 및 관련 데이터 삭제 완료: productNo = " + productNo);
     }
 
     // ---------------- 위시리스트 카운트 ----------------
@@ -180,5 +188,4 @@ public class ProductService {
         else
             return productDao.selectList(column, null, order);
     }
-
 }
