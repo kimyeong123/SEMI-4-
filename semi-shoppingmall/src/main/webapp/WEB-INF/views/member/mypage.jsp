@@ -446,8 +446,8 @@ $(document).on("click", ".btn-review-delete", function() {
             <td style="text-align: center;"><fmt:formatDate value="${review.reviewCreatedAt}" pattern="yyyy-MM-dd" /></td>
             <td>
                 <c:if test="${sessionScope.loginId eq review.memberId}">    
-                    <button class="btn btn-edit" data-review-no="${review.reviewNo}">수정</button>
-                    <button class="btn btn-review-delete" data-review-no="${review.reviewNo}">삭제</button>
+                    <button type="button" class="btn btn-edit" data-review-no="${review.reviewNo}">수정</button>
+                    <button type="button" class="btn btn-review-delete" data-review-no="${review.reviewNo}">삭제</button>
                 </c:if>
             </td>
         </tr>

@@ -56,9 +56,10 @@ public class CsBoardController {
 		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달(배경색 칠하기용)
 		List<CsBoardListVO> csBoardList = csBoardDao.selectListWithPaging(pageVO);//전체글
 		List<CsBoardListVO> result = new ArrayList<>();//합성(공지+전체)
-		
+		result.addAll(csBoardNoticeList);
+		result.addAll(csBoardList);
 		//현재 시간 비교해 플래그 값 설정
-		for(CsBoardListVO vo: csBoardList) {
+		for(CsBoardListVO vo: result) {
 			LocalDateTime wTime = vo.getCsBoardWtime().toLocalDateTime();
 			vo.setWtimeRecent(ChronoUnit.HOURS.between(wTime, now) < 24);
 			
@@ -72,8 +73,7 @@ public class CsBoardController {
 		}
 			
 			
-		result.addAll(csBoardNoticeList);
-		result.addAll(csBoardList);
+
 		model.addAttribute("csBoardList", result);//검색이든 목록이든 한번에 처리
 		
 		int dataCount = csBoardDao.count(pageVO);//검색이든 목록이든 카운트를 구해
@@ -135,14 +135,19 @@ public class CsBoardController {
 	public String write(Model model, @RequestParam(required = false) Integer csBoardOrigin) {
 		//원글 비밀글 상태 저장 변수
 		String parentSecret = "N";
+		//답글인지 확인용 변수
+		String hasParent = "N";
 		
 		if(csBoardOrigin != null) {
 			CsBoardDto parentDto = csBoardDao.selectOne(csBoardOrigin);
+			hasParent = "Y";
 			if(parentDto != null) {
 				parentSecret = parentDto.getCsBoardSecret();
 			}
 		}
+		
 		model.addAttribute("parentSecret", parentSecret);
+		model.addAttribute("hasParent", hasParent);
 		return "/WEB-INF/views/csBoard/write.jsp";
 	}
 	//새글과 답글을 구분하여 값을 계산한 뒤 등록
@@ -208,6 +213,46 @@ public class CsBoardController {
 		
 		return "redirect:list";
 	}
+	//
+	@GetMapping("/edit")
+	public String edit(@RequestParam int csBoardNo, Model model, HttpSession session) {
+	    // 1. 게시글 번호(csBoardNo)를 이용하여 DB에서 해당 게시글 정보를 조회합니다.
+	    CsBoardDto csBoardDto = csBoardDao.selectOne(csBoardNo);
+		//답글인지 확인용 변수
+		String hasParent = "N";		
+		
+	    // 2. 글이 존재하지 않으면 예외를 발생시킵니다.
+	    if(csBoardDto == null) {
+	        throw new TargetNotfoundException("존재하지 않는 글입니다.");
+	    }
+	    
+	    if(csBoardDto.getCsBoardDepth() > 0) {
+	    	hasParent = "Y";
+	    }
+	 // 게시글 작성자 ID를 변수에 저장하고 trim() 적용
+	    String writerId = csBoardDto.getCsBoardWriter();
+	    
+	 // 세션 ID를 가져와 trim() 적용
+	    String memberId = (String) session.getAttribute("loginId");
+	    
+	    // 3. 권한 검증 로직
+//	    String memberId = (String) session.getAttribute("memberId");
+	    if(memberId == null || !memberId.trim().equals(writerId.trim())) {
+	    	throw new NeedPermissionException("본인이 작성한 글만 수정 가능합니다");
+	    }
+	    
+	    
+	    // 4. 권한 통과 후 조회한 데이터를 모델에 담아 View(수정 폼)로 전달합니다.
+	    model.addAttribute("csBoardDto", csBoardDto);
+
+	    //공지사항 및 부모글이 비밀글인지 확인용
+//		model.addAttribute("parentSecret", parentSecret);
+		model.addAttribute("hasParent", hasParent);
+	    
+	    // 5. 수정 폼 템플릿 파일(예: csBoard/edit.html)로 이동합니다.
+	    return  "/WEB-INF/views/csBoard/edit.jsp"; 
+	}
+	
 	
 	@PostMapping("/edit")
 	public String edit(@ModelAttribute CsBoardDto csBoardDto) {
@@ -242,7 +287,7 @@ public class CsBoardController {
 		
 		
 		csBoardDao.update(csBoardDto);
-		return "redirect:detail?boardNo="+csBoardDto.getCsBoardNo();
+		return "redirect:detail?csboardNo="+csBoardDto.getCsBoardNo();
 	}
 	
 }

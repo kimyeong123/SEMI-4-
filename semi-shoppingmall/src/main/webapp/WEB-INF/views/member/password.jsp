@@ -23,7 +23,7 @@
 			<input class ="field w-100" type="password" name = "changePw"  required>
 		</div>
 		<div clas = "cell">
-			<button class ="btn btn-negative">비밀번호 변경</button>
+			<button class ="btn btn-negative" type="submit">비밀번호 변경</button>
 		</div>
 	</form>
 </div>
