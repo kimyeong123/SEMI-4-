@@ -66,6 +66,7 @@ public class ProductOptionDao {
 
     // ✅ 색상 + 사이즈 조합으로 해당 옵션 번호 찾기 (2단 옵션 구조)
     public Integer findOptionNoByColorAndSize(int productNo, String color, String size) {
+        // 1️⃣ 부모-자식 구조 (색상 → 사이즈)
         String sql = """
             SELECT c.option_no
             FROM product_option p
@@ -79,23 +80,28 @@ public class ProductOptionDao {
         List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, productNo, color, size);
         if (!list.isEmpty()) return list.get(0);
 
-        // ✅ 단일 구조에서도 탐색 가능하도록 보완
+        // 2️⃣ parent_no가 비어있는 경우 (단일 구조일 때 fallback)
         String sql2 = """
             SELECT option_no FROM product_option
             WHERE product_no = ?
-              AND TRIM(option_value) = TRIM(?)
+              AND (
+                  (option_name = '색상' AND TRIM(option_value) = TRIM(?))
+                  OR
+                  (option_name = '사이즈' AND TRIM(option_value) = TRIM(?))
+              )
         """;
-        List<Integer> list2 = jdbcTemplate.queryForList(sql2, Integer.class, productNo, color + "/" + size);
+        List<Integer> list2 = jdbcTemplate.queryForList(sql2, Integer.class, productNo, color, size);
         return list2.isEmpty() ? null : list2.get(0);
     }
 
     // ✅ 단일 옵션 이름 + 값으로 옵션 번호 찾기 (부모-자식 구조 아닐 때)
     public Integer findOptionNoByNameValue(int productNo, String name, String value) {
-        String sql =
-            "SELECT option_no FROM product_option " +
-            "WHERE product_no = ? " +
-            "AND TRIM(option_name) = TRIM(?) " +
-            "AND TRIM(option_value) = TRIM(?)";
+        String sql = """
+            SELECT option_no FROM product_option
+            WHERE product_no = ?
+              AND TRIM(option_name) = TRIM(?)
+              AND TRIM(option_value) = TRIM(?)
+        """;
         List<Integer> list = jdbcTemplate.queryForList(sql, Integer.class, productNo, name, value);
         return list.isEmpty() ? null : list.get(0);
     }
