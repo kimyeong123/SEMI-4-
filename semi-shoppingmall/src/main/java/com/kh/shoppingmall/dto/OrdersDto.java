@@ -17,4 +17,7 @@ public class OrdersDto {
     private String ordersShippingPost, ordersShippingAddress1, ordersShippingAddress2;
     private String ordersStatus;
     private Timestamp ordersCreatedAt;
+    
+    //체크박스 값 받는 필드
+    private boolean saveAddressAsDefault;
 }

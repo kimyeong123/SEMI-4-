@@ -53,11 +53,7 @@
 <script src="./confirm.js"></script>
 
 <script type="text/javascript">
-	// (제공해주신 자바스크립트 코드는 이전에 작성한 그대로입니다)
-	window
-			.addEventListener(
-					"load",
-					function() {
+	window.addEventListener("load", function() {
 						var state = {
 							recipientValid: false,
 							memberContactValid : false,
@@ -75,15 +71,22 @@
 						
 						//이름
 						$("[name=ordersRecipient]").on("blur", function() {
-					        var isValid = $(this).val().trim().length > 0; // 비어있는지만 확인
-					        $(this).removeClass("success fail").addClass(isValid ? "success" : "fail");
-					        state.recipientValid = isValid;
+							var regex = /^[가-힣]{2,7}$/;
+					        var valid = regex.test($(this).val());
+					        
+					        if(valid == false) {
+					            $(this).removeClass("success fail").addClass("fail");
+					            state.recipientValid = false;
+					            return;
+					        }
+							else {
+								$(this).removeClass("success fail").addClass("success");
+								state.recipientValid = true;
+							}
 					    });
-						
 
 						//전화번호
-						$("[name=ordersRecipientContact]")
-								.on("blur", function() {
+						$("[name=ordersRecipientContact]").on("blur", function() {
 											var regex = /^010[1-9][0-9]{3}[0-9]{4}$/;
 											// [수정] 빈 값 허용 안 함 (결제페이지는 필수)
 											var valid = regex.test($(this)
@@ -109,7 +112,7 @@
 													.querySelector("[name=ordersShippingAddress1]");
 											var memberAddress2Input = this;
 
-											// [수정] 빈 값(empty) 허용 안 함 (결제페이지는 필수)
+											//빈 값 허용 안 함
 											var valid = memberPostInput.value.length > 0
 													&& memberAddress1Input.value.length > 0
 													&& memberAddress2Input.value.length > 0;
@@ -124,12 +127,11 @@
 											memberAddress2Input.classList.remove("success", "fail");
 											memberAddress2Input.classList.add(valid ? "success" : "fail");
 
-											state.memberAddressValid = valid; // [수정]
+											state.memberAddressValid = valid;
 										});
 
-						// (주소 검색 로직 ... 동일)
-						var addressSearchBtn = document
-								.querySelector(".btn-address-search");
+						//주소 검색 로직
+						var addressSearchBtn = document.querySelector(".btn-address-search");
 						addressSearchBtn.addEventListener("click", findAddress);
 						document.querySelector("[name=ordersShippingPost]")
 								.addEventListener("click", findAddress);
@@ -153,18 +155,36 @@
 										}
 									}).open();
 						}
-						document
-								.querySelector(".btn-address-clear")
-								.addEventListener(
-										"click",
-										function() {
+						document.querySelector(".btn-address-clear")
+								.addEventListener("click", function() {
 											document.querySelector("[name=ordersShippingPost]").value = "";
 											document.querySelector("[name=ordersShippingAddress1]").value = "";
 											document.querySelector("[name=ordersShippingAddress2]").value = "";
 											this.style.display = "none";
 										});
+						
+						//지우기 버튼 관련 로직
+						$(".btn-clear-address").on("click", function() {
+					        // 관련 입력 필드 값 비우기
+					        $("[name=ordersRecipient]").val("").removeClass("success fail");
+					        $("[name=ordersShippingPost]").val("").removeClass("success fail");
+					        $("[name=ordersShippingAddress1]").val("").removeClass("success fail");
+					        $("[name=ordersShippingAddress2]").val("").removeClass("success fail");
+					        $("[name=ordersRecipientContact]").val("").removeClass("success fail");
 
-						// [추가] 폼 전송 시 유효성 검사
+					        state.recipientValid = false;
+					        state.memberAddressValid = false;
+					        state.memberContactValid = false;
+
+					        //주소 클리어버튼 숨기기
+					        $(".btn-address-clear").hide();
+
+					        //이름 입력창에 focus
+					        $("[name=ordersRecipient]").focus();
+					    });
+					});
+						
+						//폼 전송 시 유효성 검사
 						$(".payment-form").on("submit", function(e) {
 							$(this).find("[name]").trigger("blur");
 
@@ -179,7 +199,7 @@
 			                    }
 							}
 						});
-					});
+
 </script>
 </head>
 
@@ -197,6 +217,13 @@
 			method="post">
 
 			<div class="cell w-600">
+				<div class="cell right">
+        			<input type="checkbox" name="saveAddressAsDefault" id="saveAddressCheck" value="true">
+        			<label for="saveAddressCheck">이 주소를 기본 배송지로 저장</label>
+    				<button type="button" class="btn btn-negative btn-clear-address">
+            			<i class="fa-solid fa-eraser"></i>
+        			</button>
+    			</div>
 				<div class="cell w-100">
 					<span>이름</span> <input type="text" class="field w-100"
 						name="ordersRecipient" value="${memberDto.memberName}">

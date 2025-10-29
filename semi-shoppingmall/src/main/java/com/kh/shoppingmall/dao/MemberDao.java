@@ -201,6 +201,22 @@ public class MemberDao {
 	    return jdbcTemplate.update(sql, params) > 0;
 	}
 	
+	//결제창에서 기본배송지 설정 업데이트
+	public boolean updateMemberAddress(MemberDto memberDto) {
+		String sql = "update member set member_name=?, member_contact=?, member_post=?, member_address1=?, member_address2=? where member_id=?";
+		
+		Object[] params = {
+			memberDto.getMemberName(),
+			memberDto.getMemberContact(),
+			memberDto.getMemberPost(),
+			memberDto.getMemberAddress1(),
+			memberDto.getMemberAddress2(),
+			memberDto.getMemberId()
+		};
+		
+		return jdbcTemplate.update(sql, params) > 0;
+	}
+	
 	
 }
 
