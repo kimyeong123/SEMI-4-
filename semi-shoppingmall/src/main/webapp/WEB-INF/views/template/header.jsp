@@ -76,9 +76,9 @@
 
 /* 로그인/회원가입 버튼 (비로그인 상태) 강조 */
 .header-menu-right a.btn-primary {
-    background-color: #007bff; /* 파란색 배경 */
+    background-color: rgba(53, 59, 72,1.0); /* 파란색 배경 */
     color: white; /* 흰색 글자 */
-    border: 1px solid #007bff;
+    border: 1px solid;
     font-weight: bold;
 }
 .header-menu-right a.btn-primary:hover {
@@ -186,6 +186,32 @@
     text-decoration: none;
     font-size: 0.9em;
 }
+.logo-img {
+    width: 150px;      /* 원하는 가로 크기 */
+    height: 50px;      /* 원하는 세로 크기 */
+    object-fit: contain; /* 비율 유지하면서 영역 맞춤 */
+    display: block;    /* 불필요한 inline 공간 제거 */
+}
+/* 왼쪽 로고 */
+.w-25 .logo-img {
+    width: 100%;        /* 영역 가득 채움 */
+    height: auto;       /* 비율 유지 */
+    object-fit: contain; 
+}
+
+/* 가운데 로고 */
+.w-50 {
+    display: flex;
+    justify-content: center;  /* 수평 중앙 */
+    align-items: center;      /* 수직 중앙 */
+}
+
+.w-50 .logo-img {
+    width: 180px;       /* 조금 크게 */
+    height: auto;       /* 비율 유지 */
+    object-fit: contain;
+}
+
 
 
 </style>
@@ -222,12 +248,15 @@ $(function() {
 			<div class="w-25 flex-box flex-center">
 				<%-- **menu.jsp로 이동된 사이드바 토글 버튼 자리** --%>
 				
-				<a href="/"> 
-                    <img src="https://dummyimage.com/200x50/000/fff&text=KH+Shop" alt="KH Shop 로고">
+				<a href="/">
+    				<img src="${pageContext.request.contextPath}/images/KING HEART.png" alt="로고이미지" class="logo-img">
 				</a>
 			</div>
 			
 			<div class="w-50">
+				<a href="/">
+					<img src="${pageContext.request.contextPath}/images/KHLOGO.png" class="logo-img">
+				</a>
         	</div>
 			
 			<div class="w-25 header-menu-right">
