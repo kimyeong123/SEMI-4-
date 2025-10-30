@@ -102,7 +102,7 @@
 .logo-img { width: 150px; height: 50px; object-fit: contain; display: block; }
 .w-25 .logo-img { width: 100%; height: auto; object-fit: contain; }
 .w-50.logo { display: flex; justify-content: center; align-items: center; }
-.w-50 .logo-img { width: 180px; height: auto; object-fit: contain; }
+.w-50 .logo-img { width: 180px; height: auto; object-fit: contain; margin-bottom: 5px;}
 
 </style>
 
@@ -127,7 +127,7 @@ $(function() {
 		<div class="flex-box" style="height: 50px; align-items: center;">
 			<div class="w-25 flex-box flex-center">
 				<a href="/"> 
-                    <img src="https://dummyimage.com/200x50/000/fff&text=KH+Shop" alt="KH Shop 로고">
+                    <img src="${pageContext.request.contextPath}/images/KING HEART.png" class="logo-img">
 				</a>
 			</div>
 			<div class="w-50 logo">
@@ -196,7 +196,6 @@ $(function() {
 
 		<div class="main-content" id="mainContentArea">
 			<!-- JSP 본문 내용 포함 -->
-	</div>
 
 </body>
 </html>
