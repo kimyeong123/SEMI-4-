@@ -48,9 +48,9 @@ public class ProductCategoryMapDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, params);
     }
 
-    // ✅ 추가: 특정 상품의 모든 카테고리 매핑 삭제
-    public void deleteAllByProductNo(int productNo) {
-        String sql = "delete from product_category_map where product_no = ?";
-        jdbcTemplate.update(sql, productNo);
+    //특정 상품의 모든 카테고리 매핑 삭제
+    public int deleteByProductNo(int productNo) {
+        String sql = "DELETE FROM product_category_map WHERE product_no = ?";
+        return jdbcTemplate.update(sql, productNo);
     }
 }

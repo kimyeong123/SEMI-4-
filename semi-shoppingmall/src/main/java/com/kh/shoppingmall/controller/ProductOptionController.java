@@ -23,19 +23,19 @@ public class ProductOptionController {
     @Autowired
     private ProductDao productDao;
 
-    // ---------------- 옵션 관리 화면 (GET) ----------------
-    @GetMapping("/manage")
-    public String manage(@RequestParam int productNo, Model model) {
-        ProductDto product = productDao.selectOne(productNo);
-        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품입니다.");
-
-        List<ProductOptionDto> optionList = productOptionDao.selectListByProduct(productNo);
-        model.addAttribute("product", product);
-        model.addAttribute("optionList", optionList);
-
-        // JSP 경로
-        return "/WEB-INF/views/admin/option/manage.jsp";
-    }
+//    // ---------------- 옵션 관리 화면 (GET) ----------------
+//    @GetMapping("/manage")
+//    public String manage(@RequestParam int productNo, Model model) {
+//        ProductDto product = productDao.selectOne(productNo);
+//        if (product == null) throw new TargetNotfoundException("존재하지 않는 상품입니다.");
+//
+//        List<ProductOptionDto> optionList = productOptionDao.selectListByProduct(productNo);
+//        model.addAttribute("product", product);
+//        model.addAttribute("optionList", optionList);
+//
+//        // JSP 경로
+//        return "/WEB-INF/views/admin/option/manage.jsp";
+//    }
 
     // ---------------- 옵션 등록 (POST) ----------------
     @PostMapping("/add")
@@ -46,20 +46,20 @@ public class ProductOptionController {
         return "redirect:/admin/product/option/manage?productNo=" + productOptionDto.getProductNo();
     }
 
-    // ---------------- 옵션 수정 (AJAX) ----------------
-    @PostMapping("/edit")
-    @ResponseBody
-    public void edit(@ModelAttribute ProductOptionDto productOptionDto) {
-        boolean result = productOptionDao.update(productOptionDto);
-        if (!result) {
-            throw new TargetNotfoundException("존재하지 않는 옵션 번호");
-        }
-    }
-
-    // ---------------- 옵션 삭제 ----------------
-    @GetMapping("/delete")
-    public String delete(@RequestParam int optionNo, @RequestParam int productNo) {
-        productOptionDao.delete(optionNo);
-        return "redirect:/admin/product/option/manage?productNo=" + productNo;
-    }
+//    // ---------------- 옵션 수정 (AJAX) ----------------
+//    @PostMapping("/edit")
+//    @ResponseBody
+//    public void edit(@ModelAttribute ProductOptionDto productOptionDto) {
+//        boolean result = productOptionDao.update(productOptionDto);
+//        if (!result) {
+//            throw new TargetNotfoundException("존재하지 않는 옵션 번호");
+//        }
+//    }
+//
+//    // ---------------- 옵션 삭제 ----------------
+//    @GetMapping("/delete")
+//    public String delete(@RequestParam int optionNo, @RequestParam int productNo) {
+//        productOptionDao.delete(optionNo);
+//        return "redirect:/admin/product/option/manage?productNo=" + productNo;
+//    }
 }

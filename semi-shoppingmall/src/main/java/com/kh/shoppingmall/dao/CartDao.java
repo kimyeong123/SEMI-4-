@@ -60,6 +60,14 @@ public class CartDao {
 	    return list.isEmpty() ? null : list.get(0);
 	}
 	
+	//본인 확인을 위해 cartNo로 조회하는 메소드 추가
+	public CartDto selectOneByCartNo(int cartNo) {
+	    String sql = "SELECT * FROM cart WHERE cart_no = ?";
+	    Object[] params = { cartNo };
+	    List<CartDto> list = jdbcTemplate.query(sql, cartMapper, params);
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
 	
 	// ==========================
 	// U (수정)
@@ -102,12 +110,17 @@ public class CartDao {
 	
 	// ✅ ✅ ✅ 추가된 부분 (상품 삭제 시 장바구니 관련 레코드 제거)
 	public int deleteByProductNo(int productNo) {
-	    String sql = """
-	        DELETE FROM cart
-	        WHERE option_no IN (
-	            SELECT option_no FROM product_option WHERE product_no = ?
-	        )
-	    """;
+	    String sql = "delelte from cart "
+	    		+ "where option_no in "
+	    		+ "select option_no FROM product_option WHERE product_no = ? "
+	    		+ ")";
 	    return jdbcTemplate.update(sql, productNo);
 	}
+
+
+//	public boolean deleteByOptionNoList(List<Integer> optionNoList) {
+//		String sql ="delete from product_option "
+//				+ "where option_no =";
+//		
+//	}
 }

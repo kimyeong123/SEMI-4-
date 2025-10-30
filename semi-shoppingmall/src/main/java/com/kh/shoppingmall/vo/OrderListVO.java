@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class OrderListVO {
 	
-	private int ordersNo;
+	private int ordersNo; 
 	private Timestamp ordersCreatedAt;
 	private int ordersTotalPrice;
 	private String ordersStatus;
@@ -20,7 +20,7 @@ public class OrderListVO {
 	
 	private Integer orderAmount;
 	private Integer pricePerItem;
-	private String optionValue;
+	private String optionName;
 	private String thumbnailName;
 	
 	private Integer productNo;

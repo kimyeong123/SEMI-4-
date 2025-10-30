@@ -17,7 +17,6 @@ public class ProductOptionMapper implements RowMapper<ProductOptionDto> {
                 .optionNo(rs.getInt("option_no"))
                 .productNo(rs.getInt("product_no"))   
                 .optionName(rs.getString("option_name"))
-                .optionValue(rs.getString("option_value"))
                 .optionStock(rs.getInt("option_stock"))
                 .build();
     }

@@ -30,7 +30,7 @@
                     <td>${order.ordersNo}</td>
                     <td>${order.ordersId}</td>
                     <td>${order.productName}</td>
-                    <td>${order.optionValue}</td>
+                    <td>${order.optionName}</td>
                     <td>${order.orderAmount}</td>
                     <td><fmt:formatNumber value="${order.ordersTotalPrice}" pattern="#,###"/> 원</td>
                     <td>${order.ordersRecipient}</td>

@@ -68,9 +68,9 @@
 							<div>
 								<div style="font-weight: bold;">${order.productName}</div>
 								<div style="font-size: 0.9em; color: #777;">
-									${order.optionValue}
+									${order.optionName}
 									<%-- 옵션 값 --%>
-									<c:if test="${not empty order.optionValue}"> / </c:if>
+									<c:if test="${not empty order.optionName}"> / </c:if>
 									<%-- 옵션 있을 때만 구분자 --%>
 									${order.orderAmount}개
 									<%-- 수량 --%>

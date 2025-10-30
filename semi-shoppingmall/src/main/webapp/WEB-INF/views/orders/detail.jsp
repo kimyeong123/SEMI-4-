@@ -51,7 +51,7 @@
                             </td>
                             <td style="padding: 10px;">
                                 <div>${item.productName}</div>
-                                <div style="font-size: 0.9em; color: #777;">옵션: ${item.optionValue}</div>
+                                <div style="font-size: 0.9em; color: #777;">옵션: ${item.optionName}</div>
                             </td>
                             <td style="padding: 10px; text-align: right;">${item.orderAmount}</td>
                             <td style="padding: 10px; text-align: right;"><fmt:formatNumber value="${item.pricePerItem}" type="currency"/> 원</td>

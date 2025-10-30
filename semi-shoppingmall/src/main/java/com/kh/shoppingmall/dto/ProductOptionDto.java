@@ -12,9 +12,6 @@ public class ProductOptionDto {
 	private int optionNo;
 	private int productNo;
 	private String optionName;
-	private String optionValue;
-	private Integer optionParentNo;
 	private int optionStock;
-	private List<String> optionValueList;
 }
 

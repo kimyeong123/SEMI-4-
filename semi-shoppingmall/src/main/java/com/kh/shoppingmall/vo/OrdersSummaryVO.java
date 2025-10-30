@@ -28,7 +28,6 @@ public class OrdersSummaryVO {
 	
 	//product_option 참조
 	private String optionName;
-	private String optionValue;
 	
 	//썸네일 불러오기
 	private String thumbnailName;

@@ -71,6 +71,13 @@ public class AttachmentDao {
         Object[] param = {attachmentNo};
         return jdbcTemplate.update(sql, param) > 0;
     }
+    
+    public List<AttachmentDto> selectListByProductNo(int productNo) {
+        // review_no IS NULL 조건을 넣어 상품 상세 이미지만 가져오도록 함 (선택 사항)
+        String sql = "SELECT * FROM attachment WHERE product_no = ? AND review_no IS NULL";
+        Object[] params = { productNo };
+        return jdbcTemplate.query(sql, attachmentMapper, params);
+    }
 
     /**
      * 5. 첨부파일에 상품번호를 연결 (업데이트)
