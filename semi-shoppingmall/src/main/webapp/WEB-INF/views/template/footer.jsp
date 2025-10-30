@@ -38,6 +38,12 @@
                         <span>개인정보 처리방침</span>
                     </a>
                 </div>
+                <div class="cell center">
+                    <a href="/csBoard/detail?csBoardNo=23">
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span>반품 정책</span>
+                    </a>
+                </div>
 
                 <div class="cell center mt-30">
                     <h2>파트너쉽</h2>
