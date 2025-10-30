@@ -14,7 +14,7 @@
     border-bottom: 2px solid #333; 
     margin-bottom: 20px;
     height: 50px; /* 메뉴 높이 지정 */
-    background-color: #dcdcdc; /* 조금 더 진한 연한 회색 적용 */
+    background-color: #ced6e0; /* 조금 더 진한 연한 회색 적용 */
 }
 .category-menu { 
     width: auto; 
