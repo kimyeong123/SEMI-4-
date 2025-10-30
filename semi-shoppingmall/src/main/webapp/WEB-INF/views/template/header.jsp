@@ -200,10 +200,11 @@
 }
 
 /* 가운데 로고 */
-.w-50 {
+.w-50.logo {
     display: flex;
-    justify-content: center;  /* 수평 중앙 */
-    align-items: center;      /* 수직 중앙 */
+    justify-content: center;
+    align-items: center;
+    margin-left: 40px; 
 }
 
 .w-50 .logo-img {
@@ -253,7 +254,7 @@ $(function() {
 				</a>
 			</div>
 			
-			<div class="w-50">
+			<div class="w-50 logo">
 				<a href="/">
 					<img src="${pageContext.request.contextPath}/images/KHLOGO.png" class="logo-img">
 				</a>
@@ -280,8 +281,6 @@ $(function() {
 					<%-- 관리자 (로그인 상태) --%>
 					<c:when
 						test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
-						<a href="/"> <i class="fa-solid fa-house"></i>
-						</a>
 						<a href="/admin/home" class="admin-link"> 
 							<i class="fa-solid fa-gear"></i>
 							<span>관리메뉴</span>
@@ -292,8 +291,6 @@ $(function() {
 					</c:when>
 					<%-- 비회원 --%>
 					<c:otherwise>
-						<a href="/"> <i class="fa-solid fa-house"></i>
-						</a>
 						<a href="/orders/cart"> <i class="fa-solid fa-cart-shopping"></i>
 						</a>
 						<a href="/wishlist"> <i class="fa-regular fa-heart"></i>

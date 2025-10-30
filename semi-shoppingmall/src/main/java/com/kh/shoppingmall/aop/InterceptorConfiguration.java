@@ -59,7 +59,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer{ //웹 기본 
 		//리뷰 작성자만 (수정/삭제) 인터셉터
 		registry.addInterceptor(reviewAuthorInterceptor)
 		.addPathPatterns("/rest/review/update", "/rest/review/delete")
-		.order(4);
+		.order(5);
 		
 		//(추후) 문의글 (수정, 삭제), 관리자(삭제)_ 인터셉터 등록
 //		registry.addInterceptor(boardOwnerInterceptor)
