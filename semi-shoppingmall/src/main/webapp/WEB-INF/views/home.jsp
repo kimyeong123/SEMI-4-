@@ -19,7 +19,7 @@
    .swiper {
     width: 100%;
     max-width: 900px;
-    min-height: 400px; /* 최소 높이 지정 */
+    min-height: 600px; /* 최소 높이 지정 */
     margin: 60px auto; /* 위아래 여백 확대 */
     aspect-ratio: 16 / 9; /* 자동 비율 유지 */
     border-radius: 12px;

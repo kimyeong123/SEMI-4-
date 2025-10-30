@@ -14,13 +14,20 @@
     border-bottom: 2px solid #333; 
     margin-bottom: 20px;
     height: 50px; /* 메뉴 높이 지정 */
-    background-color: #dcdcdc; /* 조금 더 진한 연한 회색 적용 */
+    background-color: #ced6e0; /* 조금 더 진한 연한 회색 적용 */
 }
+
 .category-menu { 
     width: auto; 
     white-space: nowrap; 
     /* 토글 버튼이 차지하는 공간만큼 왼쪽 패딩을 주어 메뉴가 버튼과 겹치지 않게 합니다. */
     padding-left: 50px; 
+}
+.category-menu a {
+    color: #222;
+}
+.category-menu a:hover {
+    background-color: #e0e0e0;
 }
 
 /* --- 2. 토글 버튼 스타일 (왼쪽 정렬) --- */

@@ -10,7 +10,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="/css/commons.css">
-<!-- Font Awesome 6 버전으로 변경하여 최신 아이콘을 사용합니다. -->
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
 <style>
@@ -187,6 +186,34 @@
     font-size: 0.9em;
 }
 
+/* 로고 관련 CSS (충돌 해결) */
+.logo-img {
+    width: 150px;
+    height: 50px;
+    object-fit: contain;
+    display: block;
+}
+
+/* 왼쪽 로고 */
+.w-25 .logo-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* 가운데 로고 */
+.w-50.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 40px;
+}
+
+.w-50 .logo-img {
+    width: 180px;
+    height: auto;
+    object-fit: contain;
+}
 
 </style>
 
@@ -203,7 +230,6 @@
 $(function() {
     // 사이드바 토글 버튼 클릭 이벤트
     $('#sidebarToggle').on('click', function() {
-        // 1. 사이드바 영역의 hidden 클래스를 토글
         $('#sidebarArea').toggleClass('hidden');
     });
 });
@@ -211,68 +237,43 @@ $(function() {
 
 </head>
 <body>
-	<div class="container w-1100 flex-box flex-vertical">
-    
-    </div>
+	<div class="container w-1100 flex-box flex-vertical"></div>
 
 	<!-- 1. 헤더 영역 (로고 + 메뉴) -->
 	<div class="container">
 		<div class="flex-box" style="height: 50px; align-items: center;">
 				
 			<div class="w-25 flex-box flex-center">
-				<%-- **menu.jsp로 이동된 사이드바 토글 버튼 자리** --%>
-				
 				<a href="/"> 
                     <img src="https://dummyimage.com/200x50/000/fff&text=KH+Shop" alt="KH Shop 로고">
 				</a>
 			</div>
 			
-			<div class="w-50">
+			<div class="w-50 logo">
+				<a href="/">
+					<img src="${pageContext.request.contextPath}/images/KHLOGO.png" class="logo-img">
+				</a>
         	</div>
 			
 			<div class="w-25 header-menu-right">
 				<c:choose>
-					<%-- 일반/우수회원 (로그인 상태) --%>
 					<c:when
 						test="${sessionScope.loginId != null && (sessionScope.loginLevel == '일반회원' || sessionScope.loginLevel == '우수회원')}">
-						<a href="/member/wishlist"> <i class="fa-regular fa-heart"></i>
-						</a>
-						<a href="/orders/cart"> <i class="fa-solid fa-cart-shopping"></i>
-						</a>
-						<a href="/orders/list"><i class="fa-solid fa-receipt"></i>
-						</a>
-						<a href="/member/mypage"> <i class="fa-solid fa-user"></i> <span>내정보</span>
-						</a>
-						<a href="/member/logout" class="btn-logout"> <i
-							class="fa-solid fa-right-from-bracket"></i> <span>로그아웃</span>
-						</a>
-
+						<a href="/member/wishlist"><i class="fa-regular fa-heart"></i></a>
+						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
+						<a href="/orders/list"><i class="fa-solid fa-receipt"></i></a>
+						<a href="/member/mypage"><i class="fa-solid fa-user"></i> <span>내정보</span></a>
+						<a href="/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> <span>로그아웃</span></a>
 					</c:when>
-					<%-- 관리자 (로그인 상태) --%>
-					<c:when
-						test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
-						<a href="/"> <i class="fa-solid fa-house"></i>
-						</a>
-						<a href="/admin/home" class="admin-link"> 
-							<i class="fa-solid fa-gear"></i>
-							<span>관리메뉴</span>
-						</a>
-						<a href="/member/logout" class="btn-logout"> <i
-							class="fa-solid fa-right-from-bracket"></i> <span>로그아웃</span>
-						</a>
+					<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
+						<a href="/admin/home" class="admin-link"><i class="fa-solid fa-gear"></i><span>관리메뉴</span></a>
+						<a href="/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
 					</c:when>
-					<%-- 비회원 --%>
 					<c:otherwise>
-						<a href="/"> <i class="fa-solid fa-house"></i>
-						</a>
-						<a href="/orders/cart"> <i class="fa-solid fa-cart-shopping"></i>
-						</a>
-						<a href="/wishlist"> <i class="fa-regular fa-heart"></i>
-						</a>
-						<a href="/member/login" class="btn-primary"> <span>로그인</span>
-						</a>
-						<a href="/member/join" class="btn-primary"> <span>회원가입</span>
-						</a>
+						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
+						<a href="/wishlist"><i class="fa-regular fa-heart"></i></a>
+						<a href="/member/login" class="btn-primary"><span>로그인</span></a>
+						<a href="/member/join" class="btn-primary"><span>회원가입</span></a>
 					</c:otherwise>
 				</c:choose>
                 
@@ -283,66 +284,5 @@ $(function() {
 			</div>
 		</div>
 	</div>
-
-	<!-- 2. 주 메뉴 (Template) 영역 -->
-	<div class="container">
-		<div>
-			<jsp:include page="/WEB-INF/views/template/menu.jsp"></jsp:include>
-		</div>
-	</div>
-
-	<!-- 3. 메인 레이아웃 영역 (사이드바 + 본문) -->
-	<div class="container main-layout">
-        
-        <!-- 왼쪽: 사이드바 및 버튼 (ID 부여) -->
-        <%-- 💡 [수정] 기본적으로 숨기기 위해 'hidden' 클래스 추가 --%>
-        <div id="sidebarArea" class="sidebar-area hidden">
-            
-            <c:choose>
-                <c:when test="${sessionScope.loginId != null}">
-                    <!-- 로그인 상태: 프로필 및 버튼 -->
-                    <div class="sidebar-profile">
-                        <img src="/member/profile?memberId=${sessionScope.loginId}"
-                            width="100" height="100" class="image-profile">
-                        <h3>${sessionScope.loginId} (${sessionScope.loginLevel})</h3>
-                    </div>
-                    
-                    <div class="sidebar-buttons">
-                        <div class="menu-link-item">
-                            <a href="/member/mypage"> 
-                                <i class="fa-solid fa-user"></i> 
-                                <span>내 정보 보기</span>
-                            </a>
-                        </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <!-- 비회원 상태: 버튼 -->
-                    <div class="sidebar-profile">
-                        <h3>비회원 상태</h3>
-                    </div>
-                    <div class="sidebar-buttons">
-                        <div class="menu-link-item">
-                            <a href="/member/login"> 
-                                <i class="fa-solid fa-right-to-bracket fa-fade"></i> 
-                                <span>로그인</span>
-                            </a>
-                        </div>
-                        <div class="menu-link-item">
-                            <a href="/member/join"> 
-                                <i class="fa-solid fa-user-plus fa-fade"></i> 
-                                <span>회원가입</span>
-                            </a>
-                        </div>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-
-        </div>
-        
-        <!-- 오른쪽: 페이지 본문이 들어갈 공간 -->
-        <div class="main-content" id="mainContentArea">
-            <!-- 여기에 각 JSP 파일의 내용이 포함됩니다. -->
-
 </body>
 </html>

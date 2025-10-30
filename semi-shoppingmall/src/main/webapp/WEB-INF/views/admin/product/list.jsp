@@ -12,6 +12,7 @@
 		border-radius: 5px;
 		cursor: pointer;
 		text-decoration: none;
+		text-align: center;
 	}
 	.btn-positive { background: #4CAF50; color: white; }
 	.btn-secondary { background: #2196F3; color: white; }
@@ -65,18 +66,15 @@
 
 <div class="container w-800">
 	<h1>상품 목록</h1>
-
-	<div style="display:flex; gap:10px; align-items:center; margin-bottom: 15px;">
-		<a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
-		<a href="${pageContext.request.contextPath}/admin/product/option/manage" class="btn btn-secondary">+ 옵션 신규 등록</a>
-	</div>
-
+		<div class="flex-box flex-center mb-20">
+    <a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
+    </div>
+</div>
 	<h2>상품 수 : ${productList.size()}</h2>
 
 	<form action="list" method="get" style="margin-bottom: 20px;">
 		<select name="column">
 			<option value="product_name" ${column == 'product_name' ? 'selected' : ''}>상품명</option>
-			<option value="product_content" ${column == 'product_content' ? 'selected' : ''}>상품내용</option>
 		</select>
 		<input type="search" name="keyword" value="${keyword}" placeholder="검색어 입력">
 		<button type="submit">검색</button>

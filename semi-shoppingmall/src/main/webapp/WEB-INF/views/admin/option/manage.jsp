@@ -69,6 +69,20 @@ $(function() {
             // (참고) 인덱스(skuIndex)를 재정렬할 필요는 없음. 서버는 받는 대로 처리함.
         }
     });
+
+    // ✅ 색상/사이즈 선택 팝업 함수
+    function promptSelectOption(current) {
+        var options = ["색상", "사이즈"];
+        var msg = "옵션 이름 선택 (현재: " + current + ")\n";
+        for (var i = 0; i < options.length; i++) {
+            msg += (i + 1) + ". " + options[i] + "\n";
+        }
+        var choice = prompt(msg, "1");
+        if (choice === null) return null;
+        var idx = parseInt(choice);
+        if (isNaN(idx) || idx < 1 || idx > options.length) return current;
+        return options[idx - 1];
+    }
 });
 </script>
 

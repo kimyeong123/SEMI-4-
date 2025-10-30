@@ -186,7 +186,6 @@
     <form action="list" method="get" class="search-form">
         <select name="column">
             <option value="product_name" ${column=='product_name' ? 'selected' : '' }>상품명</option>
-            <option value="product_content" ${column=='product_content' ? 'selected' : '' }>상품내용</option>
         </select>
         <input type="search" name="keyword" value="${keyword}" placeholder="검색어 입력">
         <input type="hidden" name="order" value="${order}">
@@ -224,7 +223,7 @@
 
                 <div class="card-body">
                     <h5 class="card-title">
-                        <a href="detail?productNo=${p.productNo}" class="text-dark text-decoration-none">${p.productName}</a>
+                        ${p.productName}
                     </h5>
 
                     <p class="card-price">
