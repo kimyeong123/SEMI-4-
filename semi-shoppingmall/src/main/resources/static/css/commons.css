@@ -345,10 +345,12 @@ textarea.field {
 /*     font-size: 20px; */
 /*     padding: 0.5em; */
 
+/* 말줄임표 설정 클래스 */
+.ellipsis {
     /* 
-        혹시라도 넘어가면 말줄임표 처리 
-        - 반드시 네 가지 속성이 모두 존재해야함
-        - 폭(width), 넘침(overflow), 글자 넘침(text-overflow), 줄바꿈(white-space)
+    혹시라도 넘어가면 말줄임표 처리
+    - 반드시 세가지 속성이 모두 존재하야함
+    - 폭(width), 넘침(overflow), 글자 넘침(overflow), 줄바꿈(whitespace)
     */
     overflow: hidden;
     text-overflow: ellipsis;
