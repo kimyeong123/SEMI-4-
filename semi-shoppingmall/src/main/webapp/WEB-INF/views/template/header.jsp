@@ -55,9 +55,16 @@
 .header-menu-right a i { margin-right: 4px; }
 .header-menu-right a:hover { background-color: #f0f0f0; color: #000; }
 .header-menu-right a.btn-primary {
-    background-color: #007bff; color: white; border: 1px solid #007bff; font-weight: bold;
+    background-color: #000; /* 검은색 */
+    color: white;
+    border: 1px solid #000;
+    font-weight: bold;
 }
-.header-menu-right a.btn-primary:hover { background-color: #0056b3; color: white; }
+
+.header-menu-right a.btn-primary:hover {
+    background-color: #000080; /* 남색 */
+    color: white;
+}
 .header-menu-right a.admin-link {
     font-weight: bold; border: 1px solid #dc3545;
 }
@@ -102,7 +109,7 @@
 .logo-img { width: 150px; height: 50px; object-fit: contain; display: block; }
 .w-25 .logo-img { width: 100%; height: auto; object-fit: contain; }
 .w-50.logo { display: flex; justify-content: center; align-items: center; }
-.w-50 .logo-img { width: 180px; height: auto; object-fit: contain; }
+.w-50 .logo-img { width: 180px; height: auto; object-fit: contain; margin-bottom: }
 
 </style>
 
@@ -127,7 +134,7 @@ $(function() {
 		<div class="flex-box" style="height: 50px; align-items: center;">
 			<div class="w-25 flex-box flex-center">
 				<a href="/"> 
-                    <img src="https://dummyimage.com/200x50/000/fff&text=KH+Shop" alt="KH Shop 로고">
+                    <img src="${pageContext.request.contextPath}/images/KING HEART.png" class="logo-img">
 				</a>
 			</div>
 			<div class="w-50 logo">
@@ -196,7 +203,6 @@ $(function() {
 
 		<div class="main-content" id="mainContentArea">
 			<!-- JSP 본문 내용 포함 -->
-	</div>
 
 </body>
 </html>
