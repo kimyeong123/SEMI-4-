@@ -6,6 +6,39 @@
 <jsp:include page = "/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <link rel="stylesheet" type="text/css" href="/css/commons.css">
+<script type="text/javascript">
+	$(function () {
+		$("#all-show").on("click", function () {
+			$(this).prop("disabled", true);
+			$("#notice-list-show").prop("disabled", false);
+			$("#inquiry-list-show").prop("disabled", false);
+			$("#csBoardAll").show();
+			$("#csBoardNotice").hide();
+			$("#csBoardInquiry").hide();
+			$("#number-hide").show();
+		});
+		$("#notice-list-show").on("click", function () {
+			$(this).prop("disabled", true);
+			$("#all-show").prop("disabled", false);
+			$("#inquiry-list-show").prop("disabled", false);
+			$("#csBoardAll").hide();
+			$("#csBoardNotice").show();
+			$("#csBoardInquiry").hide();
+			$("#number-hide").show();
+		});
+		$("#inquiry-list-show").on("click", function () {
+			$(this).prop("disabled", true);
+			$("#all-show").prop("disabled", false);
+			$("#notice-list-show").prop("disabled", false);
+			$("#csBoardAll").hide();
+			$("#csBoardNotice").hide();
+			$("#csBoardInquiry").show();
+			$("#number-hide").show();
+		});
+	
+	});
+</script>
+
 <style>
 	.board-title-link
 	{
@@ -52,8 +85,45 @@
 	    cursor: default;
     }
     
-
+	#csBoardNotice 
+	{
+		display: none;
+	}
 	
+	#csBoardInquiry 
+	{
+		display: none;
+	}
+
+	/* 기본 버튼 스타일 */
+    .tab-button {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-right: 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        border: 1px solid #A0AEC0; 
+        
+        background-color: var(--tab-color-light);
+        color: var(--text-color-default);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* disabled=true (즉, 선택되어 활성화된 탭) 스타일 */
+    /* 볼드 처리 및 색상 진하게 */
+    .tab-button:disabled {
+        background-color: var(--tab-color-active);
+        color: var(--text-color-active);
+        font-weight: bold; 
+        cursor: default;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    }
+
+    /* 비활성 버튼 호버 효과 */
+    .tab-button:not(:disabled):hover {
+        background-color: #A0AEC0; 
+    }	
 	
 </style>
 
@@ -76,133 +146,324 @@
 		</c:choose>
 	</div>
 
-	<div class = "cell">
+	<div class="cell flex-box">
+	    <button id="all-show" class="tab-button" disabled>전체</button>
+	    <button id="notice-list-show" class="tab-button">공지</button>
+	    <button id="inquiry-list-show" class="tab-button">문의</button>
+	</div>
+
+<%--여기부터 전체테이블 --%>
+	<div class = "cell" id="csBoardAll">
 <%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
 		<h3>게시된 글 개수: ${csBoardList.size()}</h3>
-	</div>
 	
 		<table class="table w-100 table-border table-hover table-striped mt-30" >
-			<thead>
+		    <thead>
+		        <tr>
+		            <th width="10%">번호</th>
+		            <th width="40%">제목</th>
+		            <th width = "10%">작성자</th>
+		            <th width = "10%">작성일</th>
+		            <th width = "10%">수정일</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    
+		    <%-- 1. 공지글 포함 전체 리스트는 무조건 출력 (csBoardList는 공지+일반글) --%>
+            <c:forEach var="csBoardListVO" items="${csBoardList}" varStatus="status">
+                <c:set var="isNotice"  value = "${status.index < noticeCount }"/>
+                <tr class = "${isNotice ? 'notice-row' : '' }">
+                    
+                    <td>${csBoardListVO.csBoardNo}</td>
+                    
+                    <td>
+                        <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 --%>
+                        <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
+                            <c:if test="${csBoardListVO.csBoardDepth > 0}">
+                                <img src="/images/reply.png" width="16" height="16">
+                            </c:if>
+    
+                            <%-- 2. 공지사항 마크업 처리 (isNotice 조건 사용) --%>
+                            <c:if test="${isNotice}"> 
+                                <div class ="flex-box flex-center">
+                                    <i class="fa-solid fa-bullhorn me-10"></i>
+                                </div>
+                                <span>공지</span>
+                            </c:if>
+                            
+                            <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
+                            <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
+                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
+                            
+                            <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
+                            <c:choose>
+                                <c:when test = 	"${ isSecret && !canAccessSecret}">
+                                    <%-- 비공개 글이고 접근 권한이 없을 경우: 링크 무효 처리 --%>
+                                    <span class="board-secret-title ellipsis">
+                                        <i class="fa-solid fa-lock"></i>
+                                        <span>비공개 글입니다</span>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <%-- 공개 글 또는 비공개 글의 작성자/관리자의 경우: 링크 활성화 --%>
+                                    <a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
+                                        <c:if test="${isSecret}">
+                                            <i class="fa-solid fa-lock-open"></i>												
+                                        </c:if>
+                                        <span>${csBoardListVO.csBoardTitle}</span>										
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>								
+                    </td>
+                    
+                    <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${csBoardListVO.wtimeRecent}">
+                                <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="HH:mm"/>
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="yy.MM.dd"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${csBoardListVO.etimeRecent}">								
+                                <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="HH:mm"/>
+                            </c:when>
+                            <c:otherwise>									
+                                <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="yy.MM.dd"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </c:forEach>
+		    
+		    <%--  2. 검색 결과가 없을 때 메시지 출력 (totalListCount 활용)  --%>
+            <c:if test="${totalListCount == 0}">
 				<tr>
-					<th width="10%">번호</th>
-					<th width="40%">제목</th>
-					<th width = "10%">작성자</th>
-					<th width = "10%">작성일</th>
-					<th width = "10%">수정일</th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="csBoardListVO" items="${csBoardList}" varStatus="status">
-					<c:set var="isNotice"  value = "${status.index < noticeCount }"/>
-					<tr class = "${isNotice ? 'notice-row' : '' }">
-						
-						<td>${csBoardListVO.csBoardNo}</td>
-						
-						<td>
-							<c:choose>
-								<c:when test="${isNotice}">
-									<div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
-										<c:if test="${csBoardListVO.csBoardDepth > 0}">
-											<img src="/images/reply.png" width="16" height="16">
-										</c:if>
-									
-										<%-- 공지사항인 경우는 제목앞에 (공지) 추가 --%>
-										<div class ="flex-box flex-center">
-											<i class="fa-solid fa-bullhorn me-10"></i>
-										</div>
-										<span>공지</span>
-										
-										<%--비공개 여부에 따라 링크를  조건부 처리 --%>
-										<c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-										<c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
-										<c:choose>
-											<c:when test = 	"${ isSecret && !canAccessSecret}">
-												<%--비공개 글은 일반 사용자라면 링크 무효 --%>
-												<span class="board-secret-title ellipsis">
-													<i class="fa-solid fa-lock"></i> 
-												</span>
-												${csBoardListVO.csBoardTitle}
-											</c:when>
-											<c:otherwise>
-												<%--공개 글 또는 비공개글의 작성자와 관리자의 경우 --%>
-												<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
-													<c:if test="${isSecret }">
-														<i class="fa-solid fa-lock-open"></i>												
-													</c:if>
-													${csBoardListVO.csBoardTitle}										
-												</a>
-											</c:otherwise>
-										</c:choose>
-										
-									</div>								
-								</c:when>
-								<c:otherwise>
-									<div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
-										<c:if test="${csBoardListVO.csBoardDepth > 0}">
-											<img src="/images/reply.png" width="16" height="16">
-										</c:if>
-									
-										<%-- 공지사항인 경우는 제목앞에 (공지) 추가 --%>
-										<c:if test="${csBoardListVO.csBoardNotice == 'Y'}">
-											<div class ="flex-box flex-center">
-												<i class="fa-solid fa-bullhorn me-10"></i>
-											</div>
-											<span>공지</span>
-										</c:if>
-										
-										<%--비공개 여부에 따라 링크를  조건부 처리 --%>
-										<c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-										<c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
-										<c:choose>
-											<c:when test = 	"${ isSecret && !canAccessSecret}">
-												<%--비공개 글은 일반 사용자라면 링크 무효 --%>
-												<span class="board-secret-title ellipsis">
-													<i class="fa-solid fa-lock"></i> 
-												</span>
-												${csBoardListVO.csBoardTitle}
-											</c:when>
-											<c:otherwise>
-												<%--공개 글 또는 비공개글의 작성자와 관리자의 경우 --%>
-												<a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
-													<c:if test="${isSecret }">
-														<i class="fa-solid fa-lock-open"></i>												
-													</c:if>
-													${csBoardListVO.csBoardTitle}										
-												</a>
-											</c:otherwise>
-										</c:choose>
-										
-									</div>
-								</c:otherwise>
-								
-							</c:choose>
-						</td>
-<%-- 						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardWriter}</td> --%>
-						<td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
-						<td>
-							<c:choose>
-								<c:when test="${csBoardListVO.wtimeRecent}">
-									<fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="HH:mm"/>
-								</c:when>
-								<c:otherwise>
-									<fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="yy.MM.dd"/>
-								</c:otherwise>
-							</c:choose>
-						</td>
-						<td>
-							<c:choose>
-								<c:when test="${csBoardListVO.etimeRecent}">								
-									<fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="HH:mm"/>
-								</c:when>
-								<c:otherwise>									
-									<fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="yy.MM.dd"/>
-								</c:otherwise>
-							</c:choose>
-						</td>
-					</tr>
-				</c:forEach>
-			</tbody>
+					<td colspan="5" class="center p-30" style="color: #777;">
+						<i class="fa-solid fa-triangle-exclamation me-5"></i>
+						검색 결과가 없습니다. 다른 검색어로 다시 시도해 주세요.
+					</td>
+				</tr>		        
+            </c:if>
+
+		    </tbody>
 		</table>
+	
+	</div>
+<%--여기까지 전체 테이블 --%>
+
+<%--여기부터 공지테이블 --%>
+	<div class = "cell" id="csBoardNotice">
+<%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
+		<h3>게시된 글 개수: ${noticeListResult.size()}</h3>
+	
+		<table class="table w-100 table-border table-hover table-striped mt-30" >
+		    <thead>
+		        <tr>
+		            <th width="10%">번호</th>
+		            <th width="40%">제목</th>
+		            <th width = "10%">작성자</th>
+		            <th width = "10%">작성일</th>
+		            <th width = "10%">수정일</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    
+		    <c:choose>
+		    <%-- 1. noticeListResult에 데이터가 있을 경우 (<tbody> 내용 출력) --%>
+            <c:when test="${not empty noticeListResult}">
+                <c:forEach var="csBoardListVO" items="${noticeListResult}" varStatus="status">
+                    <c:set var="isNotice"  value = "${status.index < noticeCount }"/>
+                    <tr class = "${isNotice ? 'notice-row' : '' }">
+                        
+                        <td>${csBoardListVO.csBoardNo}</td>
+                        
+                        <td>
+                            <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 --%>
+                            <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
+                                <c:if test="${csBoardListVO.csBoardDepth > 0}">
+                                    <img src="/images/reply.png" width="16" height="16">
+                                </c:if>
+        
+                                <%-- 2. 공지사항 마크업 처리 (isNotice 조건 사용) --%>
+                                <c:if test="${isNotice}"> 
+                                    <div class ="flex-box flex-center">
+                                        <i class="fa-solid fa-bullhorn me-10"></i>
+                                    </div>
+                                    <span>공지</span>
+                                </c:if>
+                                
+                                <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
+                                <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
+                                <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
+                                
+                                <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
+                                <c:choose>
+                                    <c:when test = 	"${ isSecret && !canAccessSecret}">
+                                        <%-- 비공개 글이고 접근 권한이 없을 경우: 링크 무효 처리 --%>
+                                        <span class="board-secret-title ellipsis">
+                                            <i class="fa-solid fa-lock"></i>
+                                            <span>비공개 글입니다</span>
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <%-- 공개 글 또는 비공개 글의 작성자/관리자의 경우: 링크 활성화 --%>
+                                        <a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
+                                            <c:if test="${isSecret}">
+                                                <i class="fa-solid fa-lock-open"></i>												
+                                            </c:if>
+                                            <span>${csBoardListVO.csBoardTitle}</span>										
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>								
+                        </td>
+                        
+                        <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${csBoardListVO.wtimeRecent}">
+                                    <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="HH:mm"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="yy.MM.dd"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${csBoardListVO.etimeRecent}">								
+                                    <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="HH:mm"/>
+                                </c:when>
+                                <c:otherwise>									
+                                    <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="yy.MM.dd"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:when>
+		    
+		    <%-- 2. noticeListResult가 비어있을 경우 (메시지 출력) --%>
+            <c:otherwise>
+				<tr>
+					<td colspan="5" class="center p-30" style="color: #777 !important;">
+						<i class="fa-solid fa-triangle-exclamation me-5"></i>
+						공지글 검색 결과가 없습니다.
+					</td>
+				</tr>		        
+            </c:otherwise>
+            </c:choose>
+            
+		    </tbody>
+		</table>
+	
+	</div>
+<%--여기까지 공지 테이블 --%>
+
+<%--여기부터 문의 테이블 --%>
+	<div class = "cell" id="csBoardInquiry">
+<%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
+		<h3>게시된 글 개수: ${inquiryListResult.size()}</h3>
+	
+		<table class="table w-100 table-border table-hover table-striped mt-30" >
+		    <thead>
+		        <tr>
+		            <th width="10%">번호</th>
+		            <th width="40%">제목</th>
+		            <th width = "10%">작성자</th>
+		            <th width = "10%">작성일</th>
+		            <th width = "10%">수정일</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    
+            <c:forEach var="csBoardListVO" items="${inquiryListResult}" varStatus="status">
+                <tr >
+                    
+                    <td>${csBoardListVO.csBoardNo}</td>
+                    
+                    <td>
+                        <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 (공지 마크업 제거) --%>
+                        <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
+                            <c:if test="${csBoardListVO.csBoardDepth > 0}">
+                                <img src="/images/reply.png" width="16" height="16">
+                            </c:if>
+    
+                            <%-- 2. 공지사항 마크업 처리 (제거됨) --%>
+                            
+                            <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
+                            <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
+                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
+                            
+                            <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
+                            <c:choose>
+                                <c:when test = 	"${ isSecret && !canAccessSecret}">
+                                    <%-- 비공개 글이고 접근 권한이 없을 경우: 링크 무효 처리 --%>
+                                    <span class="board-secret-title ellipsis">
+                                        <i class="fa-solid fa-lock"></i>
+                                        <span>비공개 글입니다</span>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <%-- 공개 글 또는 비공개 글의 작성자/관리자의 경우: 링크 활성화 --%>
+                                    <a class="ellipsis" href="detail?csBoardNo=${csBoardListVO.csBoardNo}"  class="board-title-link ">
+                                        <c:if test="${isSecret}">
+                                            <i class="fa-solid fa-lock-open"></i>												
+                                        </c:if>
+                                        <span>${csBoardListVO.csBoardTitle}</span>										
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>								
+                    </td>
+                    
+                    <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${csBoardListVO.wtimeRecent}">
+                                <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="HH:mm"/>
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:formatDate value = "${csBoardListVO.csBoardWtime}" pattern="yy.MM.dd"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${csBoardListVO.etimeRecent}">								
+                                <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="HH:mm"/>
+                            </c:when>
+                            <c:otherwise>									
+                                <fmt:formatDate value = "${csBoardListVO.csBoardEtime }" pattern="yy.MM.dd"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </c:forEach>
+		    
+		    <%--  2. 검색 결과가 없을 때 메시지 출력 (inquiryListCount 활용)  --%>
+            <c:if test="${inquiryListCount == 0}">
+				<tr>
+					<td colspan="5" class="center p-30" style="color: #777;">
+						<i class="fa-solid fa-triangle-exclamation me-5"></i>
+						검색 결과가 없습니다. 다른 검색어로 다시 시도해 주세요.
+					</td>
+				</tr>		        
+            </c:if>
+
+		    </tbody>
+		</table>
+	
+	</div>
+<%--여기까지 문의 테이블 --%>
+
+	
 	<c:choose>
 		<c:when test = "${sessionScope.loginId != null}">
 			<div class="cell">
@@ -211,7 +472,7 @@
 		</c:when>
 		<c:otherwise>
 	<!--상대경로 		../member/login -->
-				<h2><a href = "/member/join">회원 가입</a>후 <a href = "/member/login">로그인</a>해야 글을 작성할 수 있습니다</h2>
+			<h2><a href = "/member/join">회원 가입</a>후 <a href = "/member/login">로그인</a>해야 글을 작성할 수 있습니다</h2>
 		</c:otherwise>
 	</c:choose>
 	

@@ -39,7 +39,7 @@ public class CsBoardDao {
 		jdbcTemplate.update(sql, params);
 	}
 	
-
+//181번 줄부터 메서드 selectListNoticeWithPaging 추가됨
 
 	
 	public List<CsBoardDto> selectListByPage(int begin, int pageSize) {
@@ -168,21 +168,80 @@ public class CsBoardDao {
 	}
 	
 	//공지사항 조회 메소드
-	public List<CsBoardListVO> selectListNotice(PageVO pageVO) {
-		if(pageVO.isList()) {
-			String sql = "select * from cs_board_list "
-					+" where cs_board_notice = 'Y' order by cs_board_no desc";
-			return jdbcTemplate.query(sql, csBoardListMapper);
-		}
-		else {
-			String sql = "select * from cs_board_list "
-				+ "where cs_board_notice = 'Y' and instr(#1, ?) > 0 "
-				+ "order by cs_board_no desc";
-			sql = sql.replace("#1", pageVO.getColumn());
-			Object[] param = {pageVO.getKeyword()};
-			return jdbcTemplate.query(sql, csBoardListMapper, param);
-		}
+	public List<CsBoardListVO> selectListNotice() {
+		String sql = "select * from ("
+					+ "select * from cs_board_list "
+					+" where cs_board_notice = 'Y' "
+					+ "order by cs_board_no desc"
+				+ ") where rownum <= 10";
+
+		return jdbcTemplate.query(sql, csBoardListMapper);
 	}
+	
+	//공지사항 조회 메소드 + 목록 + 페이징 (추가 탭(표) 만들 용도)
+	public List<CsBoardListVO> selectListNoticeWithPaging(PageVO pageVO) {
+		//목록
+		if(pageVO.isList()) {
+			String sql = "select * from ("
+					+ "select rownum rn, TMP. * from ("
+					+"select * from cs_board_list "
+					+ "connect by prior cs_board_no = cs_board_origin "
+					+ "start with cs_board_origin is null "
+					+ "order siblings by cs_board_group desc, cs_board_no asc"
+					+ ")TMP where TMP.cs_board_notice = 'Y' "
+				+ ") where rn between ? and ?";
+			Object[] params = {pageVO.getBegin(), pageVO.getEnd()};
+			return jdbcTemplate.query(sql, csBoardListMapper, params);
+		}
+		//검색
+		else {
+			String sql = "select * from ("
+					+ "select rownum rn, TMP. * from ("
+						+ "select * from cs_board_list "
+						+ "connect by prior cs_board_no = cs_board_origin "
+						+ "start with cs_board_origin is null "
+						+ "order siblings by cs_board_group desc, cs_board_no asc"
+						+ ") TMP where TMP.cs_board_notice = 'Y' and instr(#1, ?) > 0"
+			+ ") where rn between ? and ?";
+			sql = sql.replace("#1", pageVO.getColumn());
+			Object[] params = {pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()};
+			return jdbcTemplate.query(sql, csBoardListMapper, params);
+		}
+
+	}
+	
+	//문의사항 조회 메소드 + 추가됨 (목록+페이징
+	public List<CsBoardListVO> selectListInquaryWithPaging(PageVO pageVO) {
+		//목록
+		if(pageVO.isList()) {
+			String sql = "select * from ("
+					+ "select rownum rn, TMP. * from ("
+					+"select * from cs_board_list "
+					+ "connect by prior cs_board_no = cs_board_origin "
+					+ "start with cs_board_origin is null "
+					+ "order siblings by cs_board_group desc, cs_board_no asc"
+					+ ")TMP where TRIM(UPPER(TMP.cs_board_notice)) = 'N' "
+				+ ") where rn between ? and ?";
+			Object[] params = {pageVO.getBegin(), pageVO.getEnd()};
+			return jdbcTemplate.query(sql, csBoardListMapper, params);
+		}
+		//검색
+		else {
+			String sql = "select * from ("
+					+ "select rownum rn, TMP. * from ("
+						+ "select * from cs_board_list "
+						+ "connect by prior cs_board_no = cs_board_origin "
+						+ "start with cs_board_origin is null "
+						+ "order siblings by cs_board_group desc, cs_board_no asc"
+					+ ") TMP where TMP.cs_board_notice = 'N' and instr(#1, ?) > 0"
+			+ ") where rn between ? and ?";
+			sql = sql.replace("#1", pageVO.getColumn());
+			Object[] params = {pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()};
+			return jdbcTemplate.query(sql, csBoardListMapper, params);
+		}
+
+	}
+	
 	
 	public List<CsBoardListVO> selectListByMember(String csBoardWriter) {
 		if(csBoardWriter == null) return List.of();

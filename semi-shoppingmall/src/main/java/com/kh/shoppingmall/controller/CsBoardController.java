@@ -1,7 +1,5 @@
 package com.kh.shoppingmall.controller;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,11 +22,12 @@ import com.kh.shoppingmall.dao.CsBoardDao;
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dto.CsBoardDto;
 import com.kh.shoppingmall.dto.MemberDto;
+import com.kh.shoppingmall.error.NeedPermissionException;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.AttachmentService;
+import com.kh.shoppingmall.service.CsBoardService;
 import com.kh.shoppingmall.vo.CsBoardListVO;
 import com.kh.shoppingmall.vo.PageVO;
-import com.kh.shoppingmall.error.NeedPermissionException;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -41,6 +40,8 @@ public class CsBoardController {
 	private CsBoardDao csBoardDao;
 	@Autowired
 	private MemberDao memberDao;
+	@Autowired
+	private CsBoardService csBoardService;
 	
 	CsBoardController(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
@@ -48,33 +49,43 @@ public class CsBoardController {
 	
 	@RequestMapping("/list")
 	public String list(Model model, @ModelAttribute PageVO pageVO) {
-		LocalDateTime now = LocalDateTime.now();
-		
-		
-//		boolean isWtimeRecent = ;
-		List<CsBoardListVO> csBoardNoticeList = csBoardDao.selectListNotice(pageVO);//공지글
-		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달(배경색 칠하기용)
-		List<CsBoardListVO> csBoardList = csBoardDao.selectListWithPaging(pageVO);//전체글
-		List<CsBoardListVO> result = new ArrayList<>();//합성(공지+전체)
-		result.addAll(csBoardNoticeList);
-		result.addAll(csBoardList);
-		//현재 시간 비교해 플래그 값 설정
-		for(CsBoardListVO vo: result) {
-			LocalDateTime wTime = vo.getCsBoardWtime().toLocalDateTime();
-			vo.setWtimeRecent(ChronoUnit.HOURS.between(wTime, now) < 24);
-			
-			if(vo.getCsBoardEtime() != null) {
-				LocalDateTime eTime = vo.getCsBoardEtime().toLocalDateTime();
-				vo.setEtimeRecent(ChronoUnit.HOURS.between(eTime, now) < 24);
-			}
-			else {
-				vo.setEtimeRecent(false);
-			}
-		}
-			
-			
 
-		model.addAttribute("csBoardList", result);//검색이든 목록이든 한번에 처리
+		List<CsBoardListVO> csBoardNoticeList = csBoardDao.selectListNotice();//공지글 리스트
+		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달
+
+		List<CsBoardListVO> csBoardList = csBoardDao.selectListWithPaging(pageVO);//전체글
+		csBoardService.initializeListIfNull(csBoardList);
+		model.addAttribute("totalListCount", csBoardList.size());//전체글 개수를 전달
+		
+		List<CsBoardListVO> csBoardNoticeTableList = csBoardDao.selectListNoticeWithPaging(pageVO);//공지글 리스트
+		csBoardService.initializeListIfNull(csBoardNoticeList);
+		model.addAttribute("noticeListCount", csBoardList.size());//전체글 개수를 전달
+
+		List<CsBoardListVO> csBoardInquiryTableList = csBoardDao.selectListInquaryWithPaging(pageVO);//문의글 리스트		
+		csBoardService.initializeListIfNull(csBoardInquiryTableList);
+		model.addAttribute("inquiryListCount", csBoardList.size());//전체글 개수를 전달
+		
+		List<CsBoardListVO> allListResult = new ArrayList<>();//(공지+전체)
+		List<CsBoardListVO> noticeListResult = new ArrayList<>();//(공지+전체)
+		List<CsBoardListVO> inquaryListResult = new ArrayList<>();//(공지+전체)
+		
+		allListResult.addAll(csBoardNoticeList);
+		allListResult.addAll(csBoardList);
+		
+//		noticeListResult.addAll(csBoardNoticeList);
+		noticeListResult.addAll(csBoardNoticeTableList);
+		
+//		inquaryListResult.addAll(csBoardNoticeList);
+		inquaryListResult.addAll(csBoardInquiryTableList);
+		
+		csBoardService.setTimeFlags(allListResult);
+		csBoardService.setTimeFlags(noticeListResult);
+		csBoardService.setTimeFlags(inquaryListResult);
+
+		model.addAttribute("csBoardList", allListResult);//검색이든 목록이든 한번에 처리
+		model.addAttribute("noticeListResult", noticeListResult); //공지만 표시
+		model.addAttribute("inquiryListResult", inquaryListResult); //문의만 표시
+		
 		
 		int dataCount = csBoardDao.count(pageVO);//검색이든 목록이든 카운트를 구해
 		pageVO.setDataCount(dataCount);//pageVO에 설정
@@ -287,7 +298,7 @@ public class CsBoardController {
 		
 		
 		csBoardDao.update(csBoardDto);
-		return "redirect:detail?csboardNo="+csBoardDto.getCsBoardNo();
+		return "redirect:detail?csBoardNo="+csBoardDto.getCsBoardNo();
 	}
 	
 }
