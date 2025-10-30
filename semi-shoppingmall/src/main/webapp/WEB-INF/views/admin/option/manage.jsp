@@ -11,11 +11,16 @@
         <input type="hidden" name="productNo" value="${product.productNo}">
         <div class="cell">
             <label>옵션 이름</label>
-            <input type="text" name="optionName" required class="field w-100">
+            <!-- ✅ 색상 / 사이즈만 선택 가능 -->
+            <select name="optionName" class="field w-100" required>
+                <option value="">-- 옵션 이름 선택 --</option>
+                <option value="색상">색상</option>
+                <option value="사이즈">사이즈</option>
+            </select>
         </div>
         <div class="cell">
             <label>옵션 값</label>
-            <input type="text" name="optionValue" required class="field w-100">
+            <input type="text" name="optionValue" required class="field w-100" placeholder="예: 빨강, L, XL 등">
         </div>
         <div class="cell">
             <label>재고</label>
@@ -50,8 +55,13 @@
                             <td>${opt.optionValue}</td>
                             <td>${opt.optionStock}</td>
                             <td>
-                                <button type="button" class="btn btn-warning btn-edit" data-no="${opt.optionNo}">수정</button>
-                                <a href="delete?optionNo=${opt.optionNo}&productNo=${product.productNo}" class="btn btn-danger">삭제</a>
+                                <button type="button" class="btn btn-warning btn-edit" 
+                                        data-no="${opt.optionNo}" 
+                                        data-name="${opt.optionName}"
+                                        data-value="${opt.optionValue}"
+                                        data-stock="${opt.optionStock}">수정</button>
+                                <a href="/admin/product/option/delete?optionNo=${opt.optionNo}&productNo=${product.productNo}" 
+                                	class="btn btn-danger">삭제</a>
                             </td>
                         </tr>
                     </c:forEach>
@@ -59,8 +69,9 @@
             </c:choose>
         </tbody>
     </table>
-</div>
 
+    <!-- ✅ 상품 목록으로 이동 버튼 -->
+    <a href="/admin/product/list" class="btn btn-positive w-100 mt-10">상품 목록으로 돌아가기</a>
 <!-- ✅ CSS -->
 <style>
 .cell { margin-bottom: 12px; }
@@ -81,15 +92,22 @@
 $(function() {
     $(".btn-edit").click(function() {
         var optionNo = $(this).data("no");
-        var row = $(this).closest("tr");
-        var name = prompt("옵션 이름 수정", row.find("td:eq(1)").text());
-        var value = prompt("옵션 값 수정", row.find("td:eq(2)").text());
-        var stock = prompt("재고 수정", row.find("td:eq(3)").text());
+        var currentName = $(this).data("name");
+        var currentValue = $(this).data("value");
+        var currentStock = $(this).data("stock");
 
-        if (!name || !value || stock === null) return;
+        // ✅ 옵션 이름은 select로만 선택 가능
+        var name = promptSelectOption(currentName);
+        if (!name) return;
+
+        var value = prompt("옵션 값 수정", currentValue);
+        if (!value) return;
+
+        var stock = prompt("재고 수정", currentStock);
+        if (stock === null) return;
 
         $.ajax({
-            url: "edit",
+            url: "/admin/product/option/edit",
             type: "POST",
             data: {
                 optionNo: optionNo,
@@ -106,6 +124,20 @@ $(function() {
             }
         });
     });
+
+    // ✅ 색상/사이즈 선택 팝업 함수
+    function promptSelectOption(current) {
+        var options = ["색상", "사이즈"];
+        var msg = "옵션 이름 선택 (현재: " + current + ")\n";
+        for (var i = 0; i < options.length; i++) {
+            msg += (i + 1) + ". " + options[i] + "\n";
+        }
+        var choice = prompt(msg, "1");
+        if (choice === null) return null;
+        var idx = parseInt(choice);
+        if (isNaN(idx) || idx < 1 || idx > options.length) return current;
+        return options[idx - 1];
+    }
 });
 </script>
 
