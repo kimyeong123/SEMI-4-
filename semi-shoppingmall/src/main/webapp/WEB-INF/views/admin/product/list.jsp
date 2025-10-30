@@ -75,7 +75,6 @@
 	<form action="list" method="get" style="margin-bottom: 20px;">
 		<select name="column">
 			<option value="product_name" ${column == 'product_name' ? 'selected' : ''}>상품명</option>
-			<option value="product_content" ${column == 'product_content' ? 'selected' : ''}>상품내용</option>
 		</select>
 		<input type="search" name="keyword" value="${keyword}" placeholder="검색어 입력">
 		<button type="submit">검색</button>
