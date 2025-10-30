@@ -56,10 +56,16 @@ public class ProductOptionController {
         }
     }
 
-    // ---------------- 옵션 삭제 ----------------
     @GetMapping("/delete")
     public String delete(@RequestParam int optionNo, @RequestParam int productNo) {
         productOptionDao.delete(optionNo);
         return "redirect:/admin/product/option/manage?productNo=" + productNo;
+    }
+
+    // ---------------- 옵션 삭제 (POST: AJAX 용) ----------------
+    @PostMapping("/delete")
+    @ResponseBody
+    public void deleteAjax(@RequestParam int optionNo) {
+        productOptionDao.delete(optionNo);
     }
 }
