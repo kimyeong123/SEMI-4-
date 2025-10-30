@@ -41,12 +41,13 @@
             <input type="file" name="thumbnailFile" class="field w-100">
         </div>
 
-        <div class="cell">
-            <label style="display:block">현재 썸네일</label>
-            <c:if test="${product.productThumbnailNo != null}">
-                <img src="/attachment/image?attachmentNo=${product.productThumbnailNo}" width="100" height="100">
-            </c:if>
-        </div>
+       <div class="cell center">
+       		<label style="display:block">현재 썸네일</label>
+       		<c:if test="${product.productThumbnailNo != null}">
+       			<img src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${product.productThumbnailNo}" 
+       				width="300" height="300" style="object-fit: cover;">
+    		</c:if>
+		</div>
 
         <div class="cell mt-30">
             <button type="submit" class="btn btn-negative w-100">수정</button>
