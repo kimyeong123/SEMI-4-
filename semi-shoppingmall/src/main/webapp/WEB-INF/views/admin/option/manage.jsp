@@ -1,128 +1,73 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp" />
 
-<div class="container w-800">
-    <h1>${product.productName} - 옵션 관리</h1>
 
-    <!-- ✅ 옵션 추가 폼 -->
-    <form action="add" method="post" style="margin-bottom:20px;">
-        <input type="hidden" name="productNo" value="${product.productNo}">
-        <div class="cell">
-            <label>옵션 이름</label>
-            <!-- ✅ 색상 / 사이즈만 선택 가능 -->
-            <select name="optionName" class="field w-100" required>
-                <option value="">-- 옵션 이름 선택 --</option>
-                <option value="색상">색상</option>
-                <option value="사이즈">사이즈</option>
-            </select>
-        </div>
-        <div class="cell">
-            <label>옵션 값</label>
-            <input type="text" name="optionValue" required class="field w-100" placeholder="예: 빨강, L, XL 등">
-        </div>
-        <div class="cell">
-            <label>재고</label>
-            <input type="number" name="optionStock" min="0" value="0" class="field w-100">
-        </div>
-        <button class="btn btn-positive w-100 mt-10">+ 옵션 추가</button>
-    </form>
-
-    <!-- ✅ 옵션 목록 -->
-    <table class="table table-border table-hover w-100">
-        <thead>
-            <tr>
-                <th>번호</th>
-                <th>옵션 이름</th>
-                <th>옵션 값</th>
-                <th>재고</th>
-                <th>수정 / 삭제</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:choose>
-                <c:when test="${empty optionList}">
-                    <tr>
-                        <td colspan="5" style="text-align:center;">등록된 옵션이 없습니다.</td>
-                    </tr>
-                </c:when>
-                <c:otherwise>
-                    <c:forEach var="opt" items="${optionList}">
-                        <tr>
-                            <td>${opt.optionNo}</td>
-                            <td>${opt.optionName}</td>
-                            <td>${opt.optionValue}</td>
-                            <td>${opt.optionStock}</td>
-                            <td>
-                                <button type="button" class="btn btn-warning btn-edit" 
-                                        data-no="${opt.optionNo}" 
-                                        data-name="${opt.optionName}"
-                                        data-value="${opt.optionValue}"
-                                        data-stock="${opt.optionStock}">수정</button>
-                                <a href="/admin/product/option/delete?optionNo=${opt.optionNo}&productNo=${product.productNo}" 
-                                	class="btn btn-danger">삭제</a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:otherwise>
-            </c:choose>
-        </tbody>
-    </table>
-
-    <!-- ✅ 상품 목록으로 이동 버튼 -->
-    <a href="/admin/product/list" class="btn btn-positive w-100 mt-10">상품 목록으로 돌아가기</a>
-<!-- ✅ CSS -->
-<style>
-.cell { margin-bottom: 12px; }
-.field { padding:8px; border:1px solid #ccc; border-radius:5px; }
-.btn { border:none; padding:6px 10px; border-radius:5px; cursor:pointer; }
-.btn-positive { background:#4CAF50; color:white; }
-.btn-warning { background:#f39c12; color:white; }
-.btn-danger { background:#e74c3c; color:white; }
-.table { border-collapse: collapse; width: 100%; margin-top: 15px; }
-.table th, .table td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-.table-hover tr:hover { background: #fafafa; }
-.mt-10 { margin-top:10px; }
-</style>
-
-<!-- ✅ JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function() {
-    $(".btn-edit").click(function() {
-        var optionNo = $(this).data("no");
-        var currentName = $(this).data("name");
-        var currentValue = $(this).data("value");
-        var currentStock = $(this).data("stock");
+    var skuIndex = ${optionList.size()}; // 기존 목록 수에 이어서 인덱스 시작
 
-        // ✅ 옵션 이름은 select로만 선택 가능
-        var name = promptSelectOption(currentName);
-        if (!name) return;
+    // "조합 생성하기" 버튼 클릭
+    $("#generate-sku-btn").on("click", function() {
+        var name1 = $("#option1-name").val().trim(); // 예: "색상"
+        var values1 = $("#option1-values").val().trim().split(',')
+                        .map(s => s.trim()).filter(s => s); // ["빨강", "파랑"]
+        
+        var name2 = $("#option2-name").val().trim(); // 예: "사이즈"
+        var values2 = $("#option2-values").val().trim().split(',')
+                        .map(s => s.trim()).filter(s => s); // ["S", "M"]
 
-        var value = prompt("옵션 값 수정", currentValue);
-        if (!value) return;
+        if (values1.length === 0) {
+            alert("옵션 1 값을 콤마로 구분하여 입력하세요.");
+            return;
+        }
 
-        var stock = prompt("재고 수정", currentStock);
-        if (stock === null) return;
+        // 1. 옵션이 1개일 경우 (예: 신발 사이즈)
+        if (values2.length === 0) {
+            values1.forEach(function(val1) {
+                var skuName = (name1 ? name1 + ": " : "") + val1; // 예: "사이저: 250" 또는 "250"
+                addSkuRow(skuName, 0);
+            });
+        } 
+        // 2. 옵션이 2개일 경우 (조합 생성)
+        else {
+            values1.forEach(function(val1) {
+                values2.forEach(function(val2) {
+                    // 예: "색상: 빨강 / 사이즈: S"
+                    var skuName = (name1 ? name1 + ": " : "") + val1 + 
+                                  " / " + 
+                                  (name2 ? name2 + ": " : "") + val2;
+                    addSkuRow(skuName, 0);
+                });
+            });
+        }
+    });
 
-        $.ajax({
-            url: "/admin/product/option/edit",
-            type: "POST",
-            data: {
-                optionNo: optionNo,
-                optionName: name,
-                optionValue: value,
-                optionStock: stock
-            },
-            success: function() {
-                alert("수정 완료!");
-                location.reload();
-            },
-            error: function() {
-                alert("수정 실패!");
-            }
-        });
+    // SKU 테이블에 행(row) 추가
+    function addSkuRow(name, stock) {
+        var html = '<tr>' +
+            '<td>' +
+                '<input type="text" name="optionList[' + skuIndex + '].optionName" class="field" value="' + name + '" readonly>' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" name="optionList[' + skuIndex + '].optionStock" class="field" value="' + stock + '" min="0">' +
+            '</td>' +
+            '<td>' +
+                '<span class="btn-delete-sku"><i class="fa-solid fa-trash"></i></span>' +
+            '</td>' +
+        '</tr>';
+        $("#sku-table-body").append(html);
+        skuIndex++;
+    }
+
+    // SKU 행 삭제 버튼
+    $("#sku-table-body").on("click", ".btn-delete-sku", function() {
+        if(confirm("이 옵션 조합을 삭제하시겠습니까?")) {
+            $(this).closest("tr").remove();
+            // (참고) 인덱스(skuIndex)를 재정렬할 필요는 없음. 서버는 받는 대로 처리함.
+        }
     });
 
     // ✅ 색상/사이즈 선택 팝업 함수
@@ -140,5 +85,68 @@ $(function() {
     }
 });
 </script>
+
+<style>
+/* ... (기존 CSS와 공통 CSS 사용) ... */
+.option-group { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+.option-values { font-style: italic; color: #555; }
+#sku-table th, #sku-table td { text-align: left; padding: 10px; }
+#sku-table input[type="text"], #sku-table input[type="number"] { width: 90%; }
+.btn-delete-sku { color: #e74c3c; cursor: pointer; }
+</style>
+
+<div class="container w-800">
+    <h1>"${product.productName}" - 옵션 조합(SKU) 관리</h1>
+
+    <!-- 1. 옵션 정의 섹션 -->
+    <div class="option-group">
+        <h3>옵션 조합 생성</h3>
+        <p class="gray">옵션 값은 콤마(,)로 구분하여 입력하세요.</p>
+        <div class="cell flex-box" style="gap: 10px;">
+            <input type="text" id="option1-name" class="field" placeholder="옵션 1 이름 (예: 색상)">
+            <input type="text" id="option1-values" class="field flex-fill" placeholder="옵션 1 값 (예: 빨강, 파랑, 검정)">
+        </div>
+        <div class="cell flex-box" style="gap: 10px;">
+            <input type="text" id="option2-name" class="field" placeholder="옵션 2 이름 (예: 사이즈)">
+            <input type="text" id="option2-values" class="field flex-fill" placeholder="옵션 2 값 (예: S, M, L)">
+        </div>
+        <button type="button" id="generate-sku-btn" class="btn btn-neutral">조합 생성하기</button>
+    </div>
+
+    <!-- 2. SKU 등록 폼 -->
+    <form action="save" method="post">
+        <input type="hidden" name="productNo" value="${product.productNo}">
+        
+        <h3>생성된 SKU 목록</h3>
+        <table id="sku-table" class="table table-border w-100">
+            <thead>
+                <tr>
+                    <th>옵션 조합 이름 (optionName)</th>
+                    <th>재고 (optionStock)</th>
+                    <th>삭제</th>
+                </tr>
+            </thead>
+            <tbody id="sku-table-body">
+                <%-- 기존에 저장된 SKU 목록 (수정용) --%>
+                <c:forEach var="opt" items="${optionList}" varStatus="status">
+                    <tr>
+                        <td>
+                            <input type="text" name="optionList[${status.index}].optionName" class="field" value="${opt.optionName}" readonly>
+                        </td>
+                        <td>
+                            <input type="number" name="optionList[${status.index}].optionStock" class="field" value="${opt.optionStock}" min="0">
+                        </td>
+                        <td>
+                            <span class="btn-delete-sku"><i class="fa-solid fa-trash"></i></span>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+        
+        <button type="submit" class="btn btn-positive w-100 mt-20">전체 SKU 저장하기</button>
+    </form>
+</div>
+
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp" />

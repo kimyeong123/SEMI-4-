@@ -27,7 +27,6 @@ public class OrdersSummaryMapper implements RowMapper<OrdersSummaryVO> {
 					.productNo(rs.getInt("product_no"))
 					.productName(rs.getString("product_name"))
 					.optionName(rs.getString("option_name"))
-					.optionValue(rs.getString("option_value"))
 					.thumbnailName(rs.getString("thumbnail_name"))
 					.productThumbnailNo(rs.getInt("product_thumbnail_no"))
 					.ordersCreatedAt(rs.getTimestamp("orders_created_at"))

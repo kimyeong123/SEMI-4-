@@ -107,5 +107,10 @@ public class WishlistDao {
 	        return map;
 	    });
 	}
+
+    public int deleteByProductNo(int productNo) {
+        String sql = "DELETE FROM wishlist WHERE product_no = ?";
+        return jdbcTemplate.update(sql, productNo);
+    }
 	
 }

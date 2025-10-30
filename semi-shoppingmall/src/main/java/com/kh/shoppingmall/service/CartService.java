@@ -84,4 +84,18 @@ public class CartService {
     public boolean removeItemByCartNo(int cartNo) {
         return cartDao.deleteByCartNo(cartNo);
     }
+    
+    public boolean removeItemByCartNo(int cartNo, String memberId) {
+        // 1. cartNo로 아이템 조회 (본인 확인용)
+        CartDto item = cartDao.selectOneByCartNo(cartNo); // (DAO에 추가한 메소드 호출)
+
+        // 2. 본인 확인
+        if (item == null || !item.getMemberId().equals(memberId)) {
+            // 아이템이 없거나, 로그인한 사용자의 아이템이 아님
+            return false; 
+        }
+        
+        // 3. 본인 아이템이 맞으면 삭제
+        return cartDao.deleteByCartNo(cartNo);
+    }
 }

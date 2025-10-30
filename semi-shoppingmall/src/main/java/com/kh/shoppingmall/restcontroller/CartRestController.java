@@ -34,9 +34,10 @@ public class CartRestController {
     @PostMapping("/add")
     public Map<String, Object> addItem(@RequestParam int productNo,
                                        @RequestParam int cartAmount,
-                                       @RequestParam(required = false) String color,
-                                       @RequestParam(required = false) String size,
-                                       @RequestParam(required = false) Integer optionNo,
+                                       // ❌ color, size 파라미터 제거
+                                       // @RequestParam(required = false) String color,
+                                       // @RequestParam(required = false) String size,
+                                       @RequestParam int optionNo, // ✨ Integer -> int (필수)
                                        HttpSession session) {
         // 로그인 확인
         Object loginIdObj = session.getAttribute("loginId");
@@ -46,37 +47,24 @@ public class CartRestController {
         String memberId = String.valueOf(loginIdObj);
 
         try {
-            // ✅ 옵션 번호 자동 매핑 (color + size 조합)
-            if (optionNo == null && color != null && size != null) {
-                optionNo = productOptionDao.findOptionNoByColorAndSize(productNo, color, size);
-                if (optionNo == null) {
-                    throw new TargetNotfoundException("해당 색상/사이즈 조합의 옵션을 찾을 수 없습니다.");
-                }
-            }
-
-            if (optionNo == null || optionNo <= 0) {
-                throw new NeedPermissionException("옵션 정보가 누락되었습니다.");
-            }
-
-            // ✅ CartDto 생성
+            // ❌ 옵션 번호 자동 매핑 로직 (findOptionNoByColorAndSize) 전체 삭제
+            
+            // ✅ CartDto 생성 (SKU 방식)
             CartDto cartDto = new CartDto();
             cartDto.setMemberId(memberId);
             cartDto.setProductNo(productNo);
-            cartDto.setOptionNo(optionNo);
+            cartDto.setOptionNo(optionNo); // ✨ JSP에서 받은 SKU(조합)의 optionNo
             cartDto.setCartAmount(cartAmount);
 
             System.out.println("[🛒 Cart Add Log]");
             System.out.println("  MemberID = " + memberId);
             System.out.println("  ProductNo = " + productNo);
-            System.out.println("  OptionNo = " + optionNo);
+            System.out.println("  OptionNo = " + optionNo); // ✨ SKU(조합) 번호
             System.out.println("  Amount = " + cartAmount);
 
-            cartService.addItem(cartDto);
+            cartService.addItem(cartDto); // Service는 내부적으로 findItem(memberId, productNo, optionNo) 호출
             return Map.of("result", true);
 
-        } catch (TargetNotfoundException e) {
-            e.printStackTrace();
-            return Map.of("result", false, "error", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return Map.of("result", false, "error", "장바구니 추가 중 내부 오류: " + e.getMessage());
@@ -106,8 +94,7 @@ public class CartRestController {
 
     // ✅ 장바구니 삭제
     @PostMapping("/delete")
-    public boolean removeItem(@RequestParam int productNo,
-                              @RequestParam int optionNo,
+    public boolean removeItem(@RequestParam int cartNo, // ❌ productNo, optionNo 대신 cartNo 받기
                               HttpSession session) {
 
         String memberId = (String) session.getAttribute("loginId");
@@ -116,12 +103,9 @@ public class CartRestController {
         }
 
         try {
-            CartDto cartDto = new CartDto();
-            cartDto.setMemberId(memberId);
-            cartDto.setProductNo(productNo);
-            cartDto.setOptionNo(optionNo);
+            // ✨ CartService의 removeItemByCartNo 호출 (DAO의 deleteByCartNo 사용) ✨
+            boolean result = cartService.removeItemByCartNo(cartNo, memberId); // (Service에 이 메소드 추가 권장)
 
-            boolean result = cartService.removeItem(cartDto);
             if (!result) {
                 throw new TargetNotfoundException("해당 장바구니 항목을 찾을 수 없습니다.");
             }

@@ -107,22 +107,22 @@ public class ProductRestController {
         return "삭제 완료";
     }
 
-    @GetMapping("/children")
-    public String getChildOptions(@RequestParam int parentOptionNo) {
-        List<ProductOptionDto> list = productOptionDao.selectChildOptions(parentOptionNo);
-
-        StringBuilder sb = new StringBuilder();
-        if (list.isEmpty()) {
-            sb.append("<option disabled>하위 옵션 없음</option>");
-        } else {
-            for (ProductOptionDto opt : list) {
-                sb.append("<option value='").append(opt.getOptionNo()).append("' data-stock='")
-                  .append(opt.getOptionStock()).append("'>")
-                  .append(opt.getOptionValue());
-                if (opt.getOptionStock() <= 0) sb.append(" (품절)");
-                sb.append("</option>");
-            }
-        }
-        return sb.toString();
-    }
+//    @GetMapping("/children")
+//    public String getChildOptions(@RequestParam int parentOptionNo) {
+//        List<ProductOptionDto> list = productOptionDao.selectChildOptions(parentOptionNo);
+//
+//        StringBuilder sb = new StringBuilder();
+//        if (list.isEmpty()) {
+//            sb.append("<option disabled>하위 옵션 없음</option>");
+//        } else {
+//            for (ProductOptionDto opt : list) {
+//                sb.append("<option value='").append(opt.getOptionNo()).append("' data-stock='")
+//                  .append(opt.getOptionStock()).append("'>")
+//                  .append(opt.getOptionValue());
+//                if (opt.getOptionStock() <= 0) sb.append(" (품절)");
+//                sb.append("</option>");
+//            }
+//        }
+//        return sb.toString();
+//    }
 }

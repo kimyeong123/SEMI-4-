@@ -22,8 +22,8 @@ public class CartDetailMapper implements RowMapper<CartDetailVO>{
 				.productPrice(rs.getInt("product_price"))
 				.optionNo(rs.getInt("option_no"))
 				.optionName(rs.getString("option_name"))
-				.optionValue(rs.getString("option_value"))
 				.thumbnailName(rs.getString("thumbnail_name"))
+				.productThumbnailNo(rs.getInt("product_thumbnail_no"))
 			.build();
 	}
 

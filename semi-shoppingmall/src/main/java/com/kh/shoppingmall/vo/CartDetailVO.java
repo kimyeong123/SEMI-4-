@@ -15,6 +15,7 @@ public class CartDetailVO {
 	private int productPrice;
 	private int optionNo;
 	private String optionName;
-	private String optionValue;
 	private String thumbnailName;
+	
+	private Integer productThumbnailNo;
 }
