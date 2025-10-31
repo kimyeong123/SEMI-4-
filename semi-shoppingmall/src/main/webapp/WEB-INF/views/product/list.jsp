@@ -28,6 +28,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: #fff;
             cursor: pointer;
+            margin-bottom: 10px;
         }
 
         .card:hover {
