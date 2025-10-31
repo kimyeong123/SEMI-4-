@@ -1,16 +1,25 @@
 package com.kh.shoppingmall.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class PageVO {
 	//필드의 페이징에 필요한 데이터들을 배치
+	@Builder.Default
 	private int page = 1;
+	@Builder.Default
 	private int size = 10;
 	private String column, keyword;
 	
 	private int dataCount;
+	@Builder.Default
 	private int blockSize = 10;
+	//탭 타입 추가 주소에 탭 정보 넘기기용
+	@Builder.Default
+	private String tabType = "all";
 	
 	//계산이 가능하게 getter 메소드 추가 생성
 	public boolean isSearch()
