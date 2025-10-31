@@ -18,7 +18,7 @@
         /* 개별 카드 */
         .card {
             position: relative;
-            width: 300px;
+            width: 30%;
             border: 1px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
