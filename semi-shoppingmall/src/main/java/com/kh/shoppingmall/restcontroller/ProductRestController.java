@@ -106,6 +106,11 @@ public class ProductRestController {
         }
         return "삭제 완료";
     }
+    //위시리스트 옵션불러오기
+    @GetMapping("/{productNo}/options")
+    public List<ProductOptionDto> getProductOptions(@PathVariable int productNo) {
+        return productOptionDao.selectListByProduct(productNo);
+    }
 
 //    @GetMapping("/children")
 //    public String getChildOptions(@RequestParam int parentOptionNo) {
