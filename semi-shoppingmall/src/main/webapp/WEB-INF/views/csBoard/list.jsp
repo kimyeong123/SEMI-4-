@@ -8,34 +8,84 @@
 <link rel="stylesheet" type="text/css" href="/css/commons.css">
 <script type="text/javascript">
 	$(function () {
-		$("#all-show").on("click", function () {
-			$(this).prop("disabled", true);
-			$("#notice-list-show").prop("disabled", false);
-			$("#inquiry-list-show").prop("disabled", false);
-			$("#csBoardAll").show();
-			$("#csBoardNotice").hide();
-			$("#csBoardInquiry").hide();
-			$("#number-hide").show();
-		});
-		$("#notice-list-show").on("click", function () {
-			$(this).prop("disabled", true);
-			$("#all-show").prop("disabled", false);
-			$("#inquiry-list-show").prop("disabled", false);
-			$("#csBoardAll").hide();
-			$("#csBoardNotice").show();
-			$("#csBoardInquiry").hide();
-			$("#number-hide").show();
-		});
-		$("#inquiry-list-show").on("click", function () {
-			$(this).prop("disabled", true);
-			$("#all-show").prop("disabled", false);
-			$("#notice-list-show").prop("disabled", false);
-			$("#csBoardAll").hide();
-			$("#csBoardNotice").hide();
-			$("#csBoardInquiry").show();
-			$("#number-hide").show();
-		});
+// 		$("#all-show").on("click", function () {
+// 			$(this).prop("disabled", true);
+// 			$("#notice-list-show").prop("disabled", false);
+// 			$("#inquiry-list-show").prop("disabled", false);
+// 			$("#csBoardAll").show();
+// 			$("#csBoardNotice").hide();
+// 			$("#csBoardInquiry").hide();
+// 			$("#number-hide").show();
+// 		});
+// 		$("#notice-list-show").on("click", function () {
+// 			$(this).prop("disabled", true);
+// 			$("#all-show").prop("disabled", false);
+// 			$("#inquiry-list-show").prop("disabled", false);
+// 			$("#csBoardAll").hide();
+// 			$("#csBoardNotice").show();
+// 			$("#csBoardInquiry").hide();
+// 			$("#number-hide").show();
+// 		});
+// 		$("#inquiry-list-show").on("click", function () {
+// 			$(this).prop("disabled", true);
+// 			$("#all-show").prop("disabled", false);
+// 			$("#notice-list-show").prop("disabled", false);
+// 			$("#csBoardAll").hide();
+// 			$("#csBoardNotice").hide();
+// 			$("#csBoardInquiry").show();
+// 			$("#number-hide").show();
+// 		});
 	
+
+		//검색 아니고 탭만 바꿀 때
+		$(".tab-btn").on("click", function(){
+			//아이디 변수 선언
+			var targetId = $(this).data("target");
+			//탭 변수 선언
+			var tabType = targetId.replace("#csBoard", "");
+			
+			//버튼 상태 제어
+			$(".tab-btn").prop("disabled", false);
+			$(this).prop("disabled", true);
+			//콘텐츠 표시
+			$(".tab-content").hide();
+			$(targetId).show();
+			
+			$("#tabTypeInput").val(tabType);
+		});
+		
+		//검색을 했을 때 탭 변경(즉시 일어남)
+		var currentTab = "${tabType}";
+		
+		var tabMap = {
+				"all" : "#all-show",
+				"notice" : "#notice-list-show",
+				"inquiry": "#inquiry-list-show"
+		};
+		
+		var contentMap = {
+				"all" : "#csBoardAll",
+				"notice": "#csBoardNotice",
+				"inquiry":"#csBoardInquiry"
+		};
+		
+		if(tabMap[currentTab]) {
+			$(".tab-btn").prop("disabled", false);
+			$(".tab-content").hide();
+			
+			$(tabMap[currentTab]).prop("disabled", true);
+			
+			$(contentMap[currentTab]).show();
+			
+			$("#tabTypeInput").val(currentTab);
+		}
+		else {
+			$("#all-show").prop("disabled", true);
+			$("#csBoardAll").show();
+			$("#tabTypeInput").val("all");
+		}
+		
+		
 	});
 </script>
 
@@ -147,13 +197,14 @@
 	</div>
 
 	<div class="cell flex-box">
-	    <button id="all-show" class="tab-button" disabled>전체</button>
-	    <button id="notice-list-show" class="tab-button">공지</button>
-	    <button id="inquiry-list-show" class="tab-button">문의</button>
+		<%--기존에 쓰던 방식과는 다르게 data- 형식을 써서 각 표를 아이디로 연동하였다 --%>
+	    <button id="all-show" class="tab-button tab-btn" data-target="#csBoardAll" disabled>전체</button>
+	    <button id="notice-list-show" class="tab-button tab-btn" data-target="#csBoardNotice">공지</button>
+	    <button id="inquiry-list-show" class="tab-button tab-btn" data-target="#csBoardInquiry" >문의</button>
 	</div>
 
 <%--여기부터 전체테이블 --%>
-	<div class = "cell" id="csBoardAll">
+	<div class = "cell tab-content" id="csBoardAll">
 <%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
 		<h3>게시된 글 개수: ${csBoardList.size()}</h3>
 	
@@ -258,7 +309,7 @@
 <%--여기까지 전체 테이블 --%>
 
 <%--여기부터 공지테이블 --%>
-	<div class = "cell" id="csBoardNotice">
+	<div class = "cell tab-content" id="csBoardNotice">
 <%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
 		<h3>게시된 글 개수: ${noticeListResult.size()}</h3>
 	
@@ -278,8 +329,8 @@
 		    <%-- 1. noticeListResult에 데이터가 있을 경우 (<tbody> 내용 출력) --%>
             <c:when test="${not empty noticeListResult}">
                 <c:forEach var="csBoardListVO" items="${noticeListResult}" varStatus="status">
-                    <c:set var="isNotice"  value = "${status.index < noticeCount }"/>
-                    <tr class = "${isNotice ? 'notice-row' : '' }">
+<%--                     <c:set var="isNotice"  value = "${status.index < noticeCount }"/> --%>
+                    <tr class = "notice-row">
                         
                         <td>${csBoardListVO.csBoardNo}</td>
                         
@@ -367,7 +418,7 @@
 <%--여기까지 공지 테이블 --%>
 
 <%--여기부터 문의 테이블 --%>
-	<div class = "cell" id="csBoardInquiry">
+	<div class = "cell tab-content" id="csBoardInquiry">
 <%-- 		<h2>글 ${ isSearch ? "검색" : "목록"}</h2> --%>
 		<h3>게시된 글 개수: ${inquiryListResult.size()}</h3>
 	
@@ -477,6 +528,7 @@
 	</c:choose>
 	
 	<form action="list" method="get">
+		<input type="hidden" name="tabType" id="tabTypeInput" value="${tabType}">
 		<div class = "center mb-30">
 			<select class="field" name="column">
 				<option value="cs_board_title" ${column == 'cs_board_title' ? 'selected' : ''}>글 제목</option>
@@ -486,7 +538,22 @@
 			<button class ="btn btn-netural" type ="submit">검색</button>
 		</div>
 	</form>
-	<jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include>
+	
+	<c:set var="currentDataCount"  value="${pageVO.dataCount }"/>
+	<c:if test="${tabType ==  'all'}">
+		<c:set var="currentDataCount" value="${totalListCount}" />
+	</c:if>
+	<c:if test="${tabType ==  'notice'}">
+		<c:set var="currentDataCount" value="${noticeListCount}" />
+	</c:if>
+	<c:if test="${tabType ==  'inquiry'}">
+		<c:set var="currentDataCount" value="${inquiryListCount}" />
+	</c:if>
+	<jsp:include page ="/WEB-INF/views/template/tab-pagination.jsp">
+		<jsp:param name = "currentDataCount"  value="${currentDataCount }"/>
+	</jsp:include>
+<%-- 	<jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include> --%>
+
 </div>	
 
 
