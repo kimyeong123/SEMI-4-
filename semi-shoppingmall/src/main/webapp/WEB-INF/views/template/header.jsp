@@ -23,7 +23,6 @@
 }
 .image-profile:hover { opacity: 1; }
 
-/* 메뉴 토글 버튼 */
 .menu-toggle-button {
     font-size: 1.5em; 
     cursor: pointer;
@@ -34,7 +33,6 @@
 }
 .menu-toggle-button:hover { color: #000; }
 
-/* 헤더 오른쪽 메뉴 */
 .header-menu-right {
     display: flex;
     align-items: center;
@@ -55,14 +53,13 @@
 .header-menu-right a i { margin-right: 4px; }
 .header-menu-right a:hover { background-color: #f0f0f0; color: #000; }
 .header-menu-right a.btn-primary {
-    background-color: #000; /* 검은색 */
+    background-color: #000; 
     color: white;
     border: 1px solid #000;
     font-weight: bold;
 }
-
 .header-menu-right a.btn-primary:hover {
-    background-color: #000080; /* 남색 */
+    background-color: #000080; 
     color: white;
 }
 .header-menu-right a.admin-link {
@@ -77,7 +74,6 @@
 	margin-right: auto;
 }
 
-/* 사이드바 스타일 */
 .sidebar-buttons { padding: 20px 0 0 0; }
 .menu-link-item { margin-bottom: 5px; }
 .menu-link-item a {
@@ -88,36 +84,28 @@
     font-weight: 500;
     border: 1px solid #eee; 
     background-color: #f8f8f8; 
-    transition: background-color 0.2s, color 0.2, border-color 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     border-radius: 0; 
 }
 .menu-link-item a:hover { background-color: #e5e5e5; color: #000; border-color: #ccc; }
 .menu-link-item i { margin-right: 8px; font-size: 1.1em; }
 
-/* 메인 레이아웃 */
 .main-layout { display: flex; gap: 30px; min-height: 400px; padding-top: 20px; }
 .sidebar-area { width: 250px; min-width: 250px; max-width: 250px; }
 .sidebar-area.hidden { max-width: 0; min-width: 0; padding: 0; margin: 0; opacity: 0; overflow: hidden; }
 .main-content { flex-grow: 1; }
 
-/* 사이드바 프로필 */
 .sidebar-profile { display: flex; flex-direction: column; align-items: center; padding: 10px 0 20px 0; margin-bottom: 20px; border-bottom: 1px solid #eee; }
 .sidebar-profile h3 { margin: 10px 0 5px 0; font-size: 1.1em; color: #555; }
 .sidebar-profile a { color: #007bff; text-decoration: none; font-size: 0.9em; }
 
-/* 로고 스타일 */
 .logo-img { width: 150px; height: 50px; object-fit: contain; display: block; }
 .w-25 .logo-img { width: 100%; height: auto; object-fit: contain; }
 .w-50.logo { display: flex; justify-content: center; align-items: center; }
 .w-50 .logo-img { width: 180px; height: auto; object-fit: contain; margin-bottom: }
-
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/locale/ko.min.js"></script>
-<script src="/js/confirm.js"></script>
-
 <script>
 $(function() {
     $('#sidebarToggle').on('click', function() {
@@ -130,14 +118,15 @@ $(function() {
 <body>
 
 	<!-- 헤더 -->
-	<div class="container w-1100 flex-box flex-vertical">
-		<div class="flex-box" style="height: 50px; align-items: center;">
+	<div class="container w-1300 flex-box flex-vertical">
+		<!-- ✅ 여기만 수정 (50px → 80px) -->
+		<div class="flex-box" style="height: 80px; align-items: center;">
 			<div class="w-25 flex-box flex-center">
 				<a href="/"> 
                     <img src="${pageContext.request.contextPath}/images/KING HEART.png" class="logo-img">
 				</a>
 			</div>
-			<div class="w-50 logo">
+			<div class="w-50 logo mt-10">
 				<a href="/">
 					<img src="${pageContext.request.contextPath}/images/KHLOGO.png" class="logo-img">
 				</a>
@@ -200,9 +189,5 @@ $(function() {
 				</c:otherwise>
 			</c:choose>
 		</div>
-
-		<div class="main-content" id="mainContentArea">
-			<!-- JSP 본문 내용 포함 -->
-
 </body>
 </html>
