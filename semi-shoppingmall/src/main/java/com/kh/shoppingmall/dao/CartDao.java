@@ -1,5 +1,6 @@
 package com.kh.shoppingmall.dao;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,10 +118,21 @@ public class CartDao {
 	    return jdbcTemplate.update(sql, productNo);
 	}
 
+	
+	public int deleteByOptionNoList(List<Integer> optionNoList) {
+	    if (optionNoList == null || optionNoList.isEmpty()) {
+	        return 0; // 삭제할 것이 없음
+	    }
+	    
+	    // 1. IN 절에 들어갈 ? プレースホルダー 생성 (예: "?,?,?")
+	    String placeholders = String.join(",", Collections.nCopies(optionNoList.size(), "?"));
 
-//	public boolean deleteByOptionNoList(List<Integer> optionNoList) {
-//		String sql ="delete from product_option "
-//				+ "where option_no =";
-//		
-//	}
+	    // 2. SQL 쿼리 생성
+	    String sql = "DELETE FROM cart WHERE option_no IN (" + placeholders + ")";
+	    
+	    // 3. List<Integer>를 Object[] 배열로 변환
+	    Object[] params = optionNoList.toArray();
+	    
+	    return jdbcTemplate.update(sql, params);
+	}
 }

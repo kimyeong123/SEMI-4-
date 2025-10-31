@@ -75,7 +75,6 @@ public class ProductRestController {
                            @RequestParam int productPrice,
                            @RequestParam String productContent,
                            @RequestParam List<Integer> categoryNoList,
-                           @RequestParam List<ProductOptionDto> newOptionList,
                            @RequestParam(required = false) MultipartFile newThumbnailFile,
                            @RequestParam(required = false) List<Integer> deleteAttachmentNoList) {
 
@@ -88,7 +87,7 @@ public class ProductRestController {
         productDto.setProductContent(productContent);
 
         try {
-            productService.update(productDto, newOptionList, categoryNoList, newThumbnailFile, deleteAttachmentNoList);
+            productService.update(productDto, categoryNoList, newThumbnailFile, deleteAttachmentNoList);
         } catch (Exception e) {
             throw new NeedPermissionException("상품 수정 중 오류 발생: " + e.getMessage());
         }

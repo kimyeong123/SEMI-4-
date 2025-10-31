@@ -96,4 +96,19 @@ public class ReviewDao {
 		String sql = "delete from review where member_id = ?";
 		return jdbcTemplate.update(sql, memberId);
 	}
+
+	public boolean deleteByProductNo(int productNo) {
+		String sql = "delete from review where product_no=?";
+		Object[] params = { productNo };
+		
+		return jdbcTemplate.update(sql, params) > 0;
+		
+	}
+	
+	public double getAverageRating(int productNo) {
+        String sql = "SELECT COALESCE(AVG(review_rating), 0.0) FROM review WHERE product_no = ?";
+        Object[] params = { productNo };
+        // queryForObject는 결과가 없으면(AVG(NULL)) 예외를 던질 수 있으므로 COALESCE 사용
+        return jdbcTemplate.queryForObject(sql, Double.class, params);
+    }
 }
