@@ -238,7 +238,7 @@
 							<div class="w-150" style="height: 150px;">
 								<%-- ✨ attachmentNo를 뷰에서 가져오도록 수정 (productThumbnailNo) --%>
 								<img
-									src="${pageContext.request.contextPath}/download?attachmentNo=${item.productThumbnailNo}"
+									src="${pageContext.request.contextPath}/attachment/download?attachmentNo=${item.productThumbnailNo}"
 									class="product-image" alt="${item.productName}">
 							</div>
 

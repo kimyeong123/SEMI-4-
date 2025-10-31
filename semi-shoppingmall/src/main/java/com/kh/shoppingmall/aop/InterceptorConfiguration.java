@@ -37,7 +37,6 @@ public class InterceptorConfiguration implements WebMvcConfigurer{ //웹 기본 
 				"/admin/**",
 				"/wishlist",
 				"/orders"
-				
 				)
 		.excludePathPatterns(
 				
