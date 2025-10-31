@@ -4,16 +4,17 @@
 			</div>
             </div>
         </div>
-    <div class="main-footer" style="width: 100%; padding: 30px 0; background-color: #ced6e0; border-top: 1px solid #ddd;">
-        
-        <div class="content-area mb-50" style="display: flex; min-height: unset; padding: 0;">
+
+    <!-- ✅ 푸터 영역 -->
+    <div class="container w-1300 flex-box flex-vertical" style="background-color:#ced6e0;">
+        <div class="content-area mb-50" style="display:flex; min-height:unset; padding:0;">
             
-            <div class="w-50">
+            <div class="w-50 center">
                 <div class="cell">
                     <h2>KING HEART</h2>
                 </div>
                 <div class="cell">
-                    OO시 OO구 OO동 000-000번지
+                    서울특별시 강남구 논현로132길 9 마루빌딩 1층
                 </div>
                 <div class="cell">
                     대표자 - 김민준, 박창현, 김동규, 김영도
@@ -21,7 +22,14 @@
                 <div class="cell">
                     고객센터 - (02) 1234-5678
                 </div>
+                <div class="cell">
+                   FAX 02-2345-6789 
+                </div>
+                <div class="cell">
+                이메일 King Heart@kh.co.kr
+                </div>
             </div>
+
             <div class="w-50">
                 <div class="cell center">
                     <h2>운영 방침</h2>
@@ -50,13 +58,13 @@
                 </div>
                 <div class="cell center">
                     <i class="fa-brands fa-google fa-2x"></i>
-                    <i class="fa-brands fa-line  fa-2x"></i>
+                    <i class="fa-brands fa-line fa-2x"></i>
                     <i class="fa-brands fa-facebook fa-2x"></i>
                     <i class="fa-brands fa-instagram fa-2x"></i>
-                    <i class="fa-brands fa-linkedin fa-2x"></i>
                 </div>
             </div>
+
         </div>
     </div>
-    </body>
+</body>
 </html>
