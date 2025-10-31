@@ -1,5 +1,7 @@
 package com.kh.shoppingmall.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kh.shoppingmall.dao.MemberDao;
+import com.kh.shoppingmall.dao.OrdersDao;
+import com.kh.shoppingmall.dao.ReviewDao;
 import com.kh.shoppingmall.dto.MemberDto;
+import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.AttachmentService;
-//import com.kh.shoppingmall.vo.PageVO;
 import com.kh.shoppingmall.vo.PageVO;
+import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -27,6 +32,12 @@ public class AdminMemberController {
 
 	@Autowired
 	private AttachmentService attachmentService;
+	
+	@Autowired
+	private ReviewDao reviewDao;
+	
+	@Autowired
+	private OrdersDao ordersDao;
 	
 	@RequestMapping("/list")
 	public String list(Model model, @ModelAttribute(value =  "pageVO") PageVO pageVO)
@@ -68,6 +79,13 @@ public class AdminMemberController {
 		}
 		model.addAttribute("memberDto", memberDto);
 
+		//  해당 회원의 주문 내역 조회
+	    List<OrdersDto> ordersList = ordersDao.selectListByMemberId(memberId);
+	    model.addAttribute("ordersList", ordersList);
+
+	    //  해당 회원의 리뷰 내역 조회
+	    List<ReviewDetailVO> reviewList = reviewDao.selectDetailListByMember(memberId);
+	    model.addAttribute("reviewList", reviewList);
 
 		// 2. 💡 로그인한 관리자 정보 조회 (추가된 로직)
 	    String loginId = (String) session.getAttribute("loginId"); // 세션에서 로그인 ID를 가져옴

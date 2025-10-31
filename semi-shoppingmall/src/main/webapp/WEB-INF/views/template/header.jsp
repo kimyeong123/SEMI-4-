@@ -145,8 +145,8 @@ $(function() {
 						<a href="/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
 					</c:when>
 					<c:otherwise>
-						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
 						<a href="/wishlist"><i class="fa-regular fa-heart"></i></a>
+						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
 						<a href="/member/login" class="btn-primary"><span>로그인</span></a>
 						<a href="/member/join" class="btn-primary"><span>회원가입</span></a>
 					</c:otherwise>
