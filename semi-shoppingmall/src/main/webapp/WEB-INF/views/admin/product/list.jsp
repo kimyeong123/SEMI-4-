@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
 <style>
 	/* 기본 스타일 */
@@ -64,14 +64,16 @@
 	.btn-delete:hover { background-color: #c82333; }
 </style>
 
-<div class="container w-800">
-	<h1>상품 목록</h1>
-		<div class="flex-box flex-center mb-20">
-    <a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
-    </div>
-</div>
-	<h2>상품 수 : ${productList.size()}</h2>
 
+<div class="container w-800 ">
+	<div class="cell ">
+		<h1>상품 목록</h1>
+	<div>
+	<div class="cell mb-20">
+    	<a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
+    </div>
+	<h2>상품 수 : ${productList.size()}</h2>
+	
 	<form action="list" method="get" style="margin-bottom: 20px;">
 		<select name="column">
 			<option value="product_name" ${column == 'product_name' ? 'selected' : ''}>상품명</option>
@@ -135,6 +137,8 @@
 			</c:forEach>
 		</tbody>
 	</table>
+</div>
+</div>
 </div>
 
 <script>
