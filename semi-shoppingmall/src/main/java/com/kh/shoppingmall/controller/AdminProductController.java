@@ -184,7 +184,7 @@ public class AdminProductController {
         if (categoryNoList == null) categoryNoList = new ArrayList<>();
         
         // 옵션은 별도 관리하므로 빈 리스트(new ArrayList<>()) 전달
-        productService.update(productDto, new ArrayList<>(), categoryNoList, thumbnailFile, deleteAttachmentNoList);
+        productService.update(productDto, categoryNoList, thumbnailFile, deleteAttachmentNoList);
         
         return "redirect:detail?productNo=" + productDto.getProductNo();
     }
