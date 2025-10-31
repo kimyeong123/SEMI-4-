@@ -101,7 +101,7 @@
 
 .logo-img { width: 150px; height: 50px; object-fit: contain; display: block; }
 .w-25 .logo-img { width: 100%; height: auto; object-fit: contain; }
-.w-50.logo { display: flex; justify-content: center; align-items: center; }
+.w-50.logo { display: flex; justify-content: center; align-items: center; margin-left: 35px;}
 .w-50 .logo-img { width: 180px; height: auto; object-fit: contain; margin-bottom: }
 </style>
 

@@ -18,7 +18,7 @@
         /* 개별 카드 */
         .card {
             position: relative;
-            width: 300px;
+            width: 30%;
             border: 1px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
@@ -28,6 +28,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: #fff;
             cursor: pointer;
+            margin-bottom: 10px;
         }
 
         .card:hover {
