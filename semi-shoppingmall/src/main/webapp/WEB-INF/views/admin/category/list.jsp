@@ -21,8 +21,7 @@
                     <tr style="background-color: #f0f0f0; font-weight: bold;">
                         <td>${c.categoryNo}</td>
                         <td>${c.categoryName}</td>
-                        <td>
-                            <a href="detail?categoryNo=${c.categoryNo}">상세</a> |
+                        <td>                       
                             <a href="edit?categoryNo=${c.categoryNo}">수정</a> |
                             <a href="delete?categoryNo=${c.categoryNo}">삭제</a>
                         </td>
@@ -34,8 +33,7 @@
                             <tr>
                                 <td>${sub.categoryNo}</td>
                                 <td style="padding-left: 30px;"> ${sub.categoryName}</td>
-                                <td>
-                                    <a href="detail?categoryNo=${sub.categoryNo}">상세</a> |
+                                <td>                              
                                     <a href="edit?categoryNo=${sub.categoryNo}">수정</a> |
                                     <a href="delete?categoryNo=${sub.categoryNo}">삭제</a>
                                 </td>
