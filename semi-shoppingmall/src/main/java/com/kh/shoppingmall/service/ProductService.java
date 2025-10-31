@@ -59,8 +59,10 @@ public class ProductService {
 
         // 2. 상품 번호 발급 + 등록 (DAO에서 시퀀스 처리 권장)
         // (DAO가 sequence()를 호출하고 DTO에 setProductNo를 해준다고 가정)
-        productDao.insert(productDto); 
-        int productNo = productDto.getProductNo(); // DAO가 설정해준 PK 받기
+        int productNo = productDao.sequence(); 
+        productDto.setProductNo(productNo); // DAO가 설정해준 PK 받기
+        
+        productDao.insert(productDto);
 
         // 3. 옵션(SKU) 등록
         if (optionList != null && !optionList.isEmpty()) {
@@ -124,24 +126,6 @@ public class ProductService {
         for (Integer newCat : newCategoryNoList) {
             if (!oldCategoryList.contains(newCat)) productCategoryMapDao.insert(productNo, newCat);
         }
-        
-        // 5. 옵션(SKU) 처리 (Delete & Insert 방식)
-        
-        // 5-1. ✅ (수정) 옵션 삭제 전, 하위 종속 데이터(cart, order_detail) 먼저 삭제
-        clearOptionDependencies(productNo); 
-        
-        // 5-2. 기존 옵션(SKU) 모두 삭제
-        productOptionDao.deleteByProduct(productNo); 
-//        
-//        // 5-3. 새 옵션(SKU) 목록 다시 등록
-//        if (newOptionList != null && !newOptionList.isEmpty()) {
-//            for (ProductOptionDto sku : newOptionList) { 
-//                // int optionNo = productOptionDao.sequence(); // DAO에서 처리 권장
-//                // sku.setOptionNo(optionNo);
-//                sku.setProductNo(productNo);
-//                productOptionDao.insert(sku); 
-//            }
-//        }
         
         // 6. 상세 이미지 삭제 처리
         if (deleteAttachmentNoList != null) {
@@ -259,10 +243,14 @@ public class ProductService {
 			// 3. 새 옵션(SKU) 목록 다시 등록
 			if (newOptionList != null && !newOptionList.isEmpty()) {
 				for (ProductOptionDto sku : newOptionList) {
-					// int optionNo = productOptionDao.sequence(); // DAO에서 처리 권장
-					// sku.setOptionNo(optionNo);
-					sku.setProductNo(productNo);
-					productOptionDao.insert(sku); 
+					// ✅ [수정] 옵션 번호를 시퀀스에서 발급받아 DTO에 설정
+			        int optionNo = productOptionDao.sequence(); // (ProductOptionDao에 sequence() 메서드가 있어야 함)
+			        sku.setOptionNo(optionNo);
+			        
+			        sku.setProductNo(productNo);
+			        
+			        // ✅ [수정] 이제 optionNo가 포함된 DTO로 insert를 호출
+			        productOptionDao.insert(sku); 
 				}
 			}
 			return true; // 성공
