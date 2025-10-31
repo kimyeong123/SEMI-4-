@@ -35,7 +35,7 @@
 					<%-- 주문 헤더 --%>
 					<div class="order-header"
 						style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; font-size: 0.9em; color: #555;">
-				 		<div>
+						<div>
 							<%-- 주문 날짜 --%>
 							<fmt:formatDate value="${order.ordersCreatedAt}"
 								pattern="yyyy.MM.dd" />
@@ -57,14 +57,16 @@
 						<%-- 상품 정보 (이미지, 이름, 옵션, 수량, 가격) --%>
 						<div style="display: flex; align-items: center;">
 							<%-- 썸네일 이미지 (이미지 경로 설정 필요!) --%>
-							<c:if test="${not empty order.thumbnailName}">
-								<%-- 예시: /image/download?attachmentNo=${order.productThumbnailNo} 와 같은 URL 필요 --%>
-								<img src="attachment/download?attachmentNo=${order.productThumbnailNo}"
+<%-- 							<c:if test="${not empty order.productThumbnailNo}"> --%>
+								[썸네일 번호: ${order.productThumbnailNo}]
+								<img
+									src="${pageContext.request.contextPath}/attachment/download?attachmentNo=${order.productThumbnailNo}"
 									alt="${order.productName}"
 									style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;">
-								<%-- 또는 /static/product-images/${order.thumbnailName} 같은 경로 --%>
-								<%-- <img src="/static/product-images/${order.thumbnailName}" alt="${order.productName}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;"> --%>
-							</c:if>
+<%-- 							</c:if> --%>
+							<%-- 또는 /static/product-images/${order.thumbnailName} 같은 경로 --%>
+							<%-- <img src="/static/product-images/${order.thumbnailName}" alt="${order.productName}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;"> --%>
+
 							<div>
 								<div style="font-weight: bold;">${order.productName}</div>
 								<div style="font-size: 0.9em; color: #777;">
@@ -79,7 +81,7 @@
 								<div style="font-size: 0.9em; color: #333;">
 									<fmt:formatNumber value="${order.pricePerItem}" type="currency" />
 									원
-									
+
 								</div>
 							</div>
 						</div>

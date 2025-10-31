@@ -45,8 +45,8 @@
                         <tr style="border-bottom: 1px solid #eee;">
                             <td style="padding: 10px; width: 80px;">
                                 <%-- 상품 썸네일 --%>
-                                <c:if test="${not empty item.thumbnailName}">
-                                    <img src="attachment/download?attachmentNo=${item.productThumbnailNo}" alt="${item.productName}" style="width: 70px; height: 70px; object-fit: cover;">
+                                <c:if test="${not empty item.productThumbnailNo}">
+                                    <img src="${pageContext.request.contextPath}/attachment/download?attachmentNo=${item.productThumbnailNo}" alt="${item.productName}" style="width: 70px; height: 70px; object-fit: cover;">
                                 </c:if>
                             </td>
                             <td style="padding: 10px;">
