@@ -19,6 +19,7 @@ import com.kh.shoppingmall.dto.MemberDto;
 import com.kh.shoppingmall.dto.OrdersDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.AttachmentService;
+import com.kh.shoppingmall.service.MemberService;
 import com.kh.shoppingmall.vo.PageVO;
 import com.kh.shoppingmall.vo.ReviewDetailVO;
 
@@ -32,6 +33,8 @@ public class AdminMemberController {
 
 	@Autowired
 	private AttachmentService attachmentService;
+	@Autowired
+	private MemberService memberService;
 	
 	@Autowired
 	private ReviewDao reviewDao;
@@ -146,7 +149,8 @@ public class AdminMemberController {
 		
 		//if(dropId == null) return "redirect:/error/all";
 		if(memberId == null) return "redirect:/error/all";
-		memberDao.delete(memberId);
+//		memberDao.delete(memberId);
+		memberService.deleteMember(memberId);
 		try {
 			int attchmentNo = memberDao.findAttachment(memberId);
 			attachmentService.delete(attchmentNo);
@@ -171,20 +175,24 @@ public class AdminMemberController {
 	    }
 
 	    try {
-	        // 2. 회원 데이터 삭제
-	        memberDao.delete(memberId);
-	        
+	    	// 2. 회원 데이터 삭제
+	    	//데이터 삭제는 무조건 마지막에 함 그리고 이렇게 지우면 안됨 멤버가 쓴 정보들이 삭제 안됨
+//	        memberDao.delete(memberId);
+	    	
 	        // 3. 첨부파일/프로필 삭제 (선택적)
-	        try {
-	            int attchmentNo = memberDao.findAttachment(memberId);
-	            if (attchmentNo > 0) {
-	                 attachmentService.delete(attchmentNo);
-	            }
-	        } catch(Exception e) {
+//	        try {
+//	            int attchmentNo = memberDao.findAttachment(memberId);
+//	            if (attchmentNo > 0) {
+//	                 attachmentService.delete(attchmentNo); 
+//	            }
+//	        } catch(Exception e) {
 	            // 프로필이 없는 경우는 정상으로 간주하고 로깅만 할 수 있습니다.
-	        }
+//	        }
 	        
-	        return true; // 성공 시 true 반환 (클라이언트의 success(result)로 전달됨)
+	        //회원 삭제 기능 (연관된 내용 전부 삭제)
+	        return memberService.adminDelete(memberId);
+	        
+//	        return true; // 성공 시 true 반환 (클라이언트의 success(result)로 전달됨)
 	        
 	    } catch (Exception e) {
 	        // DB 오류 등 예외 발생 시
