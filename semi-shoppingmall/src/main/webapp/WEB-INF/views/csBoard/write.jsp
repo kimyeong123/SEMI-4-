@@ -46,15 +46,15 @@ $(document).ready(function() {
 </script>
 
 
-<div class="flex-fill"></div>
+<!-- <div class="flex-fill"></div> -->
 
+<div class="container w-800 ">
 <form autocomplete="off" action="write" method="post" id = "writeForm">
 <%-- 답글일 경우(csBoardOrigin이 있을 경우) 이것을 전달하는 코드를 작성 --%>
 <c:if test="${param.csBoardOrigin != null}">
 	<input type="hidden" name="csBoardOrigin" value="${param.csBoardOrigin}">
 </c:if>
 
-<div class="container w-800 ">
     <div class="cell">
         <h1>게시글 작성</h1>
     </div>            
@@ -105,7 +105,9 @@ $(document).ready(function() {
         <a href="list" class="btn btn-neutral">목록으로</a>
         <button class="btn btn-positive" type="submit">등록하기</button>
     </div>
-</div>
 </form>
-<div class="flex-fill"></div>
+</div>
+<!-- <div class="flex-fill"></div> -->
+
+
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

@@ -66,6 +66,10 @@ public class MemberDao {
 	}
 
 	public boolean delete(String memberId) {
+//		String updateBoardIdSql ="update cs_board set cs_board_writer = 'deleted_user' where cs_board_writer = ?";
+//		Object[] updateIdParam = {memberId};
+//		jdbcTemplate.update(updateBoardIdSql, updateIdParam);
+		
 		String sql = "delete from member where member_id=?";
 		Object[] params = {memberId};
 		return jdbcTemplate.update(sql, params) > 0;

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.shoppingmall.dao.CartDao;
+import com.kh.shoppingmall.dao.CsBoardDao;
 import com.kh.shoppingmall.dao.MemberDao;
 import com.kh.shoppingmall.dao.OrdersDao;
 import com.kh.shoppingmall.dao.ReviewDao;
@@ -27,10 +28,11 @@ public class MemberService {
 	private CartDao cartDao;
 	@Autowired
 	private ReviewDao reviewDao;
+	@Autowired
+	private CsBoardDao csBoardDao;
 	
 	@Autowired
 	private AttachmentService attachmentService;
-
 	
 	@Transactional
 	public boolean drop(String memberId, String memberPw) {
@@ -59,6 +61,9 @@ public class MemberService {
 		
 		//4-4. 리뷰 기록 삭제
 		reviewDao.deleteByMemberId(memberId);
+		
+		//4-5. 작성글 목록의 이름 삭제된 아이디로 수정
+		csBoardDao.updateNotMember(memberId);
 		
 		//5. 회원 삭제
 		boolean isDeleted = memberDao.delete(memberId);
@@ -132,5 +137,50 @@ public class MemberService {
 	    // DAO 메소드를 호출하여 DB 업데이트 수행
 	    return memberDao.updateMemberAddress(memberDto);
 	}
+	
+	//멤버 삭제 이벤트
+	@Transactional
+	public boolean deleteMember(String memberId) {
+		
+		csBoardDao.updateNotMember(memberId);
+		boolean result = memberDao.delete(memberId);
+		
+		return result;
+		
+	}
+	
+	
+	@Transactional
+	public boolean adminDelete(String memberId) {
+		
+		//3. 회원 사진 삭제
+		Integer attachmentNo = memberDao.findAttachment(memberId); // Integer로 받음
+		if (attachmentNo != null) { // null이 아닐 때만 삭제 시도
+		    attachmentService.delete(attachmentNo);
+		}
+		
+		//4-1. 주문 기록 비식별화
+		ordersDao.clearMemberId(memberId);
+		
+		//4-2.위시리스트 데이터 삭제
+		wishlistDao.deleteByMemberId(memberId);
+
+		//4-3. 장바구니 데이터 삭제 
+		cartDao.deleteByMemberId(memberId);
+		
+		//4-4. 리뷰 기록 삭제
+		reviewDao.deleteByMemberId(memberId);
+		
+		//4-5. 작성글 목록의 이름 삭제된 아이디로 수정
+//		csBoardDao.updateNotMember(memberId);
+		
+		//5. 회원 삭제
+		boolean isDeleted = memberDao.delete(memberId);
+		if(isDeleted == false) return false;
+
+		return true;
+		
+	}
+	
 	
 }

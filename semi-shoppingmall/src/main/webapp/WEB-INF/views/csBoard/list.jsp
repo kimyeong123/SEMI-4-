@@ -244,7 +244,11 @@
                             
                             <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
                             <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
+<%--                             <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								 --%>
+                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' 
+							    || (csBoardListVO.csBoardWriter != null && sessionScope.loginId == csBoardListVO.csBoardWriter) 
+							    || (csBoardListVO.csBoardOriginWriter != null && sessionScope.loginId == csBoardListVO.csBoardOriginWriter) }" />
+                            
                             
                             <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
                             <c:choose>
@@ -351,7 +355,10 @@
                                 
                                 <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
                                 <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-                                <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
+<%--                                 <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								 --%>
+                                <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' 
+								    || (csBoardListVO.csBoardWriter != null && sessionScope.loginId == csBoardListVO.csBoardWriter) 
+								    || (csBoardListVO.csBoardOriginWriter != null && sessionScope.loginId == csBoardListVO.csBoardOriginWriter) }" />
                                 
                                 <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
                                 <c:choose>
@@ -450,8 +457,11 @@
                             
                             <%-- 3. 비공개 여부/접근 권한 변수 설정 (공통) --%>
                             <c:set var ="isSecret" value = "${csBoardListVO.csBoardSecret == 'Y' }" />
-                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								
-                            
+<%--                             <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' || sessionScope.loginId == csBoardListVO.csBoardWriter || sessionScope.loginId == csBoardListVO.csBoardOriginWriter }" />								 --%>
+                            <c:set var ="canAccessSecret" value = "${sessionScope.loginLevel == '관리자' 
+							    || (csBoardListVO.csBoardWriter != null && sessionScope.loginId == csBoardListVO.csBoardWriter) 
+							    || (csBoardListVO.csBoardOriginWriter != null && sessionScope.loginId == csBoardListVO.csBoardOriginWriter) }" />
+							                                
                             <%-- 4. 제목 출력 및 링크 처리 (공통) --%>
                             <c:choose>
                                 <c:when test = 	"${ isSecret && !canAccessSecret}">

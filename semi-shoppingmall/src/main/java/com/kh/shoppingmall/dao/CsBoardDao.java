@@ -271,6 +271,13 @@ public class CsBoardDao {
 	    }
 	}
 	
+	public boolean updateNotMember(String memberId) {
+		String sql ="update cs_board set cs_board_writer = 'deleted_user' where cs_board_writer = ?";
+		Object[] param = {memberId};
+		return jdbcTemplate.update(sql, param) > 0;
+	}
+	
+	
 }
 
 
