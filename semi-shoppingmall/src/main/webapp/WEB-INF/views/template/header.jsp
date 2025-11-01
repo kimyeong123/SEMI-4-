@@ -87,6 +87,17 @@
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     border-radius: 0; 
 }
+.admin-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100%;
+}
+.admin-menu h2 {
+    margin: 12px 0;
+}
 .menu-link-item a:hover { background-color: #e5e5e5; color: #000; border-color: #ccc; }
 .menu-link-item i { margin-right: 8px; font-size: 1.1em; }
 

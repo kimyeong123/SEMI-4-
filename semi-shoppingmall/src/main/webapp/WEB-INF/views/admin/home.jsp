@@ -19,8 +19,8 @@
 }
 </style>
 
-<div class="cell center">
-	<h1>관리 페이지</h1>
+<div class="cell admin-menu">
+	<h1><i class="fa-solid fa-gear"></i>관리 페이지<i class="fa-solid fa-gear"></i></h1>
 	<div class="cell admin-menu">
 	<h2><a href="/admin/member/list">회원 관리</a></h2>
 	<h2><a href="/admin/product/list">상품 관리</a></h2>
