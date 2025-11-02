@@ -85,7 +85,6 @@
 <%-- 페이지 네비게이터 출력 --%>
 <jsp:include page="/WEB-INF/views/template/pagination.jsp"></jsp:include>
 	
-	
 </div>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
