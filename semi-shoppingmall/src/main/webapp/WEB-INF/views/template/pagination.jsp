@@ -8,7 +8,7 @@
 
 
 <%-- 페이지 네비게이터 (pageVO의 내용을 토대로 작성) --%>
-<div class="pagination">
+<div class="pagination mt-30 mb-30">
 
 <c:if test="${pageVO.firstBlock == false}">
 <a href="${currentURL == null ? 'list' : currentURL}?page=${pageVO.prevPage}&${pageVO.searchParams}">&lt;</a>
