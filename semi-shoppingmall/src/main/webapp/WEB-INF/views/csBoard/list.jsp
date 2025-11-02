@@ -544,7 +544,7 @@
 		<div class = "center mb-30">
 			<select class="field" name="column">
 				<option value="cs_board_title" ${column == 'cs_board_title' ? 'selected' : ''}>글 제목</option>
-				<option value="cs_board_writer" ${column == 'cs_board_writer' ? 'selected' : '' }>작성자</option>
+				<option value="cs_board_writer" ${column == 'cs_board_writer' ? 'selected' : '' }>아이디</option>
 			</select>
 			 <input class = "field" type="text" name="keyword"  placeholder = "검색어"  value = "${keyword }"  required>
 			<button class ="btn btn-netural" type ="submit">검색</button>
