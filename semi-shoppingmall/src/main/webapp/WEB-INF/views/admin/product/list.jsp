@@ -67,7 +67,7 @@
 
 <div class="container w-800 ">
 	<div class="cell ">
-		<h1>상품 목록</h1>
+		<h1>상품 관리</h1>
 	<div>
 	<div class="cell mb-20">
     	<a href="add" class="btn btn-positive">+ 상품 신규 등록</a>
