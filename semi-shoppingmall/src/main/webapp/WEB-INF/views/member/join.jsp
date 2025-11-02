@@ -9,9 +9,9 @@
 <script src = "/multipage/multipage.js"></script>
 <script src = "/js/member-join.js"></script>
 
-<div class="flex-fill"></div>
+
+<div class="container w-600">
     <form action="join" method="post" enctype="multipart/form-data" autocomplete="off" class="check-form">
-        <div class="container w-600">
             
             <div class="cell center">
                 <h1>가입 정보 입력</h1>
@@ -277,8 +277,8 @@
                 </div>
             </div>
 
-        </div>
     </form>
-<div class="flex-fill"></div>
+</div>
+
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>	
