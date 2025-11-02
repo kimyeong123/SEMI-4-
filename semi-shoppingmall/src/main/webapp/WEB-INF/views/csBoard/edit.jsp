@@ -57,7 +57,7 @@ $(document).ready(function() {
 </c:if>
 
     <div class="cell">
-        <h1>게시글 작성</h1>
+        <h1>게시글 수정</h1>
     </div>            
     <div class="cell">
         글은 자신의 인격입니다.<br>

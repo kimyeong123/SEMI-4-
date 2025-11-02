@@ -55,8 +55,9 @@
 		});
 		
 		//검색을 했을 때 탭 변경(즉시 일어남)
-		var currentTab = "${tabType}";
-		
+// 	var currentTab = "${tabType}";
+		var currentTab = "${tabType}".trim().toLowerCase();
+		console.log("Current Tab Value:", currentTab);
 		var tabMap = {
 				"all" : "#all-show",
 				"notice" : "#notice-list-show",
@@ -524,7 +525,7 @@
 	</div>
 <%--여기까지 문의 테이블 --%>
 
-	
+	<div class="cell mt-10 mb-30">
 	<c:choose>
 		<c:when test = "${sessionScope.loginId != null}">
 			<div class="cell">
@@ -533,9 +534,10 @@
 		</c:when>
 		<c:otherwise>
 	<!--상대경로 		../member/login -->
-			<h2><a href = "/member/join">회원 가입</a>후 <a href = "/member/login">로그인</a>해야 글을 작성할 수 있습니다</h2>
+				<span class="btn just-cell"><a href = "/member/join">회원 가입</a>후 <a href = "/member/login">로그인</a>해야 글을 작성할 수 있습니다</span>
 		</c:otherwise>
 	</c:choose>
+	</div>
 	
 	<form action="list" method="get">
 		<input type="hidden" name="tabType" id="tabTypeInput" value="${tabType}">

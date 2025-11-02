@@ -50,8 +50,8 @@ public class CsBoardController {
 	@GetMapping("/list")
 	public String list(Model model, @ModelAttribute PageVO pageVO) {
 		//탭 변수 가져오기
-//		String tabType = pageVO.getTabType();
-//		model.addAttribute("tabType" , tabType);
+		String tabType = pageVO.getTabType();
+		model.addAttribute("tabType" , tabType);
 		
 		List<CsBoardListVO> csBoardNoticeList = csBoardDao.selectListNotice();//공지글 리스트
 		model.addAttribute("noticeCount", csBoardNoticeList.size());//공지사항 개수를 전달
