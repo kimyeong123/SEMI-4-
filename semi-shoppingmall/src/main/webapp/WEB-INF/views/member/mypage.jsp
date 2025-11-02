@@ -275,7 +275,7 @@ td {
 			});
 		});
 //여기서 바로 삭제하는거 아님
-// 		$(".profile-delete-btn").on("click", function() {
+		$(".profile-delete-btn").on("click", function() {
 // 			if (!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다"))
 // 				return;
 // 			$.ajax({
@@ -286,7 +286,19 @@ td {
 // 					$(".image-profile").attr("src", newOrigin);
 // 				}
 // 			});
-// 		});
+
+	        if(!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다")) return;
+	        $.ajax({
+	            url: "${pageContext.request.contextPath}/rest/member/deleteProfile",
+	            method: "post",
+	            success: function(){ 
+	                $(".image-profile").attr("src", "https://placehold.co/150x150/f0f0f0/888?text=Profile");
+	                alert("프로필 삭제 완료");
+	            },
+	            error:function(){ alert("프로필 삭제 실패"); }
+	        });
+				
+		});
 	});
 </script>
 
@@ -390,11 +402,11 @@ $(document).on("click", ".btn-review-delete", function() {
 			<input type="file" id="profile-input" style="display:none">
 		</div>
 <!-- 		그냥 탈퇴가 아니라 탈퇴 페이지로 이어져야됨 -->
-<!-- 		<button type="button" class="profile-delete-btn"> -->
-<!-- 		</button> -->
-			<a href = "/member/drop" class="profile-delete-btn not-link">
-				<i class="fa-solid fa-trash-can"></i><span>회원 탈퇴</span>
-			</a>
+		<button type="button" class="profile-delete-btn">
+			<i class="fa-solid fa-trash-can"></i>
+			프로필 삭제
+		</button>
+
 		<div class="member-id">${memberDto.memberId}</div>
 	</div>
 
@@ -470,7 +482,11 @@ $(document).on("click", ".btn-review-delete", function() {
     </c:if>
     </tbody>
 </table>
-
+	<div class="cell center mb-20">
+		<a href = "/member/drop" class="btn btn-negative btn not-link">
+			<span>회원 탈퇴</span>
+		</a>
+	</div>
 </div>
 
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>
