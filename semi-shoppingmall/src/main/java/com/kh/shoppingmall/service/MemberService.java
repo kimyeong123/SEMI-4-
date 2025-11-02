@@ -63,7 +63,7 @@ public class MemberService {
 		reviewDao.deleteByMemberId(memberId);
 		
 		//4-5. 작성글 목록의 이름 삭제된 아이디로 수정
-		csBoardDao.updateNotMember(memberId);
+//		csBoardDao.updateNotMember(memberId);
 		
 		//5. 회원 삭제
 		boolean isDeleted = memberDao.delete(memberId);

@@ -241,6 +241,12 @@ td {
 .review-table-fixed thead tr th:nth-child(4) { width: 15%; } /* 작성일 */
 .review-table-fixed thead tr th:nth-child(5) { width: 15%; } /* 관리 */
 .review-table-fixed thead tr th:nth-child(3) { width: 35%; } /* 내용 */
+
+.not-link {
+	text-decoration-line: none !important;
+}
+
+
 </style>
 
 <!-- jQuery & Font Awesome -->
@@ -268,19 +274,19 @@ td {
 				}
 			});
 		});
-
-		$(".profile-delete-btn").on("click", function() {
-			if (!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다"))
-				return;
-			$.ajax({
-				url : "/rest/member/delete",
-				method : "post",
-				success : function() {
-					var newOrigin = origin + "&t=" + new Date().getTime();
-					$(".image-profile").attr("src", newOrigin);
-				}
-			});
-		});
+//여기서 바로 삭제하는거 아님
+// 		$(".profile-delete-btn").on("click", function() {
+// 			if (!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다"))
+// 				return;
+// 			$.ajax({
+// 				url : "/rest/member/delete",
+// 				method : "post",
+// 				success : function() {
+// 					var newOrigin = origin + "&t=" + new Date().getTime();
+// 					$(".image-profile").attr("src", newOrigin);
+// 				}
+// 			});
+// 		});
 	});
 </script>
 
@@ -383,9 +389,12 @@ $(document).on("click", ".btn-review-delete", function() {
 			<label for="profile-input" class="change-label">변경</label>
 			<input type="file" id="profile-input" style="display:none">
 		</div>
-		<button type="button" class="profile-delete-btn">
-			<i class="fa-solid fa-trash-can"></i><span>삭제</span>
-		</button>
+<!-- 		그냥 탈퇴가 아니라 탈퇴 페이지로 이어져야됨 -->
+<!-- 		<button type="button" class="profile-delete-btn"> -->
+<!-- 		</button> -->
+			<a href = "/member/drop" class="profile-delete-btn not-link">
+				<i class="fa-solid fa-trash-can"></i><span>회원 탈퇴</span>
+			</a>
 		<div class="member-id">${memberDto.memberId}</div>
 	</div>
 
