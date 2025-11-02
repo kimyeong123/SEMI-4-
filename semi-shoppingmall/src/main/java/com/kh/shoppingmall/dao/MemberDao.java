@@ -128,9 +128,9 @@ public class MemberDao {
 
 	public int count(PageVO pageVO) {
 		if(pageVO.isList()) {
-			return 0;//목록은 데이터가 없다! (회원 검색의 특징)
-			//String sql = "select count(*) from member";
-			//return jdbcTemplate.queryForObject(sql, int.class);
+//			return 0;//목록은 데이터가 없다! (회원 검색의 특징)
+			String sql = "select count(*) from member";
+			return jdbcTemplate.queryForObject(sql, int.class);
 		}
 		else {
 			String sql ="select count(*) from member "
