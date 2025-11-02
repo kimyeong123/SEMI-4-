@@ -53,50 +53,61 @@
 <script src="./confirm.js"></script>
 
 <script type="text/javascript">
-	window.addEventListener("load", function() {
+	window
+			.addEventListener(
+					"load",
+					function() {
 						var state = {
-							recipientValid: false,
+							recipientValid : false,
 							memberContactValid : false,
 							memberAddressValid : false,
-							
-							ok:function(){
-								return (
-								this.recipientValid &&
-								this.memberContactValid &&
-								this.memberAddressValid
-								);
+
+							ok : function() {
+								return this.recipientValid
+										&& this.memberContactValid
+										&& this.memberAddressValid;
 							}
-							
+
 						};
-						
+
 						//이름
-						$("[name=ordersRecipient]").on("blur", function() {
-							var regex = /^[가-힣]{2,7}$/;
-					        var valid = regex.test($(this).val());
-					        
-					        if(valid == false) {
-					            $(this).removeClass("success fail").addClass("fail");
-					            state.recipientValid = false;
-					            return;
-					        }
-							else {
-								$(this).removeClass("success fail").addClass("success");
-								state.recipientValid = true;
-							}
-					    });
+						$("[name=ordersRecipient]").on(
+								"blur",
+								function() {
+									var regex = /^[가-힣]{2,7}$/;
+									var valid = regex.test($(this).val());
+
+									if (valid == false) {
+										$(this).removeClass("success fail")
+												.addClass("fail");
+										state.recipientValid = false;
+										return;
+									} else {
+										$(this).removeClass("success fail")
+												.addClass("success");
+										state.recipientValid = true;
+									}
+								});
 
 						//전화번호
-						$("[name=ordersRecipientContact]").on("blur", function() {
+						$("[name=ordersRecipientContact]")
+								.on(
+										"blur",
+										function() {
 											var regex = /^010[1-9][0-9]{3}[0-9]{4}$/;
 											// [수정] 빈 값 허용 안 함 (결제페이지는 필수)
 											var valid = regex.test($(this)
 													.val());
 											$(this).removeClass("success fail")
-													.addClass(valid ? "success" : "fail");
+													.addClass(
+															valid ? "success"
+																	: "fail");
 											state.memberContactValid = valid;
 										});
-						
-						$("[name=ordersRecipientContact]").on("input", function() {
+
+						$("[name=ordersRecipientContact]").on(
+								"input",
+								function() {
 									var replacement = $(this).val().replace(
 											/[^0-9]/g, "");
 									replacement = replacement.substring(0, 11);
@@ -104,39 +115,41 @@
 								});
 
 						//주소
-						document.querySelector("[name=ordersShippingAddress2]")
-							.addEventListener("blur", function() {
-											var memberPostInput = document
-													.querySelector("[name=ordersShippingPost]");
-											var memberAddress1Input = document
-													.querySelector("[name=ordersShippingAddress1]");
-											var memberAddress2Input = this;
+						// 주소
+						$("[name=ordersShippingAddress2]")
+								.on(
+										"blur",
+										function() {
+											var memberPostInput = $("[name=ordersShippingPost]");
+											var memberAddress1Input = $("[name=ordersShippingAddress1]");
+											var memberAddress2Input = $(this);
 
 											//빈 값 허용 안 함
-											var valid = memberPostInput.value.length > 0
-													&& memberAddress1Input.value.length > 0
-													&& memberAddress2Input.value.length > 0;
+											var valid = memberPostInput.val().length > 0
+													&& memberAddress1Input
+															.val().length > 0
+													&& memberAddress2Input
+															.val().length > 0;
 
-											memberPostInput.classList.remove("success", "fail");
-											
-											memberPostInput.classList.add(valid ? "success": "fail");
-											
-											memberAddress1Input.classList.remove("success", "fail");
-											
-											memberAddress1Input.classList.add(valid ? "success" : "fail");
-											memberAddress2Input.classList.remove("success", "fail");
-											memberAddress2Input.classList.add(valid ? "success" : "fail");
+											memberPostInput.removeClass(
+													"success fail").addClass(
+													valid ? "success" : "fail");
+
+											memberAddress1Input.removeClass(
+													"success fail").addClass(
+													valid ? "success" : "fail");
+
+											memberAddress2Input.removeClass(
+													"success fail").addClass(
+													valid ? "success" : "fail");
 
 											state.memberAddressValid = valid;
 										});
 
 						//주소 검색 로직
-						var addressSearchBtn = document.querySelector(".btn-address-search");
-						addressSearchBtn.addEventListener("click", findAddress);
-						document.querySelector("[name=ordersShippingPost]")
-								.addEventListener("click", findAddress);
-						document.querySelector("[name=ordersShippingAddress1]")
-								.addEventListener("click", findAddress);
+						$(
+								".btn-address-search, [name=ordersShippingPost], [name=ordersShippingAddress1]")
+								.on("click", findAddress);
 						function findAddress() {
 							new daum.Postcode(
 									{
@@ -147,43 +160,60 @@
 											} else {
 												addr = data.jibunAddress;
 											}
-											document.querySelector("[name=ordersShippingPost]").value = data.zonecode;
-											document.querySelector("[name=ordersShippingAddress1]").value = addr;
-											document.querySelector("[name=ordersShippingAddress2]")
+											document
+													.querySelector("[name=ordersShippingPost]").value = data.zonecode;
+											document
+													.querySelector("[name=ordersShippingAddress1]").value = addr;
+											document
+													.querySelector(
+															"[name=ordersShippingAddress2]")
 													.focus();
-											document.querySelector(".btn-address-clear").style.display = "";
+											document
+													.querySelector(".btn-address-clear").style.display = "";
 										}
 									}).open();
 						}
-						document.querySelector(".btn-address-clear")
-								.addEventListener("click", function() {
-											document.querySelector("[name=ordersShippingPost]").value = "";
-											document.querySelector("[name=ordersShippingAddress1]").value = "";
-											document.querySelector("[name=ordersShippingAddress2]").value = "";
+						document
+								.querySelector(".btn-address-clear")
+								.addEventListener(
+										"click",
+										function() {
+											document
+													.querySelector("[name=ordersShippingPost]").value = "";
+											document
+													.querySelector("[name=ordersShippingAddress1]").value = "";
+											document
+													.querySelector("[name=ordersShippingAddress2]").value = "";
 											this.style.display = "none";
 										});
-						
+
 						//지우기 버튼 관련 로직
-						$(".btn-clear-address").on("click", function() {
-					        // 관련 입력 필드 값 비우기
-					        $("[name=ordersRecipient]").val("").removeClass("success fail");
-					        $("[name=ordersShippingPost]").val("").removeClass("success fail");
-					        $("[name=ordersShippingAddress1]").val("").removeClass("success fail");
-					        $("[name=ordersShippingAddress2]").val("").removeClass("success fail");
-					        $("[name=ordersRecipientContact]").val("").removeClass("success fail");
+						$(".btn-clear-address").on(
+								"click",
+								function() {
+									// 관련 입력 필드 값 비우기
+									$("[name=ordersRecipient]").val("")
+											.removeClass("success fail");
+									$("[name=ordersShippingPost]").val("")
+											.removeClass("success fail");
+									$("[name=ordersShippingAddress1]").val("")
+											.removeClass("success fail");
+									$("[name=ordersShippingAddress2]").val("")
+											.removeClass("success fail");
+									$("[name=ordersRecipientContact]").val("")
+											.removeClass("success fail");
 
-					        state.recipientValid = false;
-					        state.memberAddressValid = false;
-					        state.memberContactValid = false;
+									state.recipientValid = false;
+									state.memberAddressValid = false;
+									state.memberContactValid = false;
 
-					        //주소 클리어버튼 숨기기
-					        $(".btn-address-clear").hide();
+									//주소 클리어버튼 숨기기
+									$(".btn-address-clear").hide();
 
-					        //이름 입력창에 focus
-					        $("[name=ordersRecipient]").focus();
-					    });
-					});
-						
+									//이름 입력창에 focus
+									$("[name=ordersRecipient]").focus();
+								});
+
 						//폼 전송 시 유효성 검사
 						$(".payment-form").on("submit", function(e) {
 							$(this).find("[name]").trigger("blur");
@@ -191,15 +221,14 @@
 							if (state.ok() == false) { //상태가 모두 true가 아니라면
 								e.preventDefault(); //전송 취소
 								alert("이름과 주소, 전화번호를 모두 입력해야 해요");
-							}
-							else {
+							} else {
 								if (!confirm("결제 하시겠습니까?")) {
-			                        e.preventDefault(); // 사용자가 '취소' 누르면 전송 중단
-			                        return false;
-			                    }
+									e.preventDefault(); // 사용자가 '취소' 누르면 전송 중단
+									return false;
+								}
 							}
 						});
-
+					});
 </script>
 </head>
 
@@ -218,16 +247,17 @@
 
 			<div class="cell w-600">
 				<div class="cell right">
-        			<input type="checkbox" name="saveAddressAsDefault" id="saveAddressCheck" value="true">
-        			<label for="saveAddressCheck">이 주소를 기본 배송지로 저장</label>
-    				<button type="button" class="btn btn-negative btn-clear-address">
-            			<i class="fa-solid fa-eraser"></i>
-        			</button>
-    			</div>
+					<input type="checkbox" name="saveAddressAsDefault"
+						id="saveAddressCheck" value="true"> <label
+						for="saveAddressCheck">이 주소를 기본 배송지로 저장</label>
+					<button type="button" class="btn btn-negative btn-clear-address">
+						<i class="fa-solid fa-eraser"></i>
+					</button>
+				</div>
 				<div class="cell w-100">
 					<span>이름</span> <input type="text" class="field w-100"
 						name="ordersRecipient" value="${memberDto.memberName}">
-						<div class="fail-feedback">이름은 반드시 입력해야 해요</div>
+					<div class="fail-feedback">이름은 반드시 입력해야 해요</div>
 				</div>
 				<div class="cell">주소</div>
 				<div class="cell">

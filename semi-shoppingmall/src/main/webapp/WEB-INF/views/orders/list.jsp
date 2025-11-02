@@ -58,7 +58,6 @@
 						<div style="display: flex; align-items: center;">
 							<%-- 썸네일 이미지 (이미지 경로 설정 필요!) --%>
 <%-- 							<c:if test="${not empty order.productThumbnailNo}"> --%>
-								[썸네일 번호: ${order.productThumbnailNo}]
 								<img
 									src="${pageContext.request.contextPath}/attachment/download?attachmentNo=${order.productThumbnailNo}"
 									alt="${order.productName}"
