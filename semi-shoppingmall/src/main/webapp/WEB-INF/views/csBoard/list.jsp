@@ -273,7 +273,11 @@
                         </div>								
                     </td>
                     
-                    <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                    <td>
+                    <span class="ellipsis">
+	                    ${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}
+                    </span>
+                    </td>
                     <td>
                         <c:choose>
                             <c:when test="${csBoardListVO.wtimeRecent}">
@@ -383,7 +387,11 @@
                             </div>								
                         </td>
                         
-                        <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                        <td>
+		                    <span class="ellipsis">
+			                    ${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}
+		                    </span>                        
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${csBoardListVO.wtimeRecent}">
@@ -485,7 +493,11 @@
                         </div>								
                     </td>
                     
-                    <td>${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}</td>
+                    <td>
+	                    <span class="ellipsis">
+		                    ${csBoardListVO.csBoardWriter == null ? '(탈퇴한사용자)' : csBoardListVO.csBoardMemberNickname}
+	                    </span>                    
+                    </td>
                     <td>
                         <c:choose>
                             <c:when test="${csBoardListVO.wtimeRecent}">
