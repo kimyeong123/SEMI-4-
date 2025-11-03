@@ -104,16 +104,16 @@
             <div class="fail-feedback">주소는 모두 작성해야 합니다</div>
         </div>
 
-        <div class="cell">
-            <label>프로필 이미지</label>
-            <input type="file" name="attach" class="field w-100">
-        </div>
-        <div class="cell">
-            <img src="/images/error/no-image.png" width="200px" class="img-preview">
-        </div>
-		<div class="cell">
-			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>">
-		</div>
+<!--         <div class="cell"> -->
+<!--             <label>프로필 이미지</label> -->
+<!--             <input type="file" name="attach" class="field w-100"> -->
+<!--         </div> -->
+<!--         <div class="cell"> -->
+<!--             <img src="/images/error/no-image.png" width="200px" class="img-preview"> -->
+<!--         </div> -->
+<!-- 		<div class="cell"> -->
+<%-- 			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>"> --%>
+<!-- 		</div> -->
 
         <div class="cell mt-40">
             <button type="submit" class="btn btn-negative w-100">
