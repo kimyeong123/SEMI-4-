@@ -486,6 +486,10 @@ $(document).on("click", ".btn-review-delete", function() {
 		<a href = "/member/drop" class="btn btn-negative btn not-link">
 			<span>회원 탈퇴</span>
 		</a>
+
+		<a href= "/member/edit" class="btn btn-positive not-link">
+			<span>정보 수정</span>
+		</a>
 	</div>
 </div>
 
