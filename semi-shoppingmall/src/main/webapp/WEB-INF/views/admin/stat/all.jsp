@@ -15,8 +15,8 @@
         $(function () {
 
             //bar, doughnut, line, pie
-            createChart("http://localhost:8080/rest/admin/stat/join", "#join-chart", "line", "가입자수")
-            createChart("http://localhost:8080/rest/admin/stat/member", "#member-chart", "bar", "구매 개수")
+            createChart("/rest/admin/stat/join", "#join-chart", "line", "가입자수")
+            createChart("/rest/admin/stat/member", "#member-chart", "bar", "구매 개수")
             createChart("http://localhost:8080/rest/admin/stat/product", "#product-chart", "bar", "판매 개수")
             createChart("http://localhost:8080/rest/admin/stat/status", "#status-chart", "bar", "상품 개수")
 

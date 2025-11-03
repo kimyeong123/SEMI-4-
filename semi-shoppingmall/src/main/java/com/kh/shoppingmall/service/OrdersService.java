@@ -130,7 +130,11 @@ public class OrdersService {
 
 		// 3. 재고 차감
 		for (CartDetailVO cartItem : cartItems) {
-			productOptionDao.updateStock(cartItem.getOptionNo(), -cartItem.getCartAmount());
+			boolean stockUpdated = productOptionDao.updateStock(cartItem.getOptionNo(), -cartItem.getCartAmount());
+		
+			if(!stockUpdated) {
+				throw new RuntimeException("재고 차감 실패: 재고가 부족합니다 (optionNo: " + cartItem.getOptionNo() + ")");
+			}
 		}
 
 		// 4. 장바구니 비우기
