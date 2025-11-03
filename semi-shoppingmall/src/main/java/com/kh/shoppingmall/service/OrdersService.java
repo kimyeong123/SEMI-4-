@@ -138,7 +138,7 @@ public class OrdersService {
 		}
 
 		// 4. 장바구니 비우기
-		cartDao.deleteByMemberId(ordersId);
+		cartDao.deleteByMemberId(ordersId); 
 		
 		if (ordersDto.isSaveAddressAsDefault()) { // 체크박스가 체크되었다면
 	        try {
