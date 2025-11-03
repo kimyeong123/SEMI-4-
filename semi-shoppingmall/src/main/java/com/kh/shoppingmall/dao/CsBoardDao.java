@@ -115,14 +115,14 @@ public class CsBoardDao {
 			String sql = "select * from ("
 					+ "select rownum rn, TMP. * from ("
 						+ "select * from cs_board_list "
-						+ "where instr(#1, ?) > 0 "
+						+ "where instr(lower(#1), ?) > 0 "
 						+ "connect by prior cs_board_no = cs_board_origin "
 						+ "start with cs_board_origin is null "
 						+ "order siblings by cs_board_group desc, cs_board_no asc"
 					+ ") TMP "
 			+ ") where rn between ? and ?";
 			sql = sql.replace("#1", pageVO.getColumn());
-			Object[] params = {pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()};
+			Object[] params = {pageVO.getKeyword().toLowerCase(), pageVO.getBegin(), pageVO.getEnd()};
 			return jdbcTemplate.query(sql, csBoardListMapper, params);
 		}
 
@@ -201,10 +201,10 @@ public class CsBoardDao {
 						+ "connect by prior cs_board_no = cs_board_origin "
 						+ "start with cs_board_origin is null "
 						+ "order siblings by cs_board_group desc, cs_board_no asc"
-						+ ") TMP where TMP.cs_board_notice = 'Y' and instr(#1, ?) > 0"
+						+ ") TMP where TMP.cs_board_notice = 'Y' and instr(lower(#1), ?) > 0"
 			+ ") where rn between ? and ?";
 			sql = sql.replace("#1", pageVO.getColumn());
-			Object[] params = {pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()};
+			Object[] params = {pageVO.getKeyword().toLowerCase(), pageVO.getBegin(), pageVO.getEnd()};
 			return jdbcTemplate.query(sql, csBoardListMapper, params);
 		}
 
@@ -233,10 +233,10 @@ public class CsBoardDao {
 						+ "connect by prior cs_board_no = cs_board_origin "
 						+ "start with cs_board_origin is null "
 						+ "order siblings by cs_board_group desc, cs_board_no asc"
-					+ ") TMP where TMP.cs_board_notice = 'N' and instr(#1, ?) > 0"
+					+ ") TMP where TMP.cs_board_notice = 'N' and instr(lower(#1), ?) > 0"
 			+ ") where rn between ? and ?";
 			sql = sql.replace("#1", pageVO.getColumn());
-			Object[] params = {pageVO.getKeyword(), pageVO.getBegin(), pageVO.getEnd()};
+			Object[] params = {pageVO.getKeyword().toLowerCase(), pageVO.getBegin(), pageVO.getEnd()};
 			return jdbcTemplate.query(sql, csBoardListMapper, params);
 		}
 
