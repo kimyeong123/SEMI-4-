@@ -5,6 +5,7 @@
 
 <div class="container w-800">
     <h1>카테고리 목록</h1>
+    <h4>삭제 시 하위 카테고리가 없어야함</h4>
 
     <table border="1" cellpadding="5" class="w-100">
         <thead>
