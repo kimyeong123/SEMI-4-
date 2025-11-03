@@ -15,7 +15,7 @@ import com.kh.shoppingmall.service.ReviewService;
 import com.kh.shoppingmall.vo.ReviewDetailVO;
 
 import jakarta.servlet.http.HttpSession;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/rest/review")
 public class ReviewRestController {

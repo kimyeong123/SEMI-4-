@@ -18,7 +18,7 @@ import com.kh.shoppingmall.dao.AttachmentDao;
 import com.kh.shoppingmall.dto.AttachmentDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.AttachmentService;
-
+@CrossOrigin
 @Controller
 @RequestMapping("/attachment")
 public class AttachmentController {

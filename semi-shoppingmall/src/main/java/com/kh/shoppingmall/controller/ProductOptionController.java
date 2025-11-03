@@ -12,7 +12,7 @@ import com.kh.shoppingmall.dto.ProductOptionDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 
 import java.util.List;
-
+@CrossOrigin
 @Controller
 @RequestMapping("/admin/product/option")
 public class ProductOptionController {
