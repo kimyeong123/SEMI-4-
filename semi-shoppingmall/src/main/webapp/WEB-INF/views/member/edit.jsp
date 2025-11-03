@@ -111,6 +111,9 @@
         <div class="cell">
             <img src="/images/error/no-image.png" width="200px" class="img-preview">
         </div>
+		<div class="cell">
+			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>">
+		</div>
 
         <div class="cell mt-40">
             <button type="submit" class="btn btn-negative w-100">

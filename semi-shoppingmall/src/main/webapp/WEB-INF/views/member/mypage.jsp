@@ -287,16 +287,28 @@ td {
 // 				}
 // 			});
 
-	        if(!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다")) return;
-	        $.ajax({
-	            url: "${pageContext.request.contextPath}/rest/member/deleteProfile",
-	            method: "post",
-	            success: function(){ 
-	                $(".image-profile").attr("src", "https://placehold.co/150x150/f0f0f0/888?text=Profile");
-	                alert("프로필 삭제 완료");
-	            },
-	            error:function(){ alert("프로필 삭제 실패"); }
-	        });
+// 	        if(!confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다")) return;
+// 	        $.ajax({
+// 	            url: "${pageContext.request.contextPath}/rest/member/deleteProfile",
+// 	            method: "post",
+// 	            success: function(){ 
+// 	                $(".image-profile").attr("src", "https://placehold.co/150x150/f0f0f0/888?text=Profile");
+// 	                alert("프로필 삭제 완료");
+// 	            },
+// 	            error:function(){ alert("프로필 삭제 실패"); }
+// 	        });
+
+			var choice = window.confirm("정말 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다");
+			if(choice == false) return;
+			
+			$.ajax({
+				url:"/rest/member/delete",
+				method:"post",
+				success:function(){
+					var newOrigin = origin + "&t=" + new Date().getTime();
+					$(".image-profile").attr("src", newOrigin);
+				}
+			});
 				
 		});
 	});
@@ -396,16 +408,29 @@ $(document).on("click", ".btn-review-delete", function() {
 
 	<!-- 프로필 카드 -->
 	<div class="profile-card">
+<!-- 		<div class="profile-wrapper"> -->
+<%-- 			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>" onerror="this.src='https://placehold.co/200x200/f0f0f0/888?text=Profile';"> --%>
+<!-- 			<label for="profile-input" class="change-label">변경</label> -->
+<!-- 			<input type="file" id="profile-input" style="display:none"> -->
+<!-- 		</div> -->
+		<!-- ㅇㅇ -->
 		<div class="profile-wrapper">
-			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>" onerror="this.src='https://placehold.co/200x200/f0f0f0/888?text=Profile';">
-			<label for="profile-input" class="change-label">변경</label>
+			<img class="image-profile"  src = "/member/profile?memberId=${memberDto.memberId }" >
+			<label for="profile-input" class="change-label flex-box flex-center">변경</label>
 			<input type="file" id="profile-input" style="display:none">
+			<!-- <button type ="button" class="profile-change-btn">변경</button> -->
 		</div>
-<!-- 		그냥 탈퇴가 아니라 탈퇴 페이지로 이어져야됨 -->
-		<button type="button" class="profile-delete-btn">
+		<label class="profile-delete-btn">
 			<i class="fa-solid fa-trash-can"></i>
-			프로필 삭제
-		</button>
+			<span>프로필 삭제</span>
+		</label>		
+		
+		
+<!-- 		그냥 탈퇴가 아니라 탈퇴 페이지로 이어져야됨 -->
+<!-- 		<button type="button" class="profile-delete-btn"> -->
+<!-- 			<i class="fa-solid fa-trash-can"></i> -->
+<!-- 			프로필 삭제 -->
+<!-- 		</button> -->
 
 		<div class="member-id">${memberDto.memberId}</div>
 	</div>
