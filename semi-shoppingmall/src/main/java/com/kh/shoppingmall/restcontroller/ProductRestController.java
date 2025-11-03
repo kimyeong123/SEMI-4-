@@ -3,6 +3,7 @@ package com.kh.shoppingmall.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ import com.kh.shoppingmall.dto.ProductOptionDto;
 import com.kh.shoppingmall.error.NeedPermissionException;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.ProductService;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/rest/product")
 public class ProductRestController {

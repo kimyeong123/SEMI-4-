@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +17,7 @@ import com.kh.shoppingmall.service.WishlistService;
 import com.kh.shoppingmall.vo.WishlistDetailVO;
 
 import jakarta.servlet.http.HttpSession;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/rest/wishlist")
 public class WishlistRestController {

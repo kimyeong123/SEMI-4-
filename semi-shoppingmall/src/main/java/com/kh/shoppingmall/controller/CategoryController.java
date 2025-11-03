@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.kh.shoppingmall.dto.CategoryDto;
 import com.kh.shoppingmall.error.TargetNotfoundException;
 import com.kh.shoppingmall.service.CategoryService;
-
+@CrossOrigin
 @Controller
 @RequestMapping("/admin/category")
 public class CategoryController {
