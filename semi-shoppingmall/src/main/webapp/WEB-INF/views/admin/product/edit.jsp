@@ -37,6 +37,27 @@
         </div>
 
         <div class="cell">
+            <label>부모 카테고리 *</label>
+            <select name="parentCategoryNo" class="field w-100">
+                <option value="">선택</option>
+                <c:forEach var="c" items="${parentCategoryList}">
+                    <option value="${c.categoryNo}">${c.categoryName}</option>
+                </c:forEach>
+            </select>
+        </div>
+
+        <div class="cell">
+            <label>하위 카테고리 *</label>
+            <select name="childCategoryNo" class="field w-100">
+                <option value="">선택</option>
+                <c:forEach var="c" items="${childCategoryList}">
+                    <option value="${c.categoryNo}">${c.categoryName}</option>
+                </c:forEach>
+            </select>
+        </div>
+        
+
+        <div class="cell">
             <label>썸네일 이미지</label>
             <input type="file" name="thumbnailFile" class="field w-100">
         </div>
@@ -70,6 +91,31 @@ $(document).ready(function() {
             ['insert', ['link', 'picture']],
             ['view', ['fullscreen', 'codeview', 'help']]
         ]
+    });
+});
+$("select[name='parentCategoryNo']").change(function() {
+    var parentNo = $(this).val();
+    var $child = $("select[name='childCategoryNo']");
+
+    if (!parentNo) {
+        $child.html("<option value=''>선택</option>");
+        return;
+    }
+
+    $.ajax({
+        url: "${pageContext.request.contextPath}/admin/category/children",
+        method: "get",
+        data: { parentCategoryNo: parentNo },
+        success: function(data) {
+            $child.empty().append("<option value=''>선택</option>");
+            for (var i = 0; i < data.length; i++) {
+                var c = data[i];
+                $child.append("<option value='" + c.categoryNo + "'>" + c.categoryName + "</option>");
+            }
+        },
+        error: function() {
+            alert("하위 카테고리 불러오기 실패");
+        }
     });
 });
 </script>
