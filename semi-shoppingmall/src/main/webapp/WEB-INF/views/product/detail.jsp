@@ -366,6 +366,12 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 
 		// 6. 리뷰 등록 (From Code B, *MERGE CONFLICT RESOLVED*)
 		$("#submitReviewBtn").click(function() {
+			
+			var isLoggedIn = "${not empty sessionScope.loginId}";
+		    if (isLoggedIn !== "true") {
+		        alert("로그인이 필요합니다!");
+		        return;
+		    }
             
             // Summernote 에디터의 HTML 내용을 가져와 <textarea>에 업데이트
             var reviewContent = $('.summernote-editor').summernote('code').trim();
@@ -388,10 +394,10 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			// [MERGE FIX]
 			// 옵션 미선택 시 경고 (Code A의 SKU 셀렉터 ID인 #sku-selector 를 참조)
 			var optionNo = $("#sku-selector").val();
-			if (!optionNo || optionNo === "") {
-				alert("상품 옵션을 선택해주세요. (리뷰는 구매한 옵션에 대해 작성할 수 있습니다)");
-				return;
-			}
+// 			if (!optionNo || optionNo === "") {
+// 				alert("상품 옵션을 선택해주세요. (리뷰는 구매한 옵션에 대해 작성할 수 있습니다)");
+// 				return;
+// 			}
 			formData.append("optionNo", optionNo); // 폼에 optionNo 추가
 
 			$.ajax({
@@ -564,7 +570,7 @@ h3 { color: #444; font-size: 1.5em; margin-top: 30px; margin-bottom: 15px; borde
 			<i class="fa-regular fa-star star-input" data-rating="4" style="color:#ccc;"></i>
 			<i class="fa-regular fa-star star-input" data-rating="5" style="color:#ccc;"></i>
 		</div>
-		<textarea name="reviewContent" class="form-control summernote-editor" rows="4" placeholder="상품에 대한 솔직한 리뷰를 입력해주세요. (옵션을 선택해야 등록 가능)" style="width: 100%; margin-bottom: 10px;"></textarea>
+		<textarea name="reviewContent" class="form-control summernote-editor" rows="4" placeholder="상품에 대한 솔직한 리뷰를 입력해주세요." style="width: 100%; margin-bottom: 10px;"></textarea>
 		<button type="button" id="submitReviewBtn" class="btn btn-black">리뷰 등록</button>
 	</form>
 
