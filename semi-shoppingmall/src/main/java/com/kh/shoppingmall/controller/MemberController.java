@@ -219,8 +219,8 @@ public class MemberController {
 		
 		//memberDto 사용 시 (아이디 추가)
 		memberDto.setMemberId(loginId);//아이디를 추가 설정해야함
-//		memberDao.updateMember(memberDto);
-		memberService.updateProfile(memberDto, attach);
+		memberDao.updateMember(memberDto);
+//		memberService.updateProfile(memberDto, attach);
 		
 		//findDto 사용 시 (변경항목을 교체) - 관리자랑 사용자를 통합해서 만들 경우 좋음
 		//findDto.setMemberNickname(memberDto.getMemberNickname());
@@ -230,7 +230,7 @@ public class MemberController {
 		//findDto.setMemberPost(memberDto.getMemberPost());
 		//findDto.setMemberAddress1(memberDto.getMemberAddress1());
 		//findDto.setMemberAddress2(memberDto.getMemberAddress2());
-		//memberDao.updateMemberByAdmin(findDto);
+//		memberDao.updateMemberByAdmin(findDto);
 		return "redirect:mypage";
 	}
 	
