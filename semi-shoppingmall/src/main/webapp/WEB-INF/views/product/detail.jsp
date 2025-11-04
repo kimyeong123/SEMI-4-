@@ -10,8 +10,8 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/summernote/custom-summernote.css">
-<script src="/summernote/custom-summernote.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/summernote/custom-summernote.css">
+<script src="${pageContext.request.contextPath}/summernote/custom-summernote.js"></script>
 
 <%-- 코드 B의 완성된 스타일 시트 적용 --%>
 <style>

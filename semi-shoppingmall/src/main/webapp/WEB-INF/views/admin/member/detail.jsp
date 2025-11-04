@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-<link rel="stylesheet" href="/css/commons.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/commons.css">
 
 <style>
 .container { max-width: 900px; margin: auto; }
@@ -111,7 +111,7 @@ $(function(){
         <tbody>
             <c:forEach var="review" items="${reviewList}">
                 <tr id="review-${review.reviewNo}">
-                    <td><a href="/product/detail?productNo=${review.productNo}">${review.productName}</a></td>
+                    <td><a href="${pageContext.request.contextPath}/product/detail?productNo=${review.productNo}">${review.productName}</a></td>
                     <td>
                         <c:forEach begin="1" end="${review.reviewRating}"><i class="fa-solid fa-star gold"></i></c:forEach>
                         <c:forEach begin="${review.reviewRating+1}" end="5"><i class="fa-regular fa-star"></i></c:forEach>

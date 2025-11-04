@@ -5,7 +5,7 @@
 
 <jsp:include page = "/WEB-INF/views/template/header.jsp"></jsp:include>
 
-<link rel="stylesheet" type="text/css" href="/css/commons.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/commons.css">
 <script type="text/javascript">
 	$(function () {
 // 		$("#all-show").on("click", function () {
@@ -232,7 +232,7 @@
                         <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 --%>
                         <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
                             <c:if test="${csBoardListVO.csBoardDepth > 0}">
-                                <img src="/images/reply.png" width="16" height="16">
+                                <img src="${pageContext.request.contextPath}/images/reply.png" width="16" height="16">
                             </c:if>
     
                             <%-- 2. 공지사항 마크업 처리 (isNotice 조건 사용) --%>
@@ -347,7 +347,7 @@
                             <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 --%>
                             <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
                                 <c:if test="${csBoardListVO.csBoardDepth > 0}">
-                                    <img src="/images/reply.png" width="16" height="16">
+                                    <img src="${pageContext.request.contextPath}/images/reply.png" width="16" height="16">
                                 </c:if>
         
                                 <%-- 2. 공지사항 마크업 처리 (isNotice 조건 사용) --%>
@@ -459,7 +459,7 @@
                         <%-- 1. 공통 DIV 시작: 들여쓰기 및 답글 이미지 처리 (공지 마크업 제거) --%>
                         <div class ="flex-box" style ="width: 300px; padding-left:${csBoardListVO.csBoardDepth * 20  + 10}px">
                             <c:if test="${csBoardListVO.csBoardDepth > 0}">
-                                <img src="/images/reply.png" width="16" height="16">
+                                <img src="${pageContext.request.contextPath}/images/reply.png" width="16" height="16">
                             </c:if>
     
                             <%-- 2. 공지사항 마크업 처리 (제거됨) --%>

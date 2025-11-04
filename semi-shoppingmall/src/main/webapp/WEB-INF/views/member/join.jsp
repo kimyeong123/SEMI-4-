@@ -3,9 +3,9 @@
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
 
-<link rel = "stylesheet" type = "text/css" href="/multipage/multipage.css">
+<link rel = "stylesheet" type = "text/css" href="${pageContext.request.contextPath}/multipage/multipage.css">
 <!-- 다음주소 cdn -->
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="${pageContext.request.contextPath}//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src = "/multipage/multipage.js"></script>
 <script src = "/js/member-join.js"></script>
 
@@ -265,7 +265,7 @@
                 </div>
                 <!-- 미리보기 -->
                 <div class="cell">
-                    <img src="/images/error/no-image.png" width="200px" class = "img-preview">
+                    <img src="${pageContext.request.contextPath}/images/error/no-image.png" width="200px" class = "img-preview">
                 </div>
     
                 <!-- 가입버튼 -->

@@ -26,7 +26,7 @@
                     <td>${banner.bannerTitle}</td>
                     <td>
                         <c:if test="${not empty banner.bannerAttachmentNo}">
-                            <img src="/attachment/view?attachmentNo=${banner.bannerAttachmentNo}"
+                            <img src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${banner.bannerAttachmentNo}"
                                  width="120" height="60"
                                  style="object-fit:cover; border:1px solid #ccc; border-radius:6px;">
                         </c:if>

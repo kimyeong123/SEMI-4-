@@ -11,7 +11,7 @@
 		<h2>기존 비밀번호와 수정할 비밀번호를 입력해주세요</h2>
 	</div>
 	<div class ="cell">
-		<a class ="btn btn-netural" href="/member/mypage">마이페이지로 다시가기</a>
+		<a class ="btn btn-netural" href="${pageContext.request.contextPath}/member/mypage">마이페이지로 다시가기</a>
 	</div>
 	<form action="password" method="post">
 		<div class = cell>

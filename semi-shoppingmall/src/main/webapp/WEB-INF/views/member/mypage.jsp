@@ -478,7 +478,7 @@ $(document).on("click", ".btn-review-delete", function() {
     <c:forEach var="review" items="${reviewList}">
         <tr id="review-${review.reviewNo}">
             <td style="text-align: center;">
-                <a href="/product/detail?productNo=${review.productNo}">${review.productName}</a>
+                <a href="${pageContext.request.contextPath}/product/detail?productNo=${review.productNo}">${review.productName}</a>
             </td>
             <td style="text-align: center;">
                 <c:forEach begin="1" end="${review.reviewRating}">

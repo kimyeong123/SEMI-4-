@@ -77,7 +77,7 @@
                 <c:if test="${not empty banner.bannerAttachmentNo}">
                     <div class="swiper-slide">
                         <a href="${banner.bannerLink}">
-                            <img src="/attachment/view?attachmentNo=${banner.bannerAttachmentNo}" alt="${banner.bannerTitle}">
+                            <img src="${pageContext.request.contextPath}/attachment/view?attachmentNo=${banner.bannerAttachmentNo}" alt="${banner.bannerTitle}">
                         </a>
                     </div>
                 </c:if>
