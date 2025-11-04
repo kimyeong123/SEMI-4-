@@ -46,7 +46,7 @@
 						</div>
 						<div>
 							<%-- 상세 내역 링크 --%>
-							<a href="/orders/detail?ordersNo=${order.ordersNo}"
+							<a href="${pageContext.request.contextPath}/orders/detail?ordersNo=${order.ordersNo}"
 								style="color: #555; text-decoration: none;">상세주문내역 &gt;</a>
 						</div>
 					</div>
@@ -64,7 +64,7 @@
 									style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;">
 <%-- 							</c:if> --%>
 							<%-- 또는 /static/product-images/${order.thumbnailName} 같은 경로 --%>
-							<%-- <img src="/static/product-images/${order.thumbnailName}" alt="${order.productName}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;"> --%>
+							<%-- <img src="${pageContext.request.contextPath}/static/product-images/${order.thumbnailName}" alt="${order.productName}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;"> --%>
 
 							<div>
 								<div style="font-weight: bold;">${order.productName}</div>
@@ -92,7 +92,7 @@
 							<%-- JSP의 주문 취소 버튼 부분 --%>
 							<c:if
 								test="${order.ordersStatus == '결제완료' || order.ordersStatus == '배송준비중'}">
-								<form action="/orders/cancel" method="post"
+								<form action="${pageContext.request.contextPath}/orders/cancel" method="post"
 									onsubmit="return confirm('정말 주문을 취소하시겠습니까?');">
 									<%-- 확인 메시지 추가 --%>
 									<input type="hidden" name="ordersNo" value="${order.ordersNo}">

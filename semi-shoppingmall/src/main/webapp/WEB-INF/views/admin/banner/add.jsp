@@ -7,7 +7,7 @@
     <h1>배너 등록</h1>
 
     <!-- ✅ 파일 업로드를 위해 반드시 enctype 추가 -->
-    <form action="/admin/banner/add" method="post" enctype="multipart/form-data">
+    <form action="${pageContext.request.contextPath}/admin/banner/add" method="post" enctype="multipart/form-data">
 
         <!-- 배너 제목 -->
         <div class="cell">

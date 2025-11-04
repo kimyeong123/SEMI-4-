@@ -45,7 +45,7 @@
 </style>
 
 <script
-	src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	src="${pageContext.request.contextPath}//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -242,7 +242,7 @@
 		<c:set var="shippingFee" value="${subtotal >= 50000 ? 0 : 3000}" />
 		<c:set var="finalTotal" value="${subtotal + shippingFee}" />
 
-		<form class="flex-box payment-form" action="/orders/payment"
+		<form class="flex-box payment-form" action="${pageContext.request.contextPath}/orders/payment"
 			method="post">
 
 			<div class="cell w-600">

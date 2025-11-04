@@ -23,7 +23,7 @@
 			<c:when test="${memberDto == null}">탈퇴한사용자</c:when>
 			
 			<c:when test="${sessionScope.loginLevel == '관리자' && memberDto.memberLevel != '관리자'}">
-				<a href="/admin/member/detail?memberId=${memberDto.memberId}">
+				<a href="${pageContext.request.contextPath}/admin/member/detail?memberId=${memberDto.memberId}">
 					<span>${memberDto.memberNickname}</span>
 				</a>			
 			</c:when>			

@@ -31,7 +31,7 @@
         <div class="cell">
             <label>현재 이미지</label><br>
             <c:if test="${not empty bannerDto.bannerAttachmentNo}">
-                <img src="/attachment/download?attachmentNo=${bannerDto.bannerAttachmentNo}" width="300" height="150" style="object-fit:cover;">
+                <img src="${pageContext.request.contextPath}/attachment/download?attachmentNo=${bannerDto.bannerAttachmentNo}" width="300" height="150" style="object-fit:cover;">
             </c:if>
             <c:if test="${empty bannerDto.bannerAttachmentNo}">
                 <span style="color:#aaa;">등록된 이미지가 없습니다.</span>

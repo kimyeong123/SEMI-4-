@@ -35,19 +35,19 @@
                     <h2>운영 방침</h2>
                 </div>
                 <div class="cell center">
-                    <a href="/csBoard/detail?csBoardNo=1">
+                    <a href="${pageContext.request.contextPath}/csBoard/detail?csBoardNo=1">
                         <i class="fa-regular fa-clipboard"></i>
                         <span>홈페이지 이용약관</span>
                     </a>
                 </div>
                 <div class="cell center">
-                    <a href="/csBoard/detail?csBoardNo=2">
+                    <a href="${pageContext.request.contextPath}/csBoard/detail?csBoardNo=2">
                         <i class="fa-solid fa-user-lock"></i>
                         <span>개인정보 처리방침</span>
                     </a>
                 </div>
                 <div class="cell center">
-                    <a href="/csBoard/detail?csBoardNo=23">
+                    <a href="${pageContext.request.contextPath}/csBoard/detail?csBoardNo=23">
                         <i class="fa-solid fa-user-lock"></i>
                         <span>반품 정책</span>
                     </a>

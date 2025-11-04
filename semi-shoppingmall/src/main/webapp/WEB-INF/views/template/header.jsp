@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="/css/commons.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/commons.css">
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
 <style>
@@ -133,36 +133,36 @@ $(function() {
 		<!-- ✅ 여기만 수정 (50px → 80px) -->
 		<div class="flex-box" style="height: 80px; align-items: center;">
 			<div class="w-25 flex-box flex-center">
-				<a href="/"> 
+				<a href="${pageContext.request.contextPath}/"> 
                     <img src="${pageContext.request.contextPath}/images/KING HEART.png" class="logo-img">
 				</a>
 			</div>
 			<div class="w-50 logo mt-10">
-				<a href="/">
+				<a href="${pageContext.request.contextPath}/">
 					<img src="${pageContext.request.contextPath}/images/KHLOGO.png" class="logo-img">
 				</a>
 			</div>
 			<div class="w-25 header-menu-right">
 				<c:choose>
 					<c:when test="${sessionScope.loginId != null && (sessionScope.loginLevel == '일반회원' || sessionScope.loginLevel == '우수회원')}">
-						<a href="/member/wishlist"><i class="fa-regular fa-heart"></i></a>
-						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
-						<a href="/orders/list"><i class="fa-solid fa-receipt"></i></a>
-						<a href="/member/mypage"><i class="fa-solid fa-user"></i><span>내정보</span></a>
-						<a href="/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
+						<a href="${pageContext.request.contextPath}/member/wishlist"><i class="fa-regular fa-heart"></i></a>
+						<a href="${pageContext.request.contextPath}/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
+						<a href="${pageContext.request.contextPath}/orders/list"><i class="fa-solid fa-receipt"></i></a>
+						<a href="${pageContext.request.contextPath}/member/mypage"><i class="fa-solid fa-user"></i><span>내정보</span></a>
+						<a href="${pageContext.request.contextPath}/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
 					</c:when>
 					<c:when test="${sessionScope.loginId != null && sessionScope.loginLevel == '관리자'}">
-						<a href="/admin/home" class="admin-link"><i class="fa-solid fa-gear"></i><span>관리메뉴</span></a>
-						<a href="/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
+						<a href="${pageContext.request.contextPath}/admin/home" class="admin-link"><i class="fa-solid fa-gear"></i><span>관리메뉴</span></a>
+						<a href="${pageContext.request.contextPath}/member/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span></a>
 					</c:when>
 					<c:otherwise>
-						<a href="/wishlist"><i class="fa-regular fa-heart"></i></a>
-						<a href="/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
-						<a href="/member/login" class="btn-primary"><span>로그인</span></a>
-						<a href="/member/join" class="btn-primary"><span>회원가입</span></a>
+						<a href="${pageContext.request.contextPath}/wishlist"><i class="fa-regular fa-heart"></i></a>
+						<a href="${pageContext.request.contextPath}/orders/cart"><i class="fa-solid fa-cart-shopping"></i></a>
+						<a href="${pageContext.request.contextPath}/member/login" class="btn-primary"><span>로그인</span></a>
+						<a href="${pageContext.request.contextPath}/member/join" class="btn-primary"><span>회원가입</span></a>
 					</c:otherwise>
 				</c:choose>
-				<a href="/csBoard/list"><i class="fa-solid fa-headset"></i><span>고객센터</span></a>
+				<a href="${pageContext.request.contextPath}/csBoard/list"><i class="fa-solid fa-headset"></i><span>고객센터</span></a>
 			</div>
 		</div>
 	</div>
@@ -178,12 +178,12 @@ $(function() {
 			<c:choose>
 				<c:when test="${sessionScope.loginId != null}">
 					<div class="sidebar-profile">
-						<img src="/member/profile?memberId=${sessionScope.loginId}" width="100" height="100" class="image-profile">
+						<img src="${pageContext.request.contextPath}/member/profile?memberId=${sessionScope.loginId}" width="100" height="100" class="image-profile">
 						<h3>${sessionScope.loginId} (${sessionScope.loginLevel})</h3>
 					</div>
 					<div class="sidebar-buttons">
 						<div class="menu-link-item">
-							<a href="/member/mypage"><i class="fa-solid fa-user"></i><span>내 정보 보기</span></a>
+							<a href="${pageContext.request.contextPath}/member/mypage"><i class="fa-solid fa-user"></i><span>내 정보 보기</span></a>
 						</div>
 					</div>
 				</c:when>
@@ -191,10 +191,10 @@ $(function() {
 					<div class="sidebar-profile"><h3>비회원 상태</h3></div>
 					<div class="sidebar-buttons">
 						<div class="menu-link-item">
-							<a href="/member/login"><i class="fa-solid fa-right-to-bracket fa-fade"></i><span>로그인</span></a>
+							<a href="${pageContext.request.contextPath}/member/login"><i class="fa-solid fa-right-to-bracket fa-fade"></i><span>로그인</span></a>
 						</div>
 						<div class="menu-link-item">
-							<a href="/member/join"><i class="fa-solid fa-user-plus fa-fade"></i><span>회원가입</span></a>
+							<a href="${pageContext.request.contextPath}/member/join"><i class="fa-solid fa-user-plus fa-fade"></i><span>회원가입</span></a>
 						</div>
 					</div>
 				</c:otherwise>

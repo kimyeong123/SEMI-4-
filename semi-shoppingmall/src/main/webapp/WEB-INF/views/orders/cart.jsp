@@ -308,7 +308,7 @@
 				</div>
 
 				<div class="cell mt-30">
-					<a href="/orders/payment"
+					<a href="${pageContext.request.contextPath}/orders/payment"
 						class="btn btn-positive w-100 btn-checkout"> 주문결제 </a>
 				</div>
 			</div>

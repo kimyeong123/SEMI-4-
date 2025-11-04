@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>
-<link rel="stylesheet" href="/css/commons.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/commons.css">
 
 <div class="container w-1200">
     <h1>주문 관리</h1>

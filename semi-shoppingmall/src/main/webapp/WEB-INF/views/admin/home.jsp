@@ -22,12 +22,12 @@
 <div class="cell admin-menu">
 	<h1><i class="fa-solid fa-gear"></i>관리 페이지<i class="fa-solid fa-gear"></i></h1>
 	<div class="cell admin-menu">
-	<h2><a href="/admin/member/list">회원 관리</a></h2>
-	<h2><a href="/admin/product/list">상품 관리</a></h2>
-    <h2><a href="/admin/category/list">카테고리 관리</a></h2>
-    <h2><a href="/admin/banner/list">배너 관리</a></h2>
-    <h2><a href="/admin/stat/all">데이터 현황</a></h2>
-    <h2><a href="/admin/orders/list">주문 관리</a></h2>
+	<h2><a href="${pageContext.request.contextPath}/admin/member/list">회원 관리</a></h2>
+	<h2><a href="${pageContext.request.contextPath}/admin/product/list">상품 관리</a></h2>
+    <h2><a href="${pageContext.request.contextPath}/admin/category/list">카테고리 관리</a></h2>
+    <h2><a href="${pageContext.request.contextPath}/admin/banner/list">배너 관리</a></h2>
+    <h2><a href="${pageContext.request.contextPath}/admin/stat/all">데이터 현황</a></h2>
+    <h2><a href="${pageContext.request.contextPath}/admin/orders/list">주문 관리</a></h2>
 	</div>
 </div>
 <jsp:include page="/WEB-INF/views/template/footer.jsp"></jsp:include>

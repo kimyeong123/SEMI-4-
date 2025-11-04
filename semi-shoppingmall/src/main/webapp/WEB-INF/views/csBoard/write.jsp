@@ -7,8 +7,8 @@
 <!-- summernote -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
-<link rel="stylesheet" type="text/css" href="/summernote/custom-summernote.css">
-<script src="/summernote/custom-summernote.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/summernote/custom-summernote.css">
+<script src="${pageContext.request.contextPath}/summernote/custom-summernote.js"></script>
 
 <script type="text/javascript">
 // 문서가 로드된 후 실행 (jQuery의 ready 함수)

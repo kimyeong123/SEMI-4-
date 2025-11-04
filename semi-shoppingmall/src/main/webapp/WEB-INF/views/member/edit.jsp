@@ -4,7 +4,7 @@
 <jsp:include page="/WEB-INF/views/template/header.jsp"></jsp:include>	
 
 <!-- 다음주소 cdn -->
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="${pageContext.request.contextPath}//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src = "/js/member-edit.js"></script>
 
 <div class = "container w-600">
@@ -109,7 +109,7 @@
 <!--             <input type="file" name="attach" class="field w-100"> -->
 <!--         </div> -->
 <!--         <div class="cell"> -->
-<!--             <img src="/images/error/no-image.png" width="200px" class="img-preview"> -->
+<!--             <img src="${pageContext.request.contextPath}/images/error/no-image.png" width="200px" class="img-preview"> -->
 <!--         </div> -->
 <!-- 		<div class="cell"> -->
 <%-- 			<img class="image-profile" src="${pageContext.request.contextPath}/member/profile?memberId=${memberDto.memberId}&t=<%= System.currentTimeMillis() %>"> --%>

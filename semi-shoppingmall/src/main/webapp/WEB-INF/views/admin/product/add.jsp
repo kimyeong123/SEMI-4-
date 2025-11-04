@@ -3,14 +3,14 @@
 
 <jsp:include page="/WEB-INF/views/template/header.jsp" />
 
-<link rel="stylesheet" type="text/css" href="/css/commons.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/commons.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Summernote -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/lang/summernote-ko-KR.min.js"></script>
 <!-- option 관리용 js -->
-<script src="/js/option.js"></script>
+<script src="${pageContext.request.contextPath}/js/option.js"></script>
 
 
 <div class="container w-600">
